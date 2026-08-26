@@ -6,15 +6,18 @@ const PORT = process.env.PORT || 3000;
 const WIDTH = 150;
 const HEIGHT = 150;
 
-const MAX_PLAYERS = 4;
-
+const MAX_PLAYERS = 8;
 const TICK = 100;
 
 const COLORS = [
-    "#43ff72",
-    "#45a5ff",
+    "#42ff72",
+    "#43a5ff",
     "#ff4fd8",
-    "#ffd43b"
+    "#ffd43b",
+    "#ff7043",
+    "#b65cff",
+    "#00e5ff",
+    "#ff3d71"
 ];
 
 const MODES = [
@@ -31,7 +34,7 @@ const server = http.createServer((req, res) => {
         "Content-Type": "text/plain; charset=utf-8"
     });
 
-    res.end("🐍 Snake Online 3.0 server töötab!");
+    res.end("🐍 Snake Online server töötab!");
 
 });
 
@@ -43,10 +46,10 @@ const rooms = {};
 
 
 /* =========================
-   UTIL
+   HELPERS
 ========================= */
 
-function id() {
+function makeId() {
 
     return Math.random()
         .toString(36)
@@ -99,6 +102,18 @@ function send(ws, data) {
 }
 
 
+function validDirection(direction) {
+
+    return [
+        "up",
+        "down",
+        "left",
+        "right"
+    ].includes(direction);
+
+}
+
+
 /* =========================
    ROOM
 ========================= */
@@ -137,49 +152,39 @@ function createRoom(mode) {
    COLLISION
 ========================= */
 
+function wallAt(room, x, y) {
+
+    return room.walls.some(wall =>
+        wall.x === x &&
+        wall.y === y
+    );
+
+}
+
+
 function snakeAt(room, x, y) {
 
-    return Object.values(
-        room.players
-    ).some(player => {
+    return Object.values(room.players)
+        .some(player => {
 
-        return player.snake.some(part => {
+            if(!player.alive)
+                return false;
 
-            return (
+            return player.snake.some(part =>
                 part.x === x &&
                 part.y === y
             );
 
         });
 
-    });
-
-}
-
-
-function wallAt(room, x, y) {
-
-    return room.walls.some(wall => {
-
-        return (
-            wall.x === x &&
-            wall.y === y
-        );
-
-    });
-
 }
 
 
 function randomPosition(room) {
 
-    for(
-        let tries = 0;
-        tries < 500;
-        tries++
-    ) {
+    for(let i = 0; i < 1000; i++) {
 
-        const pos = {
+        const position = {
 
             x: Math.floor(
                 Math.random() * WIDTH
@@ -194,17 +199,17 @@ function randomPosition(room) {
         if(
             !wallAt(
                 room,
-                pos.x,
-                pos.y
+                position.x,
+                position.y
             ) &&
             !snakeAt(
                 room,
-                pos.x,
-                pos.y
+                position.x,
+                position.y
             )
         ) {
 
-            return pos;
+            return position;
 
         }
 
@@ -226,9 +231,7 @@ function createMaze() {
 
     const walls = [];
 
-    /*
-       suured pikad seinad
-    */
+    /* horisontaalsed seinad */
 
     for(
         let x = 15;
@@ -236,32 +239,28 @@ function createMaze() {
         x++
     ) {
 
-        if(
-            x < 70 ||
-            x > 80
-        ) {
+        if(x < 65 || x > 85) {
 
             walls.push({
                 x,
-                y: 40
+                y: 45
             });
 
         }
 
-        if(
-            x < 50 ||
-            x > 60
-        ) {
+        if(x < 45 || x > 65) {
 
             walls.push({
                 x,
-                y: 110
+                y: 105
             });
 
         }
 
     }
 
+
+    /* vertikaalsed seinad */
 
     for(
         let y = 15;
@@ -269,32 +268,25 @@ function createMaze() {
         y++
     ) {
 
-        if(
-            y < 70 ||
-            y > 80
-        ) {
+        if(y < 65 || y > 85) {
 
             walls.push({
-                x: 40,
+                x: 45,
                 y
             });
 
         }
 
-        if(
-            y < 50 ||
-            y > 60
-        ) {
+        if(y < 45 || y > 65) {
 
             walls.push({
-                x: 110,
+                x: 105,
                 y
             });
 
         }
 
     }
-
 
     return walls;
 
@@ -305,48 +297,80 @@ function createMaze() {
    PLAYER
 ========================= */
 
+function startPosition(index) {
+
+    const positions = [
+
+        { x: 20, y: 20 },
+
+        { x: WIDTH - 21, y: HEIGHT - 21 },
+
+        { x: WIDTH - 21, y: 20 },
+
+        { x: 20, y: HEIGHT - 21 },
+
+        { x: 75, y: 20 },
+
+        { x: 75, y: HEIGHT - 21 },
+
+        { x: 20, y: 75 },
+
+        { x: WIDTH - 21, y: 75 }
+
+    ];
+
+    return positions[
+        index % positions.length
+    ];
+
+}
+
+
+function startDirection(index) {
+
+    const directions = [
+        "right",
+        "left",
+        "left",
+        "right",
+        "down",
+        "up",
+        "right",
+        "left"
+    ];
+
+    return directions[
+        index % directions.length
+    ];
+
+}
+
+
 function createPlayer(
     playerId,
     name,
     index
 ) {
 
-    const starts = [
-
-        {
-            x: 20,
-            y: 20
-        },
-
-        {
-            x: WIDTH - 21,
-            y: HEIGHT - 21
-        },
-
-        {
-            x: WIDTH - 21,
-            y: 20
-        },
-
-        {
-            x: 20,
-            y: HEIGHT - 21
-        }
-
-    ];
-
     const start =
-        starts[
-            index % starts.length
-        ];
-
+        startPosition(index);
 
     const direction =
-        index === 1 ||
-        index === 3
-        ? "left"
-        : "right";
+        startDirection(index);
 
+    const backwards =
+        direction === "right"
+        ? -1
+        : direction === "left"
+        ? 1
+        : 0;
+
+    const verticalBack =
+        direction === "down"
+        ? -1
+        : direction === "up"
+        ? 1
+        : 0;
 
     return {
 
@@ -354,6 +378,7 @@ function createPlayer(
 
         name:
             String(name || "Player")
+            .replace(/[<>]/g, "")
             .slice(0, 12),
 
         color:
@@ -370,31 +395,21 @@ function createPlayer(
 
             {
                 x:
-                    start.x -
-                    (
-                        direction === "right"
-                        ? 1
-                        : -1
-                    ),
-
-                y: start.y
+                    start.x + backwards,
+                y:
+                    start.y + verticalBack
             },
 
             {
                 x:
-                    start.x -
-                    (
-                        direction === "right"
-                        ? 2
-                        : -2
-                    ),
-
-                y: start.y
+                    start.x + backwards * 2,
+                y:
+                    start.y + verticalBack * 2
             }
 
         ],
 
-        direction,
+        direction: direction,
 
         nextDirection: direction,
 
@@ -408,7 +423,9 @@ function createPlayer(
 
         shield: false,
 
-        boost: 0
+        boost: 0,
+
+        boostCooldown: 0
 
     };
 
@@ -421,16 +438,14 @@ function createPlayer(
 
 function addFood(room) {
 
-    const pos =
+    const position =
         randomPosition(room);
 
     room.food.push({
 
-        x: pos.x,
+        x: position.x,
 
-        y: pos.y,
-
-        type: "apple"
+        y: position.y
 
     });
 
@@ -438,12 +453,12 @@ function addFood(room) {
 
 
 /* =========================
-   POWER
+   POWERUPS
 ========================= */
 
-function addPower(room) {
+function addPowerup(room) {
 
-    const pos =
+    const position =
         randomPosition(room);
 
     const types = [
@@ -452,19 +467,21 @@ function addPower(room) {
         "coin"
     ];
 
+    const type =
+        types[
+            Math.floor(
+                Math.random() *
+                types.length
+            )
+        ];
+
     room.powerups.push({
 
-        x: pos.x,
+        x: position.x,
 
-        y: pos.y,
+        y: position.y,
 
-        type:
-            types[
-                Math.floor(
-                    Math.random() *
-                    types.length
-                )
-            ]
+        type: type
 
     });
 
@@ -472,51 +489,40 @@ function addPower(room) {
 
 
 /* =========================
-   RESET
+   RESET PLAYER
 ========================= */
 
 function resetPlayer(
     room,
-    player,
-    index
+    player
 ) {
 
-    const starts = [
-
-        {
-            x: 20,
-            y: 20
-        },
-
-        {
-            x: WIDTH - 21,
-            y: HEIGHT - 21
-        },
-
-        {
-            x: WIDTH - 21,
-            y: 20
-        },
-
-        {
-            x: 20,
-            y: HEIGHT - 21
-        }
-
-    ];
+    const index =
+        Object.keys(
+            room.players
+        ).indexOf(
+            player.id
+        );
 
     const start =
-        starts[
-            index % starts.length
-        ];
-
+        startPosition(index);
 
     const direction =
-        index === 1 ||
-        index === 3
-        ? "left"
-        : "right";
+        startDirection(index);
 
+    const backwards =
+        direction === "right"
+        ? -1
+        : direction === "left"
+        ? 1
+        : 0;
+
+    const verticalBack =
+        direction === "down"
+        ? -1
+        : direction === "up"
+        ? 1
+        : 0;
 
     player.snake = [
 
@@ -527,26 +533,16 @@ function resetPlayer(
 
         {
             x:
-                start.x -
-                (
-                    direction === "right"
-                    ? 1
-                    : -1
-                ),
-
-            y: start.y
+                start.x + backwards,
+            y:
+                start.y + verticalBack
         },
 
         {
             x:
-                start.x -
-                (
-                    direction === "right"
-                    ? 2
-                    : -2
-                ),
-
-            y: start.y
+                start.x + backwards * 2,
+            y:
+                start.y + verticalBack * 2
         }
 
     ];
@@ -565,6 +561,8 @@ function resetPlayer(
 
     player.boost = 0;
 
+    player.boostCooldown = 0;
+
 }
 
 
@@ -577,6 +575,9 @@ function killPlayer(
     player
 ) {
 
+    if(!player.alive)
+        return;
+
     if(player.shield) {
 
         player.shield = false;
@@ -587,17 +588,50 @@ function killPlayer(
 
     player.alive = false;
 
-    player.respawnTimer = 30;
-
-
     if(
-        room.mode === "last" ||
-        room.mode === "battle"
+        room.mode === "classic" ||
+        room.mode === "power" ||
+        room.mode === "maze"
     ) {
+
+        player.respawnTimer = 25;
+
+    } else {
 
         player.respawnTimer = -1;
 
     }
+
+}
+
+
+/* =========================
+   NEXT HEAD
+========================= */
+
+function getNextHead(player) {
+
+    const head = {
+
+        x: player.snake[0].x,
+
+        y: player.snake[0].y
+
+    };
+
+    if(player.direction === "up")
+        head.y--;
+
+    if(player.direction === "down")
+        head.y++;
+
+    if(player.direction === "left")
+        head.x--;
+
+    if(player.direction === "right")
+        head.x++;
+
+    return head;
 
 }
 
@@ -620,20 +654,12 @@ function movePlayer(
             player.respawnTimer--;
 
             if(
-                player.respawnTimer === 0
+                player.respawnTimer <= 0
             ) {
-
-                const index =
-                    Object.keys(
-                        room.players
-                    ).indexOf(
-                        player.id
-                    );
 
                 resetPlayer(
                     room,
-                    player,
-                    index
+                    player
                 );
 
             }
@@ -645,39 +671,58 @@ function movePlayer(
     }
 
 
-    player.direction =
-        player.nextDirection;
+    /*
+       Väga oluline:
+       ussile on alati suund.
+    */
 
+    if(
+        !validDirection(
+            player.direction
+        )
+    ) {
 
-    const head = {
+        player.direction = "right";
 
-        x:
-            player.snake[0].x,
-
-        y:
-            player.snake[0].y
-
-    };
+    }
 
 
     if(
-        player.direction === "up"
-    ) head.y--;
+        validDirection(
+            player.nextDirection
+        )
+    ) {
 
-    if(
-        player.direction === "down"
-    ) head.y++;
+        const opposite = {
 
-    if(
-        player.direction === "left"
-    ) head.x--;
+            up: "down",
 
-    if(
-        player.direction === "right"
-    ) head.x++;
+            down: "up",
+
+            left: "right",
+
+            right: "left"
+
+        };
+
+        if(
+            player.nextDirection !==
+            opposite[player.direction]
+        ) {
+
+            player.direction =
+                player.nextDirection;
+
+        }
+
+    }
 
 
-    /* seinad */
+    const head =
+        getNextHead(player);
+
+
+    /* piir */
 
     if(
         head.x < 0 ||
@@ -695,6 +740,8 @@ function movePlayer(
 
     }
 
+
+    /* sein */
 
     if(
         wallAt(
@@ -714,7 +761,7 @@ function movePlayer(
     }
 
 
-    /* teiste ussid */
+    /* teine uss */
 
     for(
         const other of Object.values(
@@ -725,26 +772,32 @@ function movePlayer(
         if(!other.alive)
             continue;
 
-        if(
-            other.snake.some(part =>
-                part.x === head.x &&
-                part.y === head.y
-            )
+        for(
+            const part of other.snake
         ) {
 
-            killPlayer(
-                room,
-                player
-            );
+            if(
+                part.x === head.x &&
+                part.y === head.y
+            ) {
 
-            return;
+                killPlayer(
+                    room,
+                    player
+                );
+
+                return;
+
+            }
 
         }
 
     }
 
 
-    player.snake.unshift(head);
+    player.snake.unshift(
+        head
+    );
 
 
     /* toit */
@@ -756,7 +809,7 @@ function movePlayer(
         );
 
 
-    if(foodIndex !== -1) {
+    if(foodIndex >= 0) {
 
         room.food.splice(
             foodIndex,
@@ -776,7 +829,7 @@ function movePlayer(
     }
 
 
-    /* power */
+    /* powerup */
 
     const powerIndex =
         room.powerups.findIndex(power =>
@@ -785,7 +838,7 @@ function movePlayer(
         );
 
 
-    if(powerIndex !== -1) {
+    if(powerIndex >= 0) {
 
         const power =
             room.powerups[
@@ -798,21 +851,27 @@ function movePlayer(
         );
 
 
-        if(power.type === "speed") {
+        if(
+            power.type === "speed"
+        ) {
 
-            player.boost = 80;
+            player.boost = 100;
 
         }
 
 
-        if(power.type === "shield") {
+        if(
+            power.type === "shield"
+        ) {
 
             player.shield = true;
 
         }
 
 
-        if(power.type === "coin") {
+        if(
+            power.type === "coin"
+        ) {
 
             player.coins += 10;
 
@@ -829,79 +888,112 @@ function movePlayer(
 
     }
 
+
+    if(
+        player.boostCooldown > 0
+    ) {
+
+        player.boostCooldown--;
+
+    }
+
 }
 
 
 /* =========================
-   STATE
+   BOOST
 ========================= */
 
-function broadcast(room) {
+function boostPlayer(
+    player
+) {
 
-    const safePlayers = {};
+    if(!player)
+        return;
+
+    if(!player.alive)
+        return;
+
+    if(
+        player.boostCooldown > 0
+    )
+        return;
+
+    /*
+       Boost kestab 30 ticki.
+    */
+
+    player.boost = Math.max(
+        player.boost,
+        30
+    );
+
+    player.boostCooldown = 45;
+
+}
+
+
+/* =========================
+   GAME SPEED
+========================= */
+
+function gameTick(room) {
 
     Object.values(
         room.players
-    ).forEach(player => {
+    ).forEach(
+        player => {
 
-        safePlayers[player.id] = {
+            movePlayer(
+                room,
+                player
+            );
 
-            id: player.id,
-
-            name: player.name,
-
-            color: player.color,
-
-            snake: player.snake,
-
-            score: player.score,
-
-            coins: player.coins,
-
-            alive: player.alive,
-
-            respawnTimer:
-                player.respawnTimer,
-
-            shield: player.shield,
-
-            boost: player.boost
-
-        };
-
-    });
+        }
+    );
 
 
-    const state = {
+    /*
+       Boostitud mängijad liiguvad
+       veel ühe sammu.
+    */
 
-        width: WIDTH,
+    Object.values(
+        room.players
+    ).forEach(
+        player => {
 
-        height: HEIGHT,
+            if(
+                player.alive &&
+                player.boost > 0 &&
+                Math.random() < 0.65
+            ) {
 
-        mode: room.mode,
+                movePlayer(
+                    room,
+                    player
+                );
 
-        players: safePlayers,
+            }
 
-        food: room.food,
-
-        powerups: room.powerups,
-
-        walls: room.walls
-
-    };
+        }
+    );
 
 
-    room.clients.forEach(client => {
+    if(
+        room.mode === "power" &&
+        Math.random() < 0.04 &&
+        room.powerups.length < 15
+    ) {
 
-        send(client, {
+        addPowerup(room);
 
-            type: "state",
+    }
 
-            state
 
-        });
+    checkWinner(room);
 
-    });
+    broadcast(room);
 
 }
 
@@ -922,25 +1014,24 @@ function checkWinner(room) {
     }
 
 
-    const alive =
+    const players =
         Object.values(
             room.players
-        )
-        .filter(
-            player => player.alive
         );
 
 
-    const count =
-        Object.keys(
-            room.players
-        ).length;
+    if(players.length < 2)
+        return;
 
 
-    if(
-        count >= 2 &&
-        alive.length === 1
-    ) {
+    const alive =
+        players.filter(
+            player =>
+                player.alive
+        );
+
+
+    if(alive.length === 1) {
 
         finishGame(
             room,
@@ -970,19 +1061,24 @@ function finishGame(
     room.clients.forEach(
         client => {
 
-            send(client, {
+            send(
+                client,
+                {
 
-                type: "winner",
+                    type: "winner",
 
-                winner: {
+                    winner: {
 
-                    name: winner.name,
+                        name:
+                            winner.name,
 
-                    score: winner.score
+                        score:
+                            winner.score
+
+                    }
 
                 }
-
-            });
+            );
 
         }
     );
@@ -996,16 +1092,19 @@ function finishGame(
 
             Object.values(
                 room.players
-            ).forEach(player => {
+            ).forEach(
+                player => {
 
-                player.score = 0;
+                    player.score = 0;
 
-                player.coins = 0;
+                    player.coins = 0;
 
-                player.alive = true;
+                    player.alive = true;
 
-            });
+                    player.respawnTimer = 0;
 
+                }
+            );
 
             startGame(room);
 
@@ -1017,7 +1116,7 @@ function finishGame(
 
 
 /* =========================
-   START
+   START GAME
 ========================= */
 
 function startGame(room) {
@@ -1039,7 +1138,7 @@ function startGame(room) {
 
     for(
         let i = 0;
-        i < 15;
+        i < 25;
         i++
     ) {
 
@@ -1054,11 +1153,11 @@ function startGame(room) {
 
         for(
             let i = 0;
-            i < 10;
+            i < 12;
             i++
         ) {
 
-            addPower(room);
+            addPowerup(room);
 
         }
 
@@ -1068,9 +1167,12 @@ function startGame(room) {
     room.clients.forEach(
         client => {
 
-            send(client, {
-                type: "start"
-            });
+            send(
+                client,
+                {
+                    type: "start"
+                }
+            );
 
         }
     );
@@ -1086,37 +1188,82 @@ function startGame(room) {
 
 
 /* =========================
-   GAME TICK
+   BROADCAST
 ========================= */
 
-function gameTick(room) {
+function broadcast(room) {
+
+    const players = {};
+
 
     Object.values(
         room.players
-    ).forEach(player => {
+    ).forEach(
+        player => {
 
-        movePlayer(
-            room,
-            player
-        );
+            players[player.id] = {
 
-    });
+                id: player.id,
+
+                name: player.name,
+
+                color: player.color,
+
+                snake: player.snake,
+
+                direction: player.direction,
+
+                score: player.score,
+
+                coins: player.coins,
+
+                alive: player.alive,
+
+                respawnTimer:
+                    player.respawnTimer,
+
+                shield: player.shield,
+
+                boost: player.boost
+
+            };
+
+        }
+    );
 
 
-    if(
-        room.mode === "power" &&
-        Math.random() < 0.04 &&
-        room.powerups.length < 15
-    ) {
+    const state = {
 
-        addPower(room);
+        width: WIDTH,
 
-    }
+        height: HEIGHT,
+
+        mode: room.mode,
+
+        players: players,
+
+        food: room.food,
+
+        powerups: room.powerups,
+
+        walls: room.walls
+
+    };
 
 
-    checkWinner(room);
+    room.clients.forEach(
+        client => {
 
-    broadcast(room);
+            send(
+                client,
+                {
+                    type: "state",
+                    state: state
+                }
+            );
+
+        }
+    );
 
 }
 
@@ -1130,7 +1277,7 @@ wss.on(
     ws => {
 
         const playerId =
-            id();
+            makeId();
 
         ws.playerId =
             playerId;
@@ -1138,13 +1285,13 @@ wss.on(
         ws.room = null;
 
 
-        send(ws, {
-
-            type: "connected",
-
-            id: playerId
-
-        });
+        send(
+            ws,
+            {
+                type: "connected",
+                id: playerId
+            }
+        );
 
 
         ws.on(
@@ -1167,7 +1314,7 @@ wss.on(
                 }
 
 
-                /* CREATE */
+                /* CREATE ROOM */
 
                 if(
                     data.type ===
@@ -1191,10 +1338,14 @@ wss.on(
                     ws.room =
                         code;
 
-                    room.clients.add(ws);
+                    room.clients.add(
+                        ws
+                    );
 
 
-                    room.players[playerId] =
+                    room.players[
+                        playerId
+                    ] =
                         createPlayer(
                             playerId,
                             data.name,
@@ -1202,17 +1353,20 @@ wss.on(
                         );
 
 
-                    send(ws, {
+                    send(
+                        ws,
+                        {
 
-                        type:
-                            "roomCreated",
+                            type:
+                                "roomCreated",
 
-                        room: code,
+                            room: code,
 
-                        mode:
-                            room.mode
+                            mode:
+                                room.mode
 
-                    });
+                        }
+                    );
 
 
                     broadcast(room);
@@ -1224,7 +1378,7 @@ wss.on(
                 }
 
 
-                /* JOIN */
+                /* JOIN ROOM */
 
                 if(
                     data.type ===
@@ -1235,6 +1389,7 @@ wss.on(
                         String(
                             data.room || ""
                         )
+                        .trim()
                         .toUpperCase();
 
 
@@ -1244,14 +1399,17 @@ wss.on(
 
                     if(!room) {
 
-                        send(ws, {
+                        send(
+                            ws,
+                            {
 
-                            type: "error",
+                                type: "error",
 
-                            message:
-                                "Sellist tuba ei ole."
+                                message:
+                                    "Sellist tuba ei ole."
 
-                        });
+                            }
+                        );
 
                         return;
 
@@ -1265,14 +1423,24 @@ wss.on(
                         MAX_PLAYERS
                     ) {
 
-                        send(ws, {
+                        send(
+                            ws,
+                            {
 
-                            type: "error",
+                                type: "error",
 
-                            message:
-                                "Tuba on täis."
+                                message:
+                                    "Tuba on täis."
 
-                        });
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    if(ws.room) {
 
                         return;
 
@@ -1282,7 +1450,9 @@ wss.on(
                     ws.room =
                         code;
 
-                    room.clients.add(ws);
+                    room.clients.add(
+                        ws
+                    );
 
 
                     const index =
@@ -1291,7 +1461,9 @@ wss.on(
                         ).length;
 
 
-                    room.players[playerId] =
+                    room.players[
+                        playerId
+                    ] =
                         createPlayer(
                             playerId,
                             data.name,
@@ -1299,17 +1471,20 @@ wss.on(
                         );
 
 
-                    send(ws, {
+                    send(
+                        ws,
+                        {
 
-                        type:
-                            "roomJoined",
+                            type:
+                                "roomJoined",
 
-                        room: code,
+                            room: code,
 
-                        mode:
-                            room.mode
+                            mode:
+                                room.mode
 
-                    });
+                        }
+                    );
 
 
                     broadcast(room);
@@ -1331,7 +1506,9 @@ wss.on(
 
 
                     const room =
-                        rooms[ws.room];
+                        rooms[
+                            ws.room
+                        ];
 
                     if(!room)
                         return;
@@ -1346,12 +1523,16 @@ wss.on(
                         return;
 
 
-                    if(!player.alive)
-                        return;
-
-
                     const direction =
                         data.direction;
+
+
+                    if(
+                        !validDirection(
+                            direction
+                        )
+                    )
+                        return;
 
 
                     const opposite = {
@@ -1368,18 +1549,10 @@ wss.on(
 
 
                     if(
-                        [
-                            "up",
-                            "down",
-                            "left",
-                            "right"
-                        ].includes(
-                            direction
-                        ) &&
+                        direction !==
                         opposite[
-                            direction
-                        ] !==
-                        player.direction
+                            player.direction
+                        ]
                     ) {
 
                         player.nextDirection =
@@ -1402,7 +1575,9 @@ wss.on(
 
 
                     const room =
-                        rooms[ws.room];
+                        rooms[
+                            ws.room
+                        ];
 
                     if(!room)
                         return;
@@ -1417,13 +1592,32 @@ wss.on(
                         return;
 
 
+                    /*
+                       Boost kasutab münte.
+                       Kui münte on 3, võtab 3.
+                       Alguses saab tasuta boosti,
+                       sest mängijal on 0 coins.
+                    */
+
                     if(
                         player.coins >= 3
                     ) {
 
                         player.coins -= 3;
 
-                        player.boost = 30;
+                        boostPlayer(
+                            player
+                        );
+
+                    } else {
+
+                        /*
+                           tasuta väike boost
+                        */
+
+                        boostPlayer(
+                            player
+                        );
 
                     }
 
@@ -1442,7 +1636,9 @@ wss.on(
 
 
                 const room =
-                    rooms[ws.room];
+                    rooms[
+                        ws.room
+                    ];
 
 
                 if(!room)
@@ -1454,7 +1650,9 @@ wss.on(
                 ];
 
 
-                room.clients.delete(ws);
+                room.clients.delete(
+                    ws
+                );
 
 
                 if(
@@ -1483,7 +1681,7 @@ wss.on(
 
 
 /* =========================
-   START SERVER
+   SERVER START
 ========================= */
 
 server.listen(
@@ -1491,8 +1689,7 @@ server.listen(
     () => {
 
         console.log(
-            "🐍 Snake Online 3.0 server töötab pordil " +
-            PORT
+            `🐍 Snake Online töötab pordil ${PORT}`
         );
 
     }
