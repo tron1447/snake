@@ -1,516 +1,488 @@
 <!DOCTYPE html>
 <html lang="et">
+
 <head>
 
 <meta charset="UTF-8">
 
 <meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0,user-scalable=no"
+name="viewport"
+content="width=device-width,initial-scale=1.0,user-scalable=no"
 >
 
-<title>Snake Online 🐍</title>
+<title>Snake Arena 🐍</title>
 
 <style>
 
 *{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-  touch-action:none;
+box-sizing:border-box;
 }
 
 html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#020604;
-  color:white;
-  font-family:Arial,sans-serif;
+margin:0;
+width:100%;
+height:100%;
+overflow:hidden;
+background:#020604;
+font-family:Arial,sans-serif;
+color:white;
+touch-action:none;
 }
 
-#game{
-  position:fixed;
-  inset:0;
-  width:100vw;
-  height:100vh;
+canvas{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
 }
 
-.hidden{
-  display:none !important;
-}
+#menu,
+#lobby{
 
-/* MAIN MENU */
+position:fixed;
+inset:0;
+z-index:20;
 
-#menu{
-  position:fixed;
-  inset:0;
-  z-index:20;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+display:flex;
+align-items:center;
+justify-content:center;
 
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(25,100,45,.55),
-      rgba(0,0,0,.97)
-    );
+background:
+radial-gradient(
+circle,
+rgba(20,90,40,.65),
+rgba(0,0,0,.98)
+);
+
 }
 
 .card{
-  width:min(92vw,440px);
-  padding:28px;
-  border-radius:26px;
 
-  background:rgba(6,20,11,.97);
+width:min(92vw,450px);
 
-  border:1px solid #32814b;
+padding:30px;
 
-  box-shadow:
-    0 20px 100px rgba(0,0,0,.8);
+border-radius:28px;
 
-  text-align:center;
+background:
+rgba(4,17,9,.97);
+
+border:
+1px solid #39824d;
+
+box-shadow:
+0 30px 100px #000;
+
+text-align:center;
+
 }
 
 .logo{
-  font-size:75px;
-  filter:drop-shadow(0 0 25px #3cff70);
+font-size:80px;
+filter:drop-shadow(0 0 25px #45ff72);
 }
 
 h1{
-  font-size:38px;
-  margin:0 0 18px;
-  color:#5cff8c;
+font-size:40px;
+color:#5cff8b;
+margin:5px 0 20px;
 }
 
 input,select{
-  width:100%;
-  padding:15px;
-  margin:6px 0;
 
-  border-radius:13px;
-  border:1px solid #285c39;
+width:100%;
 
-  background:#061009;
-  color:white;
+padding:15px;
 
-  font-size:18px;
-  text-align:center;
+margin:6px 0;
+
+border-radius:13px;
+
+border:1px solid #315f3d;
+
+background:#061008;
+
+color:white;
+
+font-size:18px;
+
+text-align:center;
+
 }
 
 button{
-  border:0;
-  border-radius:14px;
-  padding:15px;
-  font-size:18px;
-  font-weight:bold;
-  cursor:pointer;
+
+width:100%;
+
+padding:15px;
+
+margin-top:8px;
+
+border:0;
+
+border-radius:14px;
+
+font-size:18px;
+
+font-weight:bold;
+
+cursor:pointer;
+
 }
 
 .create{
-  width:100%;
-  margin-top:8px;
-  background:#3be174;
-  color:#031008;
+background:#43eb77;
+color:#031008;
 }
 
 .join{
-  width:100%;
-  margin-top:8px;
-  background:#3e91ff;
-  color:white;
+background:#438eff;
+color:white;
 }
 
-#connection{
-  margin-top:13px;
-  color:#aaa;
+#status{
+margin-top:12px;
+color:#91a99a;
 }
 
 /* LOBBY */
 
 #lobby{
-  position:fixed;
-  inset:0;
-  z-index:25;
-
-  display:none;
-
-  align-items:center;
-  justify-content:center;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(20,80,40,.7),
-      rgba(0,0,0,.98)
-    );
+display:none;
 }
 
 .lobbyCard{
-  width:min(94vw,500px);
-  padding:28px;
 
-  border-radius:28px;
+width:min(94vw,500px);
 
-  background:
-    rgba(5,18,10,.98);
+padding:30px;
 
-  border:
-    1px solid #397f4c;
+background:#06130a;
 
-  box-shadow:
-    0 30px 100px rgba(0,0,0,.85);
+border:
+1px solid #3c8150;
 
-  text-align:center;
+border-radius:28px;
+
+text-align:center;
+
 }
 
-.lobbyTitle{
-  font-size:34px;
-  color:#60ff92;
-  font-weight:bold;
+.roomTitle{
+font-size:32px;
+color:#62ff91;
+font-weight:bold;
 }
 
-.codeLabel{
-  margin-top:15px;
-  color:#8fa693;
+#roomCodeBig{
+
+font-size:48px;
+
+letter-spacing:9px;
+
+color:#66ff98;
+
+margin:15px 0;
+
 }
 
-#bigRoomCode{
-  font-size:48px;
-  letter-spacing:9px;
-  color:#6cff99;
+.copy{
 
-  margin:8px 0 18px;
+background:#183420;
 
-  text-shadow:
-    0 0 25px rgba(60,255,120,.5);
-}
+color:#a8ffbb;
 
-.copyBtn{
-  background:#203b28;
-  color:#a9ffbd;
-  margin-bottom:18px;
 }
 
 #lobbyPlayers{
-  text-align:left;
-  margin:10px 0 20px;
+margin:15px 0;
+text-align:left;
 }
 
-.player{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.lobbyPlayer{
 
-  padding:10px;
-  margin:5px 0;
+padding:10px;
 
-  background:#0a1b0e;
-  border-radius:12px;
+margin:5px 0;
+
+background:#0b1e10;
+
+border-radius:12px;
+
+display:flex;
+gap:10px;
+align-items:center;
+
 }
 
-.playerDot{
-  width:15px;
-  height:15px;
-  border-radius:50%;
+.dot{
+
+width:14px;
+height:14px;
+border-radius:50%;
+
 }
 
 .host{
-  margin-left:auto;
-  color:#ffd75c;
-  font-size:12px;
+margin-left:auto;
+color:#ffd85b;
+font-size:12px;
 }
 
-#waiting{
-  color:#91a99a;
-  margin:15px 0;
+#start{
+
+background:#45ee7b;
+color:#031008;
+
+font-size:20px;
+
 }
 
-#startButton{
-  width:100%;
-  background:#42ed7a;
-  color:#031008;
-  font-size:21px;
-}
+#leave{
 
-#startButton:disabled{
-  opacity:.35;
-}
+background:#321519;
+color:#ff8990;
 
-#leaveButton{
-  width:100%;
-  margin-top:8px;
-  background:#321417;
-  color:#ff8790;
 }
 
 /* HUD */
 
 #hud{
-  position:fixed;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
 
-  z-index:5;
+position:fixed;
 
-  display:flex;
-  gap:7px;
+top:12px;
+left:50%;
 
-  pointer-events:none;
+transform:translateX(-50%);
+
+z-index:10;
+
+display:flex;
+
+gap:7px;
+
+pointer-events:none;
+
 }
 
 .stat{
-  min-width:78px;
 
-  padding:7px 11px;
+padding:7px 14px;
 
-  border-radius:13px;
+background:
+rgba(3,14,7,.82);
 
-  background:rgba(4,14,7,.82);
+border:
+1px solid rgba(90,255,130,.3);
 
-  border:
-    1px solid rgba(70,255,120,.3);
+border-radius:12px;
 
-  backdrop-filter:blur(8px);
+text-align:center;
 
-  text-align:center;
 }
 
 .stat small{
-  display:block;
-  color:#8fa693;
-  font-size:10px;
+
+display:block;
+
+font-size:10px;
+
+color:#91a695;
+
 }
 
 .stat b{
-  font-size:18px;
+font-size:18px;
 }
 
-/* ROOM */
+#leaderboard{
 
-#room{
-  position:fixed;
-  top:75px;
-  left:50%;
-  transform:translateX(-50%);
+position:fixed;
 
-  z-index:5;
+top:12px;
+right:12px;
 
-  display:none;
+z-index:10;
 
-  padding:8px 16px;
+width:190px;
 
-  background:rgba(4,14,7,.84);
+padding:12px;
 
-  border:
-    1px solid rgba(70,255,120,.3);
+background:
+rgba(3,14,7,.82);
 
-  border-radius:13px;
+border:
+1px solid rgba(90,255,130,.3);
 
-  text-align:center;
+border-radius:15px;
 
-  pointer-events:none;
 }
 
-#roomCode{
-  font-size:27px;
-  font-weight:bold;
-  letter-spacing:5px;
-  color:#60ff92;
+#leaderboard h3{
+
+margin:0 0 8px;
+
+color:#68ff98;
+
+font-size:16px;
+
 }
 
-#players{
-  font-size:12px;
-  color:#aaa;
-}
+.rank{
 
-#message{
-  font-size:12px;
-  color:#8cffaa;
-}
+display:flex;
 
-/* CONTROLS */
+justify-content:space-between;
 
-#controls{
-  position:fixed;
-  left:18px;
-  bottom:20px;
+font-size:12px;
 
-  width:180px;
-  height:180px;
+padding:4px 0;
 
-  z-index:10;
-}
-
-.ctrl{
-  position:absolute;
-
-  width:60px;
-  height:60px;
-
-  border-radius:18px;
-
-  background:rgba(16,50,27,.84);
-
-  border:
-    1px solid rgba(100,255,140,.35);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:28px;
-}
-
-.ctrl:active{
-  background:#2c7b43;
-  transform:scale(.9);
-}
-
-.up{
-  left:60px;
-  top:0;
-}
-
-.left{
-  left:0;
-  top:60px;
-}
-
-.down{
-  left:60px;
-  top:120px;
-}
-
-.right{
-  left:120px;
-  top:60px;
 }
 
 /* BOOST */
 
 #boost{
-  position:fixed;
 
-  right:20px;
-  bottom:35px;
+position:fixed;
 
-  z-index:10;
+right:25px;
+bottom:30px;
 
-  width:88px;
-  height:88px;
+z-index:12;
 
-  border-radius:50%;
+width:90px;
+height:90px;
 
-  background:
-    radial-gradient(
-      circle,
-      #49a5ff,
-      #17579e
-    );
+border-radius:50%;
 
-  border:
-    2px solid #83c8ff;
+background:
+radial-gradient(
+circle,
+#4aa8ff,
+#12549d
+);
 
-  color:white;
+border:
+2px solid #8dceff;
 
-  font-size:30px;
+color:white;
 
-  box-shadow:
-    0 0 35px rgba(50,150,255,.5);
+font-size:30px;
+
+box-shadow:
+0 0 35px rgba(50,150,255,.5);
+
 }
 
-#boost:active{
-  transform:scale(.9);
+#boost span{
+
+display:block;
+
+font-size:9px;
+
 }
 
-#boostText{
-  position:absolute;
-  top:53px;
-  left:50%;
+/* JOYSTICK */
 
-  transform:translateX(-50%);
+#joystick{
 
-  font-size:9px;
-  white-space:nowrap;
+position:fixed;
+
+left:25px;
+bottom:25px;
+
+width:155px;
+height:155px;
+
+z-index:12;
+
+border-radius:50%;
+
+background:
+rgba(50,255,100,.08);
+
+border:
+2px solid rgba(90,255,130,.2);
+
+}
+
+#stick{
+
+position:absolute;
+
+width:65px;
+height:65px;
+
+left:45px;
+top:45px;
+
+border-radius:50%;
+
+background:
+rgba(70,255,120,.5);
+
+border:
+2px solid #7dff9e;
+
+}
+
+@media(min-width:700px){
+
+#joystick{
+display:none;
+}
+
+}
+
+@media(max-width:700px){
+
+#leaderboard{
+
+width:150px;
+
+font-size:11px;
+
+}
+
+.stat{
+padding:6px 9px;
+}
+
 }
 
 /* DEATH */
 
-#death{
-  display:none;
+#dead{
 
-  position:fixed;
-  inset:0;
+display:none;
 
-  z-index:30;
+position:fixed;
 
-  align-items:center;
-  justify-content:center;
+inset:0;
 
-  background:rgba(0,0,0,.72);
+z-index:30;
 
-  text-align:center;
+align-items:center;
+
+justify-content:center;
+
+background:rgba(0,0,0,.65);
+
+text-align:center;
+
 }
 
-.deathCard{
-  background:#0b180f;
+.deadCard{
 
-  border:
-    1px solid #39784a;
+padding:30px;
 
-  border-radius:22px;
+border-radius:25px;
 
-  padding:30px;
-}
+background:#09150c;
 
-/* MINIMAP */
-
-#minimap{
-  position:fixed;
-
-  right:15px;
-  top:15px;
-
-  width:150px;
-  height:150px;
-
-  z-index:6;
-
-  background:rgba(0,0,0,.5);
-
-  border:
-    1px solid rgba(100,255,140,.3);
-
-  border-radius:12px;
-
-  display:none;
-}
-
-@media(max-width:600px){
-
-  #minimap{
-    width:105px;
-    height:105px;
-    top:12px;
-    right:10px;
-  }
-
-  #hud{
-    left:8px;
-    transform:none;
-  }
-
-  .stat{
-    min-width:65px;
-    padding:6px 8px;
-  }
-
-  #bigRoomCode{
-    font-size:39px;
-  }
+border:1px solid #39814d;
 
 }
 
@@ -522,74 +494,64 @@ button{
 
 <canvas id="game"></canvas>
 
-<canvas id="minimap"></canvas>
 
-
-<!-- MAIN MENU -->
+<!-- MENU -->
 
 <div id="menu">
 
-  <div class="card">
+<div class="card">
 
-    <div class="logo">🐍</div>
+<div class="logo">🐍</div>
 
-    <h1>SNAKE ONLINE</h1>
+<h1>SNAKE ARENA</h1>
 
-    <input
-      id="name"
-      maxlength="12"
-      placeholder="Sinu nimi"
-    >
+<input
+id="name"
+maxlength="14"
+placeholder="Sinu nimi"
+>
 
-    <select id="mode">
+<select id="mode">
 
-      <option value="classic">
-        🍎 Classic
-      </option>
+<option value="classic">
+🍎 Classic Arena
+</option>
 
-      <option value="battle">
-        ⚔️ Battle
-      </option>
+<option value="battle">
+⚔️ Battle
+</option>
 
-      <option value="power">
-        ⚡ Power Rush
-      </option>
+<option value="power">
+⚡ Power Arena
+</option>
 
-      <option value="maze">
-        🧱 Maze
-      </option>
+</select>
 
-      <option value="last">
-        💀 Last Snake
-      </option>
+<button
+class="create"
+onclick="createRoom()"
+>
+🟢 LOO TUBA
+</button>
 
-    </select>
+<input
+id="room"
+maxlength="6"
+placeholder="ROOM CODE"
+>
 
-    <button
-      class="create"
-      onclick="createRoom()"
-    >
-      🟢 LOO TUBA
-    </button>
+<button
+class="join"
+onclick="joinRoom()"
+>
+🔵 LIITU TUPA
+</button>
 
-    <input
-      id="roomInput"
-      maxlength="6"
-      placeholder="ROOM CODE"
-    >
+<div id="status">
+🟡 Ühendan...
+</div>
 
-    <button
-      class="join"
-      onclick="joinRoom()"
-    >
-      🔵 LIITU TUPA
-    </button>
-
-    <div id="connection">
-      🟡 Ühendan serveriga...
-    </div>
-
-  </div>
+</div>
 
 </div>
 
@@ -598,48 +560,48 @@ button{
 
 <div id="lobby">
 
-  <div class="lobbyCard">
+<div class="lobbyCard">
 
-    <div class="lobbyTitle">
-      🐍 SNAKE ROOM
-    </div>
+<div class="roomTitle">
+🐍 SNAKE ROOM
+</div>
 
-    <div class="codeLabel">
-      Jaga seda koodi sõpradega:
-    </div>
+<p>
+Jaga seda koodi sõpradega:
+</p>
 
-    <div id="bigRoomCode">
-      ------
-    </div>
+<div id="roomCodeBig">
+------
+</div>
 
-    <button
-      class="copyBtn"
-      onclick="copyRoomCode()"
-    >
-      📋 KOPI ROOME CODE
-    </button>
+<button
+class="copy"
+onclick="copyCode()"
+>
+📋 KOPI KOOD
+</button>
 
-    <div id="lobbyPlayers"></div>
+<div id="lobbyPlayers"></div>
 
-    <div id="waiting">
-      ⏳ Ootame mängijaid...
-    </div>
+<p id="waiting">
+⏳ Ootame mängijaid...
+</p>
 
-    <button
-      id="startButton"
-      onclick="startGame()"
-    >
-      🚀 START GAME
-    </button>
+<button
+id="start"
+onclick="startGame()"
+>
+🚀 START GAME
+</button>
 
-    <button
-      id="leaveButton"
-      onclick="leaveRoom()"
-    >
-      ← LAHKU
-    </button>
+<button
+id="leave"
+onclick="location.reload()"
+>
+← LAHKU
+</button>
 
-  </div>
+</div>
 
 </div>
 
@@ -648,166 +610,161 @@ button{
 
 <div id="hud">
 
-  <div class="stat">
-    <small>SCORE</small>
-    <b id="score">0</b>
-  </div>
+<div class="stat">
 
-  <div class="stat">
-    <small>🪙 COINS</small>
-    <b id="coins">0</b>
-  </div>
+<small>SCORE</small>
 
-  <div class="stat">
-    <small>👥</small>
-    <b id="count">0</b>
-  </div>
+<b id="score">
+0
+</b>
+
+</div>
+
+<div class="stat">
+
+<small>LENGTH</small>
+
+<b id="length">
+35
+</b>
+
+</div>
+
+<div class="stat">
+
+<small>RANK</small>
+
+<b id="rank">
+-
+</b>
+
+</div>
 
 </div>
 
 
-<div id="room">
+<!-- LEADERBOARD -->
 
-  <div>ROOM</div>
+<div id="leaderboard">
 
-  <div id="roomCode">
-    ------
-  </div>
+<h3>🏆 LEADERBOARD</h3>
 
-  <div id="players"></div>
-
-  <div id="message"></div>
+<div id="board"></div>
 
 </div>
 
 
-<!-- CONTROLS -->
+<!-- JOYSTICK -->
 
-<div id="controls">
+<div id="joystick">
 
-  <div class="ctrl up" data-dir="up">
-    ⬆️
-  </div>
-
-  <div class="ctrl left" data-dir="left">
-    ⬅️
-  </div>
-
-  <div class="ctrl down" data-dir="down">
-    ⬇️
-  </div>
-
-  <div class="ctrl right" data-dir="right">
-    ➡️
-  </div>
+<div id="stick"></div>
 
 </div>
 
+
+<!-- BOOST -->
 
 <button id="boost">
-  ⚡
-  <span id="boostText">
-    SHIFT / SPACE
-  </span>
+
+⚡
+
+<span>
+BOOST
+</span>
+
 </button>
 
 
-<div id="death">
+<!-- DEAD -->
 
-  <div class="deathCard">
+<div id="dead">
 
-    <h2>💀</h2>
+<div class="deadCard">
 
-    <h3>Su said pihta!</h3>
+<h1>💥</h1>
 
-    <p>Respawn...</p>
+<h2>SAID PIHTA!</h2>
 
-  </div>
+<p>
+Respawn...
+</p>
+
+</div>
 
 </div>
 
 
 <script>
 
-const SERVER_URL =
-  "wss://snake-riu3.onrender.com";
+const SERVER =
+"wss://snake-riu3.onrender.com";
 
-let socket = null;
-let myId = null;
-let roomCode = null;
+let ws;
 
-let isHost = false;
+let myId=null;
 
-let gameStarted = false;
+let roomCode=null;
 
-let state = {
-  width:150,
-  height:150,
-  players:{},
-  food:[],
-  powerups:[],
-  walls:[],
-  mode:"classic",
-  started:false,
-  hostId:null
+let host=false;
+
+let gameStarted=false;
+
+let state={
+world:5000,
+players:{},
+food:[]
 };
 
-
-/* CANVAS */
-
 const canvas =
-  document.getElementById("game");
+document.getElementById("game");
 
 const ctx =
-  canvas.getContext("2d");
+canvas.getContext("2d");
 
-const minimap =
-  document.getElementById("minimap");
+let W=innerWidth;
+let H=innerHeight;
 
-const miniCtx =
-  minimap.getContext("2d");
+let camera={
+x:2500,
+y:2500
+};
 
-let W = innerWidth;
-let H = innerHeight;
+let mouse={
+x:innerWidth/2,
+y:innerHeight/2
+};
+
+let boosting=false;
+
+
+/* RESIZE */
 
 function resize(){
 
-  W = innerWidth;
-  H = innerHeight;
+W=innerWidth;
+H=innerHeight;
 
-  const dpr =
-    Math.min(devicePixelRatio || 1,2);
+canvas.width=W*devicePixelRatio;
+canvas.height=H*devicePixelRatio;
 
-  canvas.width =
-    Math.floor(W*dpr);
+canvas.style.width=W+"px";
+canvas.style.height=H+"px";
 
-  canvas.height =
-    Math.floor(H*dpr);
+ctx.setTransform(
+devicePixelRatio,
+0,
+0,
+devicePixelRatio,
+0,
+0
+);
 
-  canvas.style.width =
-    W+"px";
-
-  canvas.style.height =
-    H+"px";
-
-  ctx.setTransform(
-    dpr,0,0,dpr,0,0
-  );
-
-  minimap.width =
-    minimap.clientWidth*dpr;
-
-  minimap.height =
-    minimap.clientHeight*dpr;
-
-  miniCtx.setTransform(
-    dpr,0,0,dpr,0,0
-  );
 }
 
 addEventListener(
-  "resize",
-  resize
+"resize",
+resize
 );
 
 resize();
@@ -817,124 +774,94 @@ resize();
 
 function connect(){
 
-  socket =
-    new WebSocket(SERVER_URL);
+ws=new WebSocket(SERVER);
 
-  socket.onopen = () => {
+ws.onopen=()=>{
 
-    document.getElementById(
-      "connection"
-    ).textContent =
-      "🟢 Serveriga ühendatud!";
+document.getElementById(
+"status"
+).textContent=
+"🟢 Serveriga ühendatud";
 
-  };
+};
 
-  socket.onmessage = event => {
+ws.onmessage=e=>{
 
-    let data;
+let data;
 
-    try{
-      data = JSON.parse(event.data);
-    }catch{
-      return;
-    }
+try{
+data=JSON.parse(e.data);
+}catch{
+return;
+}
 
-    if(data.type === "connected"){
-      myId = data.id;
-    }
+if(data.type==="connected"){
 
-    if(
-      data.type === "roomCreated" ||
-      data.type === "roomJoined"
-    ){
+myId=data.id;
 
-      roomCode = data.room;
+}
 
-      isHost =
-        data.host === true;
+if(
+data.type==="roomCreated" ||
+data.type==="roomJoined"
+){
 
-      showLobby();
+roomCode=data.room;
 
-    }
+host=data.host;
 
-    if(data.type === "lobby"){
+showLobby();
 
-      roomCode = data.room;
+}
 
-      isHost =
-        data.hostId === myId;
+if(data.type==="lobby"){
 
-      updateLobby(data);
+roomCode=data.room;
 
-    }
+host=
+data.hostId===myId;
 
-    if(data.type === "gameStarted"){
+updateLobby(data);
 
-      gameStarted = true;
+}
 
-      hideLobby();
+if(data.type==="gameStarted"){
 
-      document.getElementById(
-        "room"
-      ).style.display = "block";
+gameStarted=true;
 
-      document.getElementById(
-        "minimap"
-      ).style.display = "block";
+document.getElementById(
+"lobby"
+).style.display="none";
 
-    }
+}
 
-    if(data.type === "state"){
+if(data.type==="state"){
 
-      state = data.state;
+state=data.state;
 
-      gameStarted =
-        data.state.started === true;
+gameStarted=
+data.state.started;
 
-      if(gameStarted){
-        hideLobby();
-      }
+updateGameUI();
 
-      updateUI();
+}
 
-    }
+if(data.type==="error"){
 
-    if(data.type === "winner"){
+alert(data.message);
 
-      alert(
-        "🏆 Võitja: " +
-        data.winner.name +
-        "\nScore: " +
-        data.winner.score
-      );
+}
 
-    }
+};
 
-    if(data.type === "error"){
+ws.onclose=()=>{
 
-      alert(data.message);
+document.getElementById(
+"status"
+).textContent=
+"🔴 Serveriga ühendus katkes";
 
-    }
-
-  };
-
-  socket.onerror = () => {
-
-    document.getElementById(
-      "connection"
-    ).textContent =
-      "🔴 Serveri viga";
-
-  };
-
-  socket.onclose = () => {
-
-    document.getElementById(
-      "connection"
-    ).textContent =
-      "🔴 Ühendus katkes";
-
-  };
+};
 
 }
 
@@ -943,49 +870,55 @@ function connect(){
 
 function send(data){
 
-  if(
-    socket &&
-    socket.readyState === WebSocket.OPEN
-  ){
+if(
+ws &&
+ws.readyState===
+WebSocket.OPEN
+){
 
-    socket.send(
-      JSON.stringify(data)
-    );
+ws.send(
+JSON.stringify(data)
+);
 
-  }
+}
 
 }
 
 
-/* CREATE ROOM */
+/* CREATE */
 
 function createRoom(){
 
-  const name =
-    document.getElementById(
-      "name"
-    ).value.trim();
+const name=
+document
+.getElementById("name")
+.value
+.trim();
 
-  const mode =
-    document.getElementById(
-      "mode"
-    ).value;
+const mode=
+document
+.getElementById("mode")
+.value;
 
-  if(!name){
+if(!name){
 
-    alert(
-      "Kirjuta kõigepealt nimi!"
-    );
+alert(
+"Kirjuta nimi!"
+);
 
-    return;
+return;
 
-  }
+}
 
-  send({
-    type:"createRoom",
-    name:name,
-    mode:mode
-  });
+send({
+
+type:"createRoom",
+
+name,
+
+mode
+
+});
 
 }
 
@@ -994,75 +927,73 @@ function createRoom(){
 
 function joinRoom(){
 
-  const name =
-    document.getElementById(
-      "name"
-    ).value.trim();
+const name=
+document
+.getElementById("name")
+.value
+.trim();
 
-  const room =
-    document.getElementById(
-      "roomInput"
-    ).value
-      .trim()
-      .toUpperCase();
+const room=
+document
+.getElementById("room")
+.value
+.trim()
+.toUpperCase();
 
-  if(!name){
+if(!name){
 
-    alert(
-      "Kirjuta kõigepealt nimi!"
-    );
+alert(
+"Kirjuta nimi!"
+);
 
-    return;
+return;
 
-  }
+}
 
-  if(room.length !== 6){
+if(room.length!==6){
 
-    alert(
-      "Room Code peab olema 6 märki!"
-    );
+alert(
+"Room Code peab olema 6 märki!"
+);
 
-    return;
+return;
 
-  }
+}
 
-  send({
-    type:"joinRoom",
-    name:name,
-    room:room
-  });
+send({
+
+type:"joinRoom",
+
+name,
+
+room
+
+});
 
 }
 
 
-/* SHOW LOBBY */
+/* LOBBY */
 
 function showLobby(){
 
-  document.getElementById(
-    "menu"
-  ).style.display = "none";
+document.getElementById(
+"menu"
+).style.display="none";
 
-  document.getElementById(
-    "lobby"
-  ).style.display = "flex";
+document.getElementById(
+"lobby"
+).style.display="flex";
 
-  document.getElementById(
-    "bigRoomCode"
-  ).textContent =
-    roomCode;
+document.getElementById(
+"roomCodeBig"
+).textContent=
+roomCode;
 
-  document.getElementById(
-    "startButton"
-  ).style.display =
-    isHost ? "block" : "none";
-
-  document.getElementById(
-    "waiting"
-  ).textContent =
-    isHost
-      ? "👑 Sina oled host. Oota sõpru ja vajuta START GAME."
-      : "⏳ Ootame, kuni host mängu alustab...";
+document.getElementById(
+"start"
+).style.display=
+host?"block":"none";
 
 }
 
@@ -1071,113 +1002,97 @@ function showLobby(){
 
 function updateLobby(data){
 
-  document.getElementById(
-    "bigRoomCode"
-  ).textContent =
-    data.room;
+document.getElementById(
+"roomCodeBig"
+).textContent=
+data.room;
 
-  const players =
-    data.players || [];
+const box=
+document.getElementById(
+"lobbyPlayers"
+);
 
-  const box =
-    document.getElementById(
-      "lobbyPlayers"
-    );
+box.innerHTML="";
 
-  box.innerHTML = "";
+data.players.forEach(
+p=>{
 
-  players.forEach(player => {
+const row=
+document.createElement("div");
 
-    const div =
-      document.createElement("div");
+row.className=
+"lobbyPlayer";
 
-    div.className = "player";
+const dot=
+document.createElement("span");
 
-    const dot =
-      document.createElement("span");
+dot.className="dot";
 
-    dot.className =
-      "playerDot";
+dot.style.background=
+p.color;
 
-    dot.style.background =
-      player.color;
+const name=
+document.createElement("span");
 
-    const name =
-      document.createElement("span");
+name.textContent=
+p.name;
 
-    name.textContent =
-      player.name;
+row.appendChild(dot);
 
-    div.appendChild(dot);
-    div.appendChild(name);
+row.appendChild(name);
 
-    if(player.id === data.hostId){
+if(p.id===data.hostId){
 
-      const host =
-        document.createElement("span");
+const h=
+document.createElement("span");
 
-      host.className = "host";
+h.className="host";
 
-      host.textContent =
-        "👑 HOST";
+h.textContent=
+"👑 HOST";
 
-      div.appendChild(host);
+row.appendChild(h);
 
-    }
+}
 
-    box.appendChild(div);
+box.appendChild(row);
 
-  });
+});
 
+host=
+data.hostId===myId;
 
-  isHost =
-    data.hostId === myId;
+document.getElementById(
+"start"
+).style.display=
+host?"block":"none";
 
-
-  const startButton =
-    document.getElementById(
-      "startButton"
-    );
-
-
-  startButton.style.display =
-    isHost ? "block" : "none";
-
-
-  document.getElementById(
-    "waiting"
-  ).textContent =
-    isHost
-      ? `👑 Sina oled host • ${players.length}/8 mängijat`
-      : `⏳ Ootame hosti • ${players.length}/8 mängijat`;
+document.getElementById(
+"waiting"
+).textContent=
+host
+?
+"👑 Sina oled host – vajuta START GAME kui sõbrad on kohal."
+:
+"⏳ Ootame hosti...";
 
 }
 
 
 /* COPY */
 
-function copyRoomCode(){
+function copyCode(){
 
-  if(!roomCode)
-    return;
+navigator.clipboard
+.writeText(roomCode)
+.then(()=>{
 
-  navigator.clipboard
-    .writeText(roomCode)
-    .then(() => {
+alert(
+"Room Code kopeeritud: "+
+roomCode
+);
 
-      document.getElementById(
-        "waiting"
-      ).textContent =
-        "✅ Room Code kopeeritud!";
-
-    })
-    .catch(() => {
-
-      alert(
-        "Room Code: " + roomCode
-      );
-
-    });
+});
 
 }
 
@@ -1186,759 +1101,803 @@ function copyRoomCode(){
 
 function startGame(){
 
-  if(!isHost){
+if(!host){
 
-    alert(
-      "Ainult host saab mängu alustada!"
-    );
+alert(
+"Ainult host saab alustada!"
+);
 
-    return;
+return;
 
-  }
+}
 
-  send({
-    type:"startGame"
-  });
+send({
+type:"startGame"
+});
 
 }
 
 
-/* LEAVE */
+/* MOUSE */
 
-function leaveRoom(){
+addEventListener(
+"mousemove",
+e=>{
 
-  location.reload();
+mouse.x=e.clientX;
+mouse.y=e.clientY;
 
-}
+});
 
+function sendAim(){
 
-/* HIDE LOBBY */
+if(!gameStarted)
+return;
 
-function hideLobby(){
+const cx=W/2;
+const cy=H/2;
 
-  document.getElementById(
-    "lobby"
-  ).style.display = "none";
+const angle=
+Math.atan2(
+mouse.y-cy,
+mouse.x-cx
+);
 
-}
+send({
 
+type:"aim",
 
-/* DIRECTION */
+angle
 
-function changeDirection(direction){
-
-  if(!gameStarted)
-    return;
-
-  send({
-    type:"direction",
-    direction:direction
-  });
-
-}
-
-
-/* TOUCH */
-
-document
-  .querySelectorAll(".ctrl")
-  .forEach(button => {
-
-    function press(event){
-
-      event.preventDefault();
-
-      changeDirection(
-        button.dataset.dir
-      );
-
-    }
-
-    button.addEventListener(
-      "touchstart",
-      press,
-      {passive:false}
-    );
-
-    button.addEventListener(
-      "mousedown",
-      press
-    );
-
-  });
-
-
-/* BOOST */
-
-function doBoost(){
-
-  if(!gameStarted)
-    return;
-
-  send({
-    type:"boost"
-  });
+});
 
 }
 
-document
-  .getElementById("boost")
-  .addEventListener(
-    "touchstart",
-    e => {
-
-      e.preventDefault();
-
-      doBoost();
-
-    },
-    {passive:false}
-  );
-
-
-document
-  .getElementById("boost")
-  .addEventListener(
-    "click",
-    doBoost
-  );
-
-
-/* KEYBOARD */
-
-document.addEventListener(
-  "keydown",
-  event => {
-
-    const dirs = {
-
-      ArrowUp:"up",
-      w:"up",
-      W:"up",
-
-      ArrowDown:"down",
-      s:"down",
-      S:"down",
-
-      ArrowLeft:"left",
-      a:"left",
-      A:"left",
-
-      ArrowRight:"right",
-      d:"right",
-      D:"right"
-
-    };
-
-    if(dirs[event.key]){
-
-      event.preventDefault();
-
-      changeDirection(
-        dirs[event.key]
-      );
-
-    }
-
-    if(
-      event.code === "ShiftLeft" ||
-      event.code === "ShiftRight" ||
-      event.code === "Space"
-    ){
-
-      event.preventDefault();
-
-      if(!event.repeat){
-        doBoost();
-      }
-
-    }
-
-  }
+setInterval(
+sendAim,
+50
 );
 
 
-/* UI */
+/* CLICK BOOST */
 
-function updateUI(){
+function setBoost(value){
 
-  const me =
-    state.players?.[myId];
+boosting=value;
 
-  if(me){
+send({
 
-    document.getElementById(
-      "score"
-    ).textContent =
-      me.score;
+type:"boost",
 
-    document.getElementById(
-      "coins"
-    ).textContent =
-      me.coins;
+active:value
 
-    document.getElementById(
-      "death"
-    ).style.display =
-      me.alive
-        ? "none"
-        : "flex";
+});
 
-  }
+}
 
-  const players =
-    Object.values(
-      state.players || {}
-    );
+addEventListener(
+"mousedown",
+e=>{
 
-  document.getElementById(
-    "count"
-  ).textContent =
-    players.length;
+if(e.button===0)
+setBoost(true);
 
-  document.getElementById(
-    "roomCode"
-  ).textContent =
-    roomCode || "------";
+});
 
-  document.getElementById(
-    "players"
-  ).textContent =
-    players
-      .map(
-        p =>
-          "🐍 " +
-          p.name +
-          " " +
-          p.score
-      )
-      .join(" • ");
+addEventListener(
+"mouseup",
+e=>{
+
+if(e.button===0)
+setBoost(false);
+
+});
+
+
+/* SPACE */
+
+addEventListener(
+"keydown",
+e=>{
+
+if(
+e.code==="Space" ||
+e.code==="ShiftLeft" ||
+e.code==="ShiftRight"
+){
+
+e.preventDefault();
+
+setBoost(true);
+
+}
+
+});
+
+addEventListener(
+"keyup",
+e=>{
+
+if(
+e.code==="Space" ||
+e.code==="ShiftLeft" ||
+e.code==="ShiftRight"
+){
+
+e.preventDefault();
+
+setBoost(false);
+
+}
+
+});
+
+
+/* BOOST BUTTON */
+
+const boostButton=
+document.getElementById(
+"boost"
+);
+
+boostButton.addEventListener(
+"touchstart",
+e=>{
+
+e.preventDefault();
+
+setBoost(true);
+
+},
+{passive:false}
+);
+
+boostButton.addEventListener(
+"touchend",
+e=>{
+
+e.preventDefault();
+
+setBoost(false);
+
+},
+{passive:false}
+);
+
+
+/* JOYSTICK */
+
+const joystick=
+document.getElementById(
+"joystick"
+);
+
+const stick=
+document.getElementById(
+"stick"
+);
+
+let joyActive=false;
+
+function joystickMove(
+x,
+y
+){
+
+const rect=
+joystick.getBoundingClientRect();
+
+const cx=
+rect.left+
+rect.width/2;
+
+const cy=
+rect.top+
+rect.height/2;
+
+let dx=x-cx;
+let dy=y-cy;
+
+const max=55;
+
+const len=
+Math.hypot(dx,dy);
+
+if(len>max){
+
+dx=
+dx/len*max;
+
+dy=
+dy/len*max;
+
+}
+
+stick.style.left=
+45+dx+"px";
+
+stick.style.top=
+45+dy+"px";
+
+const angle=
+Math.atan2(dy,dx);
+
+send({
+
+type:"aim",
+angle
+
+});
+
+}
+
+joystick.addEventListener(
+"touchstart",
+e=>{
+
+joyActive=true;
+
+const t=e.touches[0];
+
+joystickMove(
+t.clientX,
+t.clientY
+);
+
+},
+{passive:false}
+);
+
+joystick.addEventListener(
+"touchmove",
+e=>{
+
+if(!joyActive)return;
+
+e.preventDefault();
+
+const t=e.touches[0];
+
+joystickMove(
+t.clientX,
+t.clientY
+);
+
+},
+{passive:false}
+);
+
+joystick.addEventListener(
+"touchend",
+()=>{
+
+joyActive=false;
+
+stick.style.left="45px";
+stick.style.top="45px";
+
+},
+{passive:false}
+);
+
+
+/* GAME UI */
+
+function updateGameUI(){
+
+const me=
+state.players[
+myId
+];
+
+if(!me)
+return;
+
+document.getElementById(
+"score"
+).textContent=
+me.score;
+
+document.getElementById(
+"length"
+).textContent=
+Math.floor(me.length);
+
+if(!me.alive){
+
+document.getElementById(
+"dead"
+).style.display=
+"flex";
+
+}else{
+
+document.getElementById(
+"dead"
+).style.display=
+"none";
+
+}
+
+
+/* RANK */
+
+const players=
+Object.values(
+state.players
+);
+
+players.sort(
+(a,b)=>
+b.score-a.score
+);
+
+const rank=
+players.findIndex(
+p=>p.id===myId
+)+1;
+
+document.getElementById(
+"rank"
+).textContent=
+rank;
+
+
+/* BOARD */
+
+const board=
+document.getElementById(
+"board"
+);
+
+board.innerHTML="";
+
+players
+.slice(0,8)
+.forEach(
+(p,i)=>{
+
+const row=
+document.createElement("div");
+
+row.className="rank";
+
+row.innerHTML=
+`
+<span>
+${i+1}. ${escapeHTML(p.name)}
+</span>
+
+<b>
+${p.score}
+</b>
+`;
+
+board.appendChild(row);
+
+});
+
+}
+
+
+/* ESCAPE */
+
+function escapeHTML(str){
+
+return String(str)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;");
 
 }
 
 
 /* CAMERA */
 
-let camera = {
-  x:0,
-  y:0
-};
+function updateCamera(){
 
-function getCamera(){
+const me=
+state.players[
+myId
+];
 
-  const me =
-    state.players?.[myId];
+if(!me)
+return;
 
-  if(
-    !me ||
-    !me.snake ||
-    !me.snake.length
-  ){
+const targetX=
+me.x;
 
-    return {
-      x:camera.x,
-      y:camera.y,
-      zoom:.40
-    };
+const targetY=
+me.y;
 
-  }
+camera.x +=
+(targetX-camera.x)
+*.12;
 
-  const CELL = 20;
-
-  const head =
-    me.snake[0];
-
-  const worldWidth =
-    state.width * CELL;
-
-  const worldHeight =
-    state.height * CELL;
-
-  let zoom = .40;
-
-  if(me.snake.length > 20)
-    zoom = .36;
-
-  if(me.snake.length > 40)
-    zoom = .32;
-
-  if(me.snake.length > 70)
-    zoom = .28;
-
-  const viewWidth =
-    W / zoom;
-
-  const viewHeight =
-    H / zoom;
-
-  let targetX =
-    head.x * CELL +
-    CELL / 2 -
-    viewWidth / 2;
-
-  let targetY =
-    head.y * CELL +
-    CELL / 2 -
-    viewHeight / 2;
-
-  targetX =
-    Math.max(
-      0,
-      Math.min(
-        targetX,
-        worldWidth - viewWidth
-      )
-    );
-
-  targetY =
-    Math.max(
-      0,
-      Math.min(
-        targetY,
-        worldHeight - viewHeight
-      )
-    );
-
-  camera.x +=
-    (targetX - camera.x) * .16;
-
-  camera.y +=
-    (targetY - camera.y) * .16;
-
-  return {
-    x:camera.x,
-    y:camera.y,
-    zoom:zoom
-  };
+camera.y +=
+(targetY-camera.y)
+*.12;
 
 }
 
 
-/* DRAW */
+/* DRAW WORLD */
 
 function draw(){
 
-  requestAnimationFrame(draw);
-
-  ctx.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-  const cam =
-    getCamera();
-
-  const CELL = 20;
-
-  ctx.fillStyle =
-    "#020604";
-
-  ctx.fillRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-  ctx.save();
-
-  ctx.translate(
-    W/2,
-    H/2
-  );
-
-  ctx.scale(
-    cam.zoom,
-    cam.zoom
-  );
-
-  ctx.translate(
-    -W/2,
-    -H/2
-  );
-
-  ctx.translate(
-    -cam.x,
-    -cam.y
-  );
-
-  const worldWidth =
-    state.width * CELL;
-
-  const worldHeight =
-    state.height * CELL;
-
-  ctx.fillStyle =
-    "#07150c";
-
-  ctx.fillRect(
-    0,
-    0,
-    worldWidth,
-    worldHeight
-  );
-
-  /* GRID */
-
-  ctx.strokeStyle =
-    "rgba(100,255,130,.055)";
-
-  ctx.lineWidth = 1;
-
-  const startX =
-    Math.floor(cam.x/CELL)*CELL;
-
-  const startY =
-    Math.floor(cam.y/CELL)*CELL;
-
-  const visibleWidth =
-    W/cam.zoom;
-
-  const visibleHeight =
-    H/cam.zoom;
-
-  for(
-    let x=startX;
-    x<cam.x+visibleWidth+CELL;
-    x+=CELL
-  ){
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      x,
-      cam.y
-    );
-
-    ctx.lineTo(
-      x,
-      cam.y+visibleHeight
-    );
-
-    ctx.stroke();
-
-  }
-
-  for(
-    let y=startY;
-    y<cam.y+visibleHeight+CELL;
-    y+=CELL
-  ){
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      cam.x,
-      y
-    );
-
-    ctx.lineTo(
-      cam.x+visibleWidth,
-      y
-    );
-
-    ctx.stroke();
-
-  }
-
-  /* BORDER */
-
-  ctx.strokeStyle =
-    "#3ee878";
-
-  ctx.lineWidth = 8;
-
-  ctx.strokeRect(
-    0,
-    0,
-    worldWidth,
-    worldHeight
-  );
-
-  /* WALLS */
-
-  (state.walls || [])
-    .forEach(wall => {
-
-      ctx.fillStyle =
-        "#3c4940";
-
-      ctx.fillRect(
-        wall.x*CELL,
-        wall.y*CELL,
-        CELL,
-        CELL
-      );
-
-    });
-
-  /* FOOD */
-
-  (state.food || [])
-    .forEach(food => {
-
-      const x =
-        food.x*CELL+CELL/2;
-
-      const y =
-        food.y*CELL+CELL/2;
-
-      ctx.shadowColor =
-        "#ff3155";
-
-      ctx.shadowBlur = 18;
-
-      ctx.fillStyle =
-        "#ff3155";
-
-      ctx.beginPath();
-
-      ctx.arc(
-        x,
-        y,
-        CELL*.30,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-
-      ctx.shadowBlur = 0;
-
-    });
-
-  /* POWERUPS */
-
-  const colors = {
-    speed:"#42a5ff",
-    shield:"#b65cff",
-    coin:"#ffd43b"
-  };
-
-  (state.powerups || [])
-    .forEach(power => {
-
-      const x =
-        power.x*CELL+CELL/2;
-
-      const y =
-        power.y*CELL+CELL/2;
-
-      ctx.fillStyle =
-        colors[power.type];
-
-      ctx.beginPath();
-
-      ctx.arc(
-        x,
-        y,
-        CELL*.38,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-
-    });
-
-  /* SNAKES */
-
-  Object.values(
-    state.players || {}
-  )
-  .forEach(player => {
-
-    if(!player.snake)
-      return;
-
-    player.snake.forEach(
-      (part,index) => {
-
-        let color =
-          player.color;
-
-        if(player.id === myId){
-
-          color =
-            player.boost > 0
-              ? "#55aaff"
-              : "#55ff83";
-
-        }
-
-        ctx.fillStyle =
-          color;
-
-        ctx.shadowColor =
-          color;
-
-        ctx.shadowBlur =
-          index === 0
-            ? 18
-            : 5;
-
-        ctx.beginPath();
-
-        ctx.roundRect(
-          part.x*CELL+2,
-          part.y*CELL+2,
-          CELL-4,
-          CELL-4,
-          6
-        );
-
-        ctx.fill();
-
-        ctx.shadowBlur = 0;
-
-        if(index === 0){
-
-          ctx.fillStyle =
-            "#06120a";
-
-          ctx.beginPath();
-
-          ctx.arc(
-            part.x*CELL+6,
-            part.y*CELL+6,
-            2.5,
-            0,
-            Math.PI*2
-          );
-
-          ctx.fill();
-
-          ctx.beginPath();
-
-          ctx.arc(
-            part.x*CELL+14,
-            part.y*CELL+6,
-            2.5,
-            0,
-            Math.PI*2
-          );
-
-          ctx.fill();
-
-        }
-
-      }
-
-    );
-
-  });
-
-  ctx.restore();
-
-  drawMinimap();
+requestAnimationFrame(
+draw
+);
+
+ctx.clearRect(
+0,
+0,
+W,
+H
+);
+
+updateCamera();
+
+const zoom=
+Math.min(
+1.15,
+Math.max(
+0.72,
+1.0-
+Math.log(
+(state.players[myId]?.length||35)
+/
+35
+)*0.08
+)
+);
+
+ctx.save();
+
+ctx.translate(
+W/2,
+H/2
+);
+
+ctx.scale(
+zoom,
+zoom
+);
+
+ctx.translate(
+-camera.x,
+-camera.y
+);
+
+
+/* BACKGROUND */
+
+ctx.fillStyle=
+"#06150a";
+
+ctx.fillRect(
+0,
+0,
+state.world,
+state.world
+);
+
+
+/* GRID */
+
+const grid=100;
+
+ctx.strokeStyle=
+"rgba(80,255,120,.035)";
+
+ctx.lineWidth=2;
+
+const startX=
+Math.floor(
+(camera.x-W/2/zoom)/
+grid
+)*grid;
+
+const endX=
+camera.x+
+W/2/zoom+
+grid;
+
+for(
+let x=startX;
+x<endX;
+x+=grid
+){
+
+ctx.beginPath();
+
+ctx.moveTo(
+x,
+camera.y-H/2/zoom
+);
+
+ctx.lineTo(
+x,
+camera.y+H/2/zoom
+);
+
+ctx.stroke();
+
+}
+
+const startY=
+Math.floor(
+(camera.y-H/2/zoom)/
+grid
+)*grid;
+
+const endY=
+camera.y+
+H/2/zoom+
+grid;
+
+for(
+let y=startY;
+y<endY;
+y+=grid
+){
+
+ctx.beginPath();
+
+ctx.moveTo(
+camera.x-W/2/zoom,
+y
+);
+
+ctx.lineTo(
+camera.x+W/2/zoom,
+y
+);
+
+ctx.stroke();
 
 }
 
 
-/* MINIMAP */
+/* BORDER */
 
-function drawMinimap(){
+ctx.strokeStyle=
+"#45ff72";
 
-  if(
-    minimap.style.display === "none"
-  ){
-    return;
-  }
+ctx.lineWidth=18;
 
-  const mw =
-    minimap.clientWidth;
+ctx.strokeRect(
+0,
+0,
+state.world,
+state.world
+);
 
-  const mh =
-    minimap.clientHeight;
 
-  miniCtx.clearRect(
-    0,
-    0,
-    mw,
-    mh
-  );
+/* FOOD */
 
-  miniCtx.fillStyle =
-    "rgba(5,15,8,.8)";
+for(
+const food of state.food
+){
 
-  miniCtx.fillRect(
-    0,
-    0,
-    mw,
-    mh
-  );
+ctx.beginPath();
 
-  const sx =
-    mw/state.width;
+ctx.fillStyle=
+food.value>=5
+?
+"#fff15a"
+:
+"#ff4f79";
 
-  const sy =
-    mh/state.height;
+ctx.shadowColor=
+ctx.fillStyle;
 
-  miniCtx.fillStyle =
-    "#ff3155";
+ctx.shadowBlur=
+food.value>=5
+?
+18
+:
+10;
 
-  (state.food || [])
-    .forEach(food => {
+ctx.arc(
+food.x,
+food.y,
+food.size,
+0,
+Math.PI*2
+);
 
-      miniCtx.fillRect(
-        food.x*sx,
-        food.y*sy,
-        2,
-        2
-      );
+ctx.fill();
 
-    });
+}
 
-  Object.values(
-    state.players || {}
-  )
-  .forEach(player => {
+ctx.shadowBlur=0;
 
-    if(
-      !player.snake ||
-      !player.snake.length
-    ){
-      return;
-    }
 
-    const head =
-      player.snake[0];
+/* SNAKES */
 
-    miniCtx.fillStyle =
-      player.id === myId
-        ? "#63ff91"
-        : player.color;
+const players=
+Object.values(
+state.players
+);
 
-    miniCtx.beginPath();
+players.sort(
+(a,b)=>
+a.length-b.length
+);
 
-    miniCtx.arc(
-      head.x*sx,
-      head.y*sy,
-      3,
-      0,
-      Math.PI*2
-    );
+for(
+const player of players
+){
 
-    miniCtx.fill();
+if(!player.snake)
+continue;
 
-  });
+const snake=
+player.snake;
 
-  miniCtx.strokeStyle =
-    "rgba(100,255,140,.6)";
+for(
+let i=snake.length-1;
+i>=0;
+i--
+){
 
-  miniCtx.strokeRect(
-    0,
-    0,
-    mw,
-    mh
-  );
+const part=
+snake[i];
+
+const t=
+i/snake.length;
+
+const radius=
+Math.max(
+5,
+11-t*3
+);
+
+ctx.beginPath();
+
+ctx.fillStyle=
+player.color;
+
+ctx.shadowColor=
+player.color;
+
+ctx.shadowBlur=
+player.id===myId
+?
+14
+:
+7;
+
+ctx.arc(
+part.x,
+part.y,
+radius,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+}
+
+ctx.shadowBlur=0;
+
+
+/* HEAD */
+
+if(
+snake.length &&
+player.alive
+){
+
+const head=
+snake[0];
+
+ctx.fillStyle=
+player.color;
+
+ctx.beginPath();
+
+ctx.arc(
+head.x,
+head.y,
+14,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+
+/* EYES */
+
+const angle=
+player.angle;
+
+const ex=
+Math.cos(angle);
+
+const ey=
+Math.sin(angle);
+
+const sx=
+-Math.sin(angle);
+
+const sy=
+Math.cos(angle);
+
+ctx.fillStyle=
+"#061008";
+
+ctx.beginPath();
+
+ctx.arc(
+head.x+
+ex*7+
+sx*5,
+head.y+
+ey*7+
+sy*5,
+3,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+ctx.beginPath();
+
+ctx.arc(
+head.x+
+ex*7-
+sx*5,
+head.y+
+ey*7-
+sy*5,
+3,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+}
 
 }
 
 
-/* START */
+/* NAME */
+
+ctx.font=
+"bold 14px Arial";
+
+ctx.textAlign="center";
+
+for(
+const player of players
+){
+
+if(
+!player.snake ||
+!player.snake.length
+)
+continue;
+
+ctx.fillStyle=
+"rgba(255,255,255,.8)";
+
+ctx.fillText(
+player.name,
+player.x,
+player.y-24
+);
+
+}
+
+ctx.restore();
+
+}
 
 connect();
 
