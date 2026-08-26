@@ -19,68 +19,95 @@ box-sizing:border-box;
 touch-action:none;
 }
 
-html,body{
+html,
+body{
+
 margin:0;
+
 width:100%;
+
 height:100%;
+
 overflow:hidden;
+
 background:#020604;
+
 font-family:Arial,sans-serif;
+
 color:white;
+
 }
 
 #game{
+
 position:fixed;
+
 inset:0;
+
 width:100vw;
+
 height:100vh;
+
 background:#06120a;
+
 }
 
 #menu{
+
 position:fixed;
+
 inset:0;
+
 z-index:20;
 
 display:flex;
+
 align-items:center;
+
 justify-content:center;
 
 background:
 radial-gradient(
-circle,
-rgba(30,100,45,.5),
+circle at center,
+rgba(25,100,45,.55),
 rgba(0,0,0,.97)
 );
+
 }
 
 .card{
-width:min(92vw,430px);
 
-padding:25px;
+width:min(92vw,440px);
 
-border-radius:25px;
+padding:28px;
 
-background:rgba(7,22,12,.97);
+border-radius:26px;
+
+background:
+rgba(6,20,11,.97);
 
 border:1px solid #32814b;
 
 box-shadow:
-0 20px 80px rgba(0,0,0,.7);
+0 20px 100px rgba(0,0,0,.8);
 
 text-align:center;
+
 }
 
 .logo{
-font-size:75px;
+
+font-size:80px;
 
 filter:
 drop-shadow(
-0 0 20px #40ff76
+0 0 25px #3cff70
 );
+
 }
 
 h1{
+
 font-size:40px;
 
 margin:0 0 18px;
@@ -89,9 +116,11 @@ color:#5cff8c;
 
 text-shadow:
 0 0 20px #35ff70;
+
 }
 
-input,select{
+input,
+select{
 
 width:100%;
 
@@ -157,7 +186,7 @@ color:white;
 
 #connection{
 
-margin-top:12px;
+margin-top:13px;
 
 font-size:14px;
 
@@ -182,23 +211,27 @@ display:flex;
 gap:7px;
 
 pointer-events:none;
+
 }
 
 .stat{
 
-min-width:75px;
+min-width:78px;
 
 padding:7px 11px;
 
 border-radius:13px;
 
-background:rgba(4,14,7,.78);
+background:
+rgba(4,14,7,.82);
 
-border:1px solid rgba(70,255,120,.3);
+border:
+1px solid rgba(70,255,120,.3);
 
 backdrop-filter:blur(8px);
 
 text-align:center;
+
 }
 
 .stat small{
@@ -231,28 +264,32 @@ z-index:5;
 
 display:none;
 
-padding:7px 15px;
+padding:8px 16px;
 
-background:rgba(4,14,7,.82);
+background:
+rgba(4,14,7,.84);
 
-border:1px solid rgba(70,255,120,.3);
+border:
+1px solid rgba(70,255,120,.3);
 
 border-radius:13px;
 
 text-align:center;
 
 pointer-events:none;
+
 }
 
 #roomCode{
 
-font-size:25px;
+font-size:27px;
 
 font-weight:bold;
 
 letter-spacing:5px;
 
 color:#60ff92;
+
 }
 
 #players{
@@ -262,6 +299,7 @@ font-size:12px;
 color:#aaa;
 
 margin-top:3px;
+
 }
 
 #message{
@@ -271,6 +309,7 @@ font-size:12px;
 color:#8cffaa;
 
 margin-top:3px;
+
 }
 
 #controls{
@@ -281,9 +320,9 @@ left:18px;
 
 bottom:20px;
 
-width:175px;
+width:180px;
 
-height:175px;
+height:180px;
 
 z-index:10;
 
@@ -293,15 +332,17 @@ z-index:10;
 
 position:absolute;
 
-width:58px;
+width:60px;
 
-height:58px;
+height:60px;
 
 border-radius:18px;
 
-background:rgba(16,50,27,.82);
+background:
+rgba(16,50,27,.84);
 
-border:1px solid rgba(100,255,140,.35);
+border:
+1px solid rgba(100,255,140,.35);
 
 display:flex;
 
@@ -309,7 +350,7 @@ align-items:center;
 
 justify-content:center;
 
-font-size:27px;
+font-size:28px;
 
 color:white;
 
@@ -326,23 +367,35 @@ transform:scale(.9);
 }
 
 .up{
-left:58px;
+
+left:60px;
+
 top:0;
+
 }
 
 .left{
+
 left:0;
-top:58px;
+
+top:60px;
+
 }
 
 .down{
-left:58px;
-top:116px;
+
+left:60px;
+
+top:120px;
+
 }
 
 .right{
-left:116px;
-top:58px;
+
+left:120px;
+
+top:60px;
+
 }
 
 #boost{
@@ -355,32 +408,52 @@ bottom:35px;
 
 z-index:10;
 
-width:82px;
+width:88px;
 
-height:82px;
+height:88px;
 
 border-radius:50%;
 
 background:
 radial-gradient(
 circle,
-#3e9cff,
-#1858a0
+#49a5ff,
+#17579e
 );
 
-border:2px solid #83c8ff;
+border:
+2px solid #83c8ff;
 
 color:white;
 
-font-size:28px;
+font-size:30px;
 
 box-shadow:
-0 0 30px rgba(50,150,255,.45);
+0 0 35px rgba(50,150,255,.5);
+
 }
 
 #boost:active{
 
 transform:scale(.9);
+
+}
+
+#boostText{
+
+position:absolute;
+
+top:53px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+font-size:9px;
+
+font-weight:bold;
+
+white-space:nowrap;
 
 }
 
@@ -401,13 +474,15 @@ justify-content:center;
 background:rgba(0,0,0,.72);
 
 text-align:center;
+
 }
 
 .deathCard{
 
 background:#0b180f;
 
-border:1px solid #39784a;
+border:
+1px solid #39784a;
 
 border-radius:22px;
 
@@ -417,9 +492,68 @@ padding:30px;
 
 .deathCard h2{
 
-font-size:40px;
+font-size:45px;
 
 margin:0;
+
+}
+
+#minimap{
+
+position:fixed;
+
+right:15px;
+
+top:15px;
+
+width:150px;
+
+height:150px;
+
+z-index:6;
+
+background:
+rgba(0,0,0,.5);
+
+border:
+1px solid rgba(100,255,140,.3);
+
+border-radius:12px;
+
+display:none;
+
+}
+
+@media(max-width:600px){
+
+#minimap{
+
+width:105px;
+
+height:105px;
+
+top:12px;
+
+right:10px;
+
+}
+
+#hud{
+
+left:8px;
+
+transform:none;
+
+}
+
+.stat{
+
+min-width:65px;
+
+padding:6px 8px;
+
+}
+
 }
 
 @media(min-width:800px){
@@ -443,14 +577,20 @@ opacity:.7;
 
 <canvas id="game"></canvas>
 
+<canvas id="minimap"></canvas>
+
 
 <div id="menu">
 
 <div class="card">
 
-<div class="logo">🐍</div>
+<div class="logo">
+🐍
+</div>
 
-<h1>SNAKE ONLINE</h1>
+<h1>
+SNAKE ONLINE
+</h1>
 
 <input
 id="name"
@@ -503,7 +643,9 @@ onclick="joinRoom()">
 </button>
 
 <div id="connection">
+
 🟡 Ühendan serveriga...
+
 </div>
 
 </div>
@@ -517,7 +659,9 @@ onclick="joinRoom()">
 
 <small>SCORE</small>
 
-<b id="score">0</b>
+<b id="score">
+0
+</b>
 
 </div>
 
@@ -525,7 +669,9 @@ onclick="joinRoom()">
 
 <small>🪙 COINS</small>
 
-<b id="coins">0</b>
+<b id="coins">
+0
+</b>
 
 </div>
 
@@ -533,7 +679,9 @@ onclick="joinRoom()">
 
 <small>👥</small>
 
-<b id="count">0</b>
+<b id="count">
+0
+</b>
 
 </div>
 
@@ -542,7 +690,9 @@ onclick="joinRoom()">
 
 <div id="room">
 
-<div>ROOM</div>
+<div>
+ROOM
+</div>
 
 <div id="roomCode">
 ------
@@ -562,32 +712,46 @@ onclick="joinRoom()">
 <div
 class="ctrl up"
 data-dir="up">
+
 ⬆️
+
 </div>
 
 <div
 class="ctrl left"
 data-dir="left">
+
 ⬅️
+
 </div>
 
 <div
 class="ctrl down"
 data-dir="down">
+
 ⬇️
+
 </div>
 
 <div
 class="ctrl right"
 data-dir="right">
+
 ➡️
+
 </div>
 
 </div>
 
 
 <button id="boost">
+
 ⚡
+
+<span id="boostText">
+SHIFT / SPACE
+</span>
+
 </button>
 
 
@@ -595,11 +759,17 @@ data-dir="right">
 
 <div class="deathCard">
 
-<h2>💀</h2>
+<h2>
+💀
+</h2>
 
-<p>Su uss sai pihta!</p>
+<h3>
+Su said pihta!
+</h3>
 
-<p>Respawn...</p>
+<p>
+Respawn...
+</p>
 
 </div>
 
@@ -608,23 +778,26 @@ data-dir="right">
 
 <script>
 
-
 /* =========================
-SERVER
+   SERVER
 ========================= */
 
 const SERVER_URL =
 "wss://snake-riu3.onrender.com";
 
 
-let socket=null;
+let socket = null;
 
-let myId=null;
+let myId = null;
 
-let roomCode=null;
+let roomCode = null;
 
 
-let state={
+/* =========================
+   GAME STATE
+========================= */
+
+let state = {
 
 width:150,
 
@@ -644,7 +817,7 @@ mode:"classic"
 
 
 /* =========================
-CANVAS
+   CANVAS
 ========================= */
 
 const canvas =
@@ -655,36 +828,76 @@ document.getElementById(
 const ctx =
 canvas.getContext("2d");
 
-let W=innerWidth;
+const minimap =
+document.getElementById(
+"minimap"
+);
 
-let H=innerHeight;
+const miniCtx =
+minimap.getContext("2d");
+
+
+let W =
+innerWidth;
+
+let H =
+innerHeight;
 
 
 function resize(){
 
-W=innerWidth;
+W =
+innerWidth;
 
-H=innerHeight;
+H =
+innerHeight;
 
-const dpr=
+
+const dpr =
 Math.min(
-devicePixelRatio||1,
+devicePixelRatio || 1,
 2
 );
 
-canvas.width=
-Math.floor(W*dpr);
 
-canvas.height=
-Math.floor(H*dpr);
+canvas.width =
+Math.floor(
+W * dpr
+);
 
-canvas.style.width=
-W+"px";
+canvas.height =
+Math.floor(
+H * dpr
+);
 
-canvas.style.height=
-H+"px";
+
+canvas.style.width =
+W + "px";
+
+canvas.style.height =
+H + "px";
+
 
 ctx.setTransform(
+dpr,
+0,
+0,
+dpr,
+0,
+0
+);
+
+
+minimap.width =
+minimap.clientWidth *
+dpr;
+
+minimap.height =
+minimap.clientHeight *
+dpr;
+
+
+miniCtx.setTransform(
 dpr,
 0,
 0,
@@ -705,7 +918,7 @@ resize();
 
 
 /* =========================
-CONNECT
+   CONNECT
 ========================= */
 
 function connect(){
@@ -716,24 +929,26 @@ SERVER_URL
 );
 
 
-socket.onopen=()=>{
+socket.onopen = () => {
 
 document.getElementById(
 "connection"
-).textContent=
+).textContent =
 "🟢 Serveriga ühendatud!";
 
 };
 
 
-socket.onmessage=e=>{
+socket.onmessage = event => {
 
 let data;
 
 try{
 
-data=
-JSON.parse(e.data);
+data =
+JSON.parse(
+event.data
+);
 
 }catch{
 
@@ -742,70 +957,99 @@ return;
 }
 
 
-if(data.type==="connected"){
+if(
+data.type ===
+"connected"
+){
 
-myId=data.id;
+myId =
+data.id;
 
 }
 
 
 if(
-data.type==="roomCreated" ||
-data.type==="roomJoined"
+data.type ===
+"roomCreated" ||
+data.type ===
+"roomJoined"
 ){
 
-roomCode=data.room;
+roomCode =
+data.room;
+
 
 document.getElementById(
 "menu"
-).style.display=
+).style.display =
 "none";
+
 
 document.getElementById(
 "room"
-).style.display=
+).style.display =
 "block";
+
 
 document.getElementById(
 "roomCode"
-).textContent=
+).textContent =
 roomCode;
+
+
+document.getElementById(
+"minimap"
+).style.display =
+"block";
 
 }
 
 
-if(data.type==="state"){
+if(
+data.type ===
+"state"
+){
 
-state=data.state;
+state =
+data.state;
 
 updateUI();
 
 }
 
 
-if(data.type==="start"){
+if(
+data.type ===
+"start"
+){
 
 document.getElementById(
 "message"
-).textContent=
+).textContent =
 "🔥 MÄNG ALGAS!";
 
 }
 
 
-if(data.type==="winner"){
+if(
+data.type ===
+"winner"
+){
 
 alert(
-"🏆 Võitja: "+
-data.winner.name+
-"\nScore: "+
+"🏆 Võitja: " +
+data.winner.name +
+"\nScore: " +
 data.winner.score
 );
 
 }
 
 
-if(data.type==="error"){
+if(
+data.type ===
+"error"
+){
 
 alert(
 data.message
@@ -816,21 +1060,21 @@ data.message
 };
 
 
-socket.onerror=()=>{
+socket.onerror = () => {
 
 document.getElementById(
 "connection"
-).textContent=
+).textContent =
 "🔴 Serveri viga";
 
 };
 
 
-socket.onclose=()=>{
+socket.onclose = () => {
 
 document.getElementById(
 "connection"
-).textContent=
+).textContent =
 "🔴 Ühendus katkes";
 
 };
@@ -839,14 +1083,14 @@ document.getElementById(
 
 
 /* =========================
-SEND
+   SEND
 ========================= */
 
 function send(data){
 
 if(
 socket &&
-socket.readyState===
+socket.readyState ===
 WebSocket.OPEN
 ){
 
@@ -860,7 +1104,7 @@ JSON.stringify(data)
 
 
 /* =========================
-ROOM
+   CREATE ROOM
 ========================= */
 
 function createRoom(){
@@ -879,7 +1123,7 @@ document.getElementById(
 if(!name){
 
 alert(
-"Kirjuta nimi!"
+"Kirjuta kõigepealt nimi!"
 );
 
 return;
@@ -889,16 +1133,23 @@ return;
 
 send({
 
-type:"createRoom",
+type:
+"createRoom",
 
-name:name,
+name:
+name,
 
-mode:mode
+mode:
+mode
 
 });
 
 }
 
+
+/* =========================
+   JOIN ROOM
+========================= */
 
 function joinRoom(){
 
@@ -918,7 +1169,7 @@ document.getElementById(
 if(!name){
 
 alert(
-"Kirjuta nimi!"
+"Kirjuta kõigepealt nimi!"
 );
 
 return;
@@ -926,7 +1177,9 @@ return;
 }
 
 
-if(room.length!==6){
+if(
+room.length !== 6
+){
 
 alert(
 "Room Code peab olema 6 märki!"
@@ -939,11 +1192,14 @@ return;
 
 send({
 
-type:"joinRoom",
+type:
+"joinRoom",
 
-name:name,
+name:
+name,
 
-room:room
+room:
+room
 
 });
 
@@ -951,56 +1207,71 @@ room:room
 
 
 /* =========================
-CONTROLS
+   DIRECTION
 ========================= */
 
-function direction(
-dir
+function changeDirection(
+direction
 ){
 
 send({
 
-type:"direction",
+type:
+"direction",
 
-direction:dir
+direction:
+direction
 
 });
 
 }
 
 
+/* =========================
+   TOUCH CONTROLS
+========================= */
+
 document
-.querySelectorAll(".ctrl")
+.querySelectorAll(
+".ctrl"
+)
 .forEach(
-button=>{
+button => {
 
-let last=0;
+let lastPress = 0;
 
-function press(e){
 
-if(e){
+function press(event){
 
-e.preventDefault();
+event.preventDefault();
 
-e.stopPropagation();
+event.stopPropagation();
+
+
+const now =
+Date.now();
+
+
+if(
+now - lastPress <
+100
+){
+
+return;
 
 }
 
-const now=
-Date.now();
 
-if(
-now-last<80
-)
-return;
+lastPress =
+now;
 
-last=now;
 
-direction(
+changeDirection(
 button.dataset.dir
 );
 
 }
+
 
 button.addEventListener(
 "touchstart",
@@ -1009,6 +1280,7 @@ press,
 passive:false
 }
 );
+
 
 button.addEventListener(
 "mousedown",
@@ -1020,20 +1292,34 @@ press
 
 
 /* =========================
-BOOST
+   BOOST
 ========================= */
 
-document
-.getElementById("boost")
-.addEventListener(
-"touchstart",
-e=>{
+let boostHeld = false;
 
-e.preventDefault();
+
+function doBoost(){
 
 send({
 type:"boost"
 });
+
+}
+
+
+const boostButton =
+document.getElementById(
+"boost"
+);
+
+
+boostButton.addEventListener(
+"touchstart",
+event => {
+
+event.preventDefault();
+
+doBoost();
 
 },
 {
@@ -1042,29 +1328,27 @@ passive:false
 );
 
 
-document
-.getElementById("boost")
-.addEventListener(
+boostButton.addEventListener(
 "click",
-()=>{
+event => {
 
-send({
-type:"boost"
-});
+event.preventDefault();
+
+doBoost();
 
 }
 );
 
 
 /* =========================
-KEYBOARD
+   KEYBOARD
 ========================= */
 
 document.addEventListener(
 "keydown",
-e=>{
+event => {
 
-const map={
+const directions = {
 
 ArrowUp:"up",
 
@@ -1094,27 +1378,56 @@ D:"right"
 
 
 if(
-map[e.key]
+directions[event.key]
 ){
 
-e.preventDefault();
+event.preventDefault();
 
-direction(
-map[e.key]
+changeDirection(
+directions[event.key]
 );
 
 }
 
 
+/*
+   SHIFT BOOST
+*/
+
 if(
-e.code==="Space"
+event.code ===
+"ShiftLeft" ||
+event.code ===
+"ShiftRight"
 ){
 
-e.preventDefault();
+event.preventDefault();
 
-send({
-type:"boost"
-});
+if(!event.repeat){
+
+doBoost();
+
+}
+
+}
+
+
+/*
+   SPACE BOOST
+*/
+
+if(
+event.code ===
+"Space"
+){
+
+event.preventDefault();
+
+if(!event.repeat){
+
+doBoost();
+
+}
 
 }
 
@@ -1123,7 +1436,7 @@ type:"boost"
 
 
 /* =========================
-UI
+   UI
 ========================= */
 
 function updateUI(){
@@ -1138,44 +1451,46 @@ if(me){
 
 document.getElementById(
 "score"
-).textContent=
+).textContent =
 me.score;
+
 
 document.getElementById(
 "coins"
-).textContent=
+).textContent =
 me.coins;
 
 
 document.getElementById(
 "death"
-).style.display=
+).style.display =
 me.alive
-?"none"
-:"flex";
+? "none"
+: "flex";
 
 }
 
 
 document.getElementById(
 "count"
-).textContent=
+).textContent =
 Object.keys(
-state.players||{}
+state.players || {}
 ).length;
 
 
 document.getElementById(
 "players"
-).textContent=
+).textContent =
 Object.values(
-state.players||{}
+state.players || {}
 )
 .map(
-p=>
-"🐍 "+
-p.name+
-" "+p.score
+player =>
+"🐍 " +
+player.name +
+" " +
+player.score
 )
 .join(" • ");
 
@@ -1183,12 +1498,15 @@ p.name+
 
 
 /* =========================
-CAMERA
+   CAMERA
 ========================= */
 
-let camera={
+let camera = {
+
 x:0,
+
 y:0
+
 };
 
 
@@ -1206,111 +1524,130 @@ if(
 !me.snake.length
 ){
 
-return camera;
+return {
+
+x:camera.x,
+
+y:camera.y,
+
+zoom:.40
+
+};
 
 }
+
+
+const CELL = 20;
 
 
 const head =
 me.snake[0];
 
 
-/*
-    maailma pikslites
-*/
+const worldWidth =
+state.width *
+CELL;
 
-const WORLD_CELL=20;
 
-const worldW=
-state.width*
-WORLD_CELL;
-
-const worldH=
-state.height*
-WORLD_CELL;
+const worldHeight =
+state.height *
+CELL;
 
 
 /*
-    KAAMERA ON ROHKEM ZOOM OUT
+   PALJU ROHKEM ZOOM OUT
 */
 
-let zoom=0.68;
+let zoom =
+0.40;
 
-
-/*
-    pikema ussi puhul
-    veel rohkem välja
-*/
 
 if(
-me.snake.length>20
-)
-zoom=.60;
+me.snake.length > 20
+){
+
+zoom =
+0.36;
+
+}
+
 
 if(
-me.snake.length>40
-)
-zoom=.53;
+me.snake.length > 40
+){
+
+zoom =
+0.32;
+
+}
+
 
 if(
-me.snake.length>70
-)
-zoom=.47;
+me.snake.length > 70
+){
+
+zoom =
+0.28;
+
+}
 
 
-const viewW=
-W/zoom;
-
-const viewH=
-H/zoom;
+const viewWidth =
+W / zoom;
 
 
-let targetX=
-head.x*
-WORLD_CELL+
-WORLD_CELL/2-
-viewW/2;
+const viewHeight =
+H / zoom;
 
 
-let targetY=
-head.y*
-WORLD_CELL+
-WORLD_CELL/2-
-viewH/2;
+let targetX =
+head.x * CELL +
+CELL / 2 -
+viewWidth / 2;
 
 
-targetX=
+let targetY =
+head.y * CELL +
+CELL / 2 -
+viewHeight / 2;
+
+
+targetX =
 Math.max(
 0,
 Math.min(
 targetX,
-worldW-viewW
+worldWidth - viewWidth
 )
 );
 
 
-targetY=
+targetY =
 Math.max(
 0,
 Math.min(
 targetY,
-worldH-viewH
+worldHeight - viewHeight
 )
 );
 
 
+/*
+   Sujuv jälitamine
+*/
+
 camera.x +=
 (
-targetX-camera.x
-)*
-.14;
+targetX -
+camera.x
+) * 0.16;
 
 
 camera.y +=
 (
-targetY-camera.y
-)*
-.14;
+targetY -
+camera.y
+) * 0.16;
 
 
 return {
@@ -1327,7 +1664,7 @@ zoom:zoom
 
 
 /* =========================
-DRAW
+   DRAW
 ========================= */
 
 function draw(){
@@ -1345,102 +1682,131 @@ H
 );
 
 
-const cam=
+const cameraData =
 getCamera();
 
-const CELL=20;
+
+const CELL = 20;
+
+
+/*
+   TUMEDAM TAUST
+*/
+
+ctx.fillStyle =
+"#020604";
+
+ctx.fillRect(
+0,
+0,
+W,
+H
+);
 
 
 ctx.save();
 
 
 /*
-    zoom around screen center
+   KAAMERA
 */
 
 ctx.translate(
-W/2,
-H/2
+W / 2,
+H / 2
 );
 
 ctx.scale(
-cam.zoom,
-cam.zoom
+cameraData.zoom,
+cameraData.zoom
 );
 
 ctx.translate(
--W/2,
--H/2
+-W / 2,
+-H / 2
 );
 
 
 ctx.translate(
--cam.x,
--cam.y
+-cameraData.x,
+-cameraData.y
 );
 
 
 /*
-    maailma
+   WORLD
 */
 
-const worldW=
-state.width*
-CELL;
-
-const worldH=
-state.height*
+const worldWidth =
+state.width *
 CELL;
 
 
-ctx.fillStyle=
+const worldHeight =
+state.height *
+CELL;
+
+
+ctx.fillStyle =
 "#07150c";
 
 ctx.fillRect(
 0,
 0,
-worldW,
-worldH
+worldWidth,
+worldHeight
 );
 
 
 /*
-    grid
+   GRID
 */
 
-ctx.strokeStyle=
-"rgba(100,255,130,.045)";
+ctx.strokeStyle =
+"rgba(100,255,130,.055)";
 
-ctx.lineWidth=1;
+ctx.lineWidth = 1;
 
 
-const startX=
+const startX =
 Math.floor(
-cam.x/CELL
-)*CELL;
+cameraData.x / CELL
+) * CELL;
 
-const startY=
+
+const startY =
 Math.floor(
-cam.y/CELL
-)*CELL;
+cameraData.y / CELL
+) * CELL;
+
+
+const visibleWidth =
+W / cameraData.zoom;
+
+
+const visibleHeight =
+H / cameraData.zoom;
 
 
 for(
-let x=startX;
-x<cam.x+W/cam.zoom+CELL;
-x+=CELL
+let x = startX;
+x < cameraData.x +
+visibleWidth +
+CELL;
+x += CELL
 ){
 
 ctx.beginPath();
 
 ctx.moveTo(
 x,
-cam.y
+cameraData.y
 );
 
 ctx.lineTo(
 x,
-cam.y+H/cam.zoom
+cameraData.y +
+visibleHeight
 );
 
 ctx.stroke();
@@ -1449,20 +1815,23 @@ ctx.stroke();
 
 
 for(
-let y=startY;
-y<cam.y+H/cam.zoom+CELL;
-y+=CELL
+let y = startY;
+y < cameraData.y +
+visibleHeight +
+CELL;
+y += CELL
 ){
 
 ctx.beginPath();
 
 ctx.moveTo(
-cam.x,
+cameraData.x,
 y
 );
 
 ctx.lineTo(
-cam.x+W/cam.zoom,
+cameraData.x +
+visibleWidth,
 y
 );
 
@@ -1472,38 +1841,48 @@ ctx.stroke();
 
 
 /*
-    BORDER
+   WORLD BORDER
 */
 
-ctx.strokeStyle=
+ctx.strokeStyle =
 "#3ee878";
 
-ctx.lineWidth=7;
+ctx.lineWidth = 8;
 
 ctx.strokeRect(
 0,
 0,
-worldW,
-worldH
+worldWidth,
+worldHeight
 );
 
 
 /*
-    WALLS
+   WALLS
 */
 
-(state.walls||[])
+(state.walls || [])
 .forEach(
-wall=>{
+wall => {
 
-ctx.fillStyle=
-"#3a493f";
+ctx.fillStyle =
+"#3c4940";
 
 ctx.fillRect(
-wall.x*CELL,
-wall.y*CELL,
+wall.x * CELL,
+wall.y * CELL,
 CELL,
 CELL
+);
+
+ctx.fillStyle =
+"rgba(255,255,255,.08)";
+
+ctx.fillRect(
+wall.x * CELL + 2,
+wall.y * CELL + 2,
+CELL - 4,
+4
 );
 
 }
@@ -1511,28 +1890,28 @@ CELL
 
 
 /*
-    FOOD
+   FOOD
 */
 
-(state.food||[])
+(state.food || [])
 .forEach(
-food=>{
+food => {
 
-const x=
-food.x*CELL+
-CELL/2;
+const x =
+food.x * CELL +
+CELL / 2;
 
-const y=
-food.y*CELL+
-CELL/2;
+const y =
+food.y * CELL +
+CELL / 2;
 
 
-ctx.shadowColor=
+ctx.shadowColor =
 "#ff3155";
 
-ctx.shadowBlur=18;
+ctx.shadowBlur = 18;
 
-ctx.fillStyle=
+ctx.fillStyle =
 "#ff3155";
 
 
@@ -1541,24 +1920,25 @@ ctx.beginPath();
 ctx.arc(
 x,
 y,
-CELL*.3,
+CELL * .30,
 0,
-Math.PI*2
+Math.PI * 2
 );
 
 ctx.fill();
 
-ctx.shadowBlur=0;
+
+ctx.shadowBlur = 0;
 
 }
 );
 
 
 /*
-    POWERUPS
+   POWERUPS
 */
 
-const colors={
+const powerColors = {
 
 speed:"#42a5ff",
 
@@ -1569,7 +1949,7 @@ coin:"#ffd43b"
 };
 
 
-const icons={
+const powerIcons = {
 
 speed:"⚡",
 
@@ -1580,29 +1960,29 @@ coin:"🪙"
 };
 
 
-(state.powerups||[])
+(state.powerups || [])
 .forEach(
-power=>{
+power => {
 
-const x=
-power.x*CELL+
-CELL/2;
+const x =
+power.x * CELL +
+CELL / 2;
 
-const y=
-power.y*CELL+
-CELL/2;
+const y =
+power.y * CELL +
+CELL / 2;
 
 
-ctx.fillStyle=
-colors[
+ctx.fillStyle =
+powerColors[
 power.type
 ];
 
 
-ctx.shadowColor=
+ctx.shadowColor =
 ctx.fillStyle;
 
-ctx.shadowBlur=15;
+ctx.shadowBlur = 16;
 
 
 ctx.beginPath();
@@ -1610,29 +1990,31 @@ ctx.beginPath();
 ctx.arc(
 x,
 y,
-CELL*.38,
+CELL * .38,
 0,
-Math.PI*2
+Math.PI * 2
 );
 
 ctx.fill();
 
-ctx.shadowBlur=0;
+
+ctx.shadowBlur = 0;
 
 
-ctx.font=
+ctx.font =
 "14px Arial";
 
-ctx.textAlign=
+ctx.textAlign =
 "center";
 
-ctx.textBaseline=
+ctx.textBaseline =
 "middle";
 
-ctx.fillStyle="#06120a";
+ctx.fillStyle =
+"#06120a";
 
 ctx.fillText(
-icons[
+powerIcons[
 power.type
 ],
 x,
@@ -1644,90 +2026,96 @@ y
 
 
 /*
-    SNAKES
+   SNAKES
 */
 
 Object.values(
-state.players||{}
+state.players || {}
 )
 .forEach(
-player=>{
+player => {
 
-if(!player.snake)
+if(
+!player.snake
+)
 return;
 
 
 player.snake.forEach(
-(part,index)=>{
+(part,index) => {
 
-let color=
+let color =
 player.color;
 
 
 if(
-player.id===myId
+player.id === myId
 ){
 
-color=
+color =
 "#55ff83";
 
+
 if(
-player.boost>0
+player.boost > 0
 ){
 
-color=
-"#5aaeff";
+color =
+"#55aaff";
 
 }
 
 }
 
 
-ctx.fillStyle=
+ctx.fillStyle =
 color;
 
-ctx.shadowColor=
+ctx.shadowColor =
 color;
 
-ctx.shadowBlur=
-index===0
-?18
-:5;
+ctx.shadowBlur =
+index === 0
+? 18
+: 5;
 
 
 ctx.beginPath();
 
 ctx.roundRect(
-part.x*CELL+2,
-part.y*CELL+2,
-CELL-4,
-CELL-4,
+part.x * CELL + 2,
+part.y * CELL + 2,
+CELL - 4,
+CELL - 4,
 6
 );
 
 ctx.fill();
 
-ctx.shadowBlur=0;
+
+ctx.shadowBlur = 0;
 
 
 /*
-    silmad
+   HEAD
 */
 
-if(index===0){
+if(
+index === 0
+){
 
-ctx.fillStyle=
+ctx.fillStyle =
 "#06120a";
 
 
 ctx.beginPath();
 
 ctx.arc(
-part.x*CELL+6,
-part.y*CELL+6,
+part.x * CELL + 6,
+part.y * CELL + 6,
 2.5,
 0,
-Math.PI*2
+Math.PI * 2
 );
 
 ctx.fill();
@@ -1736,35 +2124,65 @@ ctx.fill();
 ctx.beginPath();
 
 ctx.arc(
-part.x*CELL+14,
-part.y*CELL+6,
+part.x * CELL + 14,
+part.y * CELL + 6,
 2.5,
 0,
-Math.PI*2
+Math.PI * 2
 );
 
 ctx.fill();
 
 
 /*
-    shield ring
+   shield
 */
 
-if(player.shield){
+if(
+player.shield
+){
 
-ctx.strokeStyle=
-"#b65cff";
+ctx.strokeStyle =
+"#c05cff";
 
-ctx.lineWidth=3;
+ctx.lineWidth = 3;
 
 ctx.beginPath();
 
 ctx.arc(
-part.x*CELL+10,
-part.y*CELL+10,
-13,
+part.x * CELL + 10,
+part.y * CELL + 10,
+14,
 0,
-Math.PI*2
+Math.PI * 2
+);
+
+ctx.stroke();
+
+}
+
+
+/*
+   BOOST GLOW
+*/
+
+if(
+player.boost > 0
+){
+
+ctx.strokeStyle =
+"#65baff";
+
+ctx.lineWidth = 3;
+
+ctx.beginPath();
+
+ctx.arc(
+part.x * CELL + 10,
+part.y * CELL + 10,
+17,
+0,
+Math.PI * 2
 );
 
 ctx.stroke();
@@ -1781,11 +2199,149 @@ ctx.stroke();
 
 ctx.restore();
 
+
+drawMinimap();
+
 }
 
 
 /* =========================
-START
+   MINIMAP
+========================= */
+
+function drawMinimap(){
+
+if(
+minimap.style.display ===
+"none"
+){
+
+return;
+
+}
+
+
+const mw =
+minimap.clientWidth;
+
+const mh =
+minimap.clientHeight;
+
+
+miniCtx.clearRect(
+0,
+0,
+mw,
+mh
+);
+
+
+miniCtx.fillStyle =
+"rgba(5,15,8,.8)";
+
+miniCtx.fillRect(
+0,
+0,
+mw,
+mh
+);
+
+
+const sx =
+mw /
+state.width;
+
+
+const sy =
+mh /
+state.height;
+
+
+/*
+   FOOD
+*/
+
+miniCtx.fillStyle =
+"#ff3155";
+
+
+(state.food || [])
+.forEach(
+food => {
+
+miniCtx.fillRect(
+food.x * sx,
+food.y * sy,
+2,
+2
+);
+
+}
+);
+
+
+/*
+   PLAYERS
+*/
+
+Object.values(
+state.players || {}
+)
+.forEach(
+player => {
+
+if(
+!player.snake ||
+!player.snake.length
+)
+return;
+
+
+const head =
+player.snake[0];
+
+
+miniCtx.fillStyle =
+player.id === myId
+? "#63ff91"
+: player.color;
+
+
+miniCtx.beginPath();
+
+miniCtx.arc(
+head.x * sx,
+head.y * sy,
+3,
+0,
+Math.PI * 2
+);
+
+miniCtx.fill();
+
+}
+);
+
+
+/*
+   BORDER
+*/
+
+miniCtx.strokeStyle =
+"rgba(100,255,140,.6)";
+
+miniCtx.strokeRect(
+0,
+0,
+mw,
+mh
+);
+
+}
+
+
+/* =========================
+   START
 ========================= */
 
 connect();
@@ -1795,4 +2351,5 @@ draw();
 </script>
 
 </body>
+
 </html>
