@@ -2,199 +2,252 @@
 <html lang="et">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snake Online 🐍</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Snake Online 2.0 🐍</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
 }
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at top, #173d22 0%, #07130b 45%, #020604 100%);
-    color: white;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+body{
+margin:0;
+min-height:100vh;
+background:
+radial-gradient(circle at top,#174d28,#06100a 55%,#020403);
+font-family:Arial,sans-serif;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
-.app {
-    width: min(94vw, 680px);
-    padding: 15px 0;
-    text-align: center;
+.app{
+width:min(95vw,760px);
+padding:15px;
+text-align:center;
 }
 
-h1 {
-    margin: 0 0 15px;
-    font-size: clamp(38px, 9vw, 58px);
-    text-shadow:
-        0 0 10px #35ff76,
-        0 0 30px rgba(53,255,118,.5);
+h1{
+font-size:clamp(38px,9vw,65px);
+margin:5px 0 15px;
+text-shadow:0 0 25px #35ff76;
 }
 
-.card {
-    background: rgba(12, 28, 18, .95);
-    border: 1px solid #27633c;
-    border-radius: 20px;
-    padding: 18px;
-    margin-bottom: 15px;
-    box-shadow: 0 12px 40px rgba(0,0,0,.35);
+.card{
+background:rgba(10,25,15,.96);
+border:1px solid #2a6840;
+border-radius:20px;
+padding:18px;
+margin-bottom:15px;
+box-shadow:0 15px 50px rgba(0,0,0,.4);
 }
 
-input {
-    width: 100%;
-    border: 1px solid #28563a;
-    outline: none;
-    border-radius: 12px;
-    padding: 14px;
-    margin: 6px 0;
-    background: #06100a;
-    color: white;
-    font-size: 18px;
-    text-align: center;
+input,select{
+width:100%;
+padding:14px;
+margin:5px 0;
+border-radius:12px;
+border:1px solid #2c593a;
+background:#061009;
+color:white;
+font-size:18px;
+text-align:center;
 }
 
-input:focus {
-    border-color: #42ff7b;
-    box-shadow: 0 0 12px rgba(66,255,123,.2);
+button{
+border:0;
+border-radius:12px;
+padding:14px;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+transition:.15s;
 }
 
-button {
-    border: none;
-    border-radius: 12px;
-    padding: 14px;
-    margin-top: 7px;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: .15s;
+button:hover{
+transform:translateY(-2px);
 }
 
-button:hover {
-    transform: translateY(-2px);
+button:active{
+transform:scale(.95);
 }
 
-button:active {
-    transform: scale(.95);
+.create{
+width:100%;
+background:#39df70;
+color:#031008;
+margin-top:8px;
 }
 
-.create {
-    width: 100%;
-    background: #35dc6d;
-    color: #041008;
+.join{
+width:100%;
+background:#3f91ff;
+color:white;
+margin-top:8px;
 }
 
-.join {
-    width: 100%;
-    background: #3e91ff;
-    color: white;
+.shopBtn{
+width:100%;
+background:#f4b72f;
+color:#151000;
+margin-top:8px;
 }
 
-#connection {
-    margin-top: 12px;
-    color: #aaa;
-    font-size: 14px;
+#connection{
+margin-top:12px;
+font-size:14px;
+color:#aaa;
 }
 
-.room {
-    display: none;
+.room{
+display:none;
 }
 
-.roomTitle {
-    font-size: 14px;
-    color: #aaa;
+.modeName{
+font-size:24px;
+font-weight:bold;
+margin:4px;
 }
 
-.code {
-    font-size: 36px;
-    font-weight: bold;
-    color: #5dff91;
-    letter-spacing: 7px;
-    margin: 5px 0 12px;
-    text-shadow: 0 0 15px rgba(93,255,145,.4);
+.code{
+font-size:38px;
+font-weight:bold;
+letter-spacing:7px;
+color:#62ff98;
+text-shadow:0 0 18px rgba(98,255,152,.5);
 }
 
-.players {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
+.players{
+display:flex;
+justify-content:center;
+gap:8px;
+flex-wrap:wrap;
+margin-top:12px;
 }
 
-.player {
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: #14271b;
+.player{
+padding:8px 12px;
+border-radius:10px;
+background:#14291b;
 }
 
-#status {
-    margin-top: 12px;
-    color: #bbb;
+#status{
+margin-top:12px;
+color:#bbb;
 }
 
-canvas {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    display: block;
-    background: #07150c;
-    border: 4px solid #35dc6d;
-    border-radius: 20px;
-    box-shadow:
-        0 0 25px rgba(53,220,109,.2),
-        0 15px 40px rgba(0,0,0,.4);
+.stats{
+display:flex;
+justify-content:space-around;
+gap:8px;
+margin-bottom:12px;
 }
 
-.controls {
-    display: grid;
-    grid-template-columns: 70px 70px 70px;
-    grid-template-rows: 70px 70px;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 15px;
+.stat{
+flex:1;
+background:#102318;
+border-radius:12px;
+padding:9px;
 }
 
-.controls button {
-    margin: 0;
-    background: #173823;
-    color: white;
-    font-size: 26px;
-    border: 1px solid #2c6540;
+.stat b{
+display:block;
+font-size:20px;
 }
 
-.up {
-    grid-column: 2;
+canvas{
+display:block;
+width:100%;
+aspect-ratio:1;
+background:#06120a;
+border:4px solid #35dc6d;
+border-radius:20px;
+box-shadow:0 0 35px rgba(53,220,109,.2);
 }
 
-.left {
-    grid-column: 1;
-    grid-row: 2;
+.controls{
+display:grid;
+grid-template-columns:70px 70px 70px;
+grid-template-rows:70px 70px;
+justify-content:center;
+gap:8px;
+margin-top:15px;
 }
 
-.down {
-    grid-column: 2;
-    grid-row: 2;
+.controls button{
+background:#173923;
+color:white;
+font-size:27px;
+border:1px solid #326845;
 }
 
-.right {
-    grid-column: 3;
-    grid-row: 2;
+.up{
+grid-column:2;
 }
 
-.help {
-    color: #777;
-    margin-top: 12px;
-    font-size: 13px;
+.left{
+grid-column:1;
+grid-row:2;
 }
 
-@media (min-width: 700px) {
-    .controls {
-        display: none;
-    }
+.down{
+grid-column:2;
+grid-row:2;
+}
+
+.right{
+grid-column:3;
+grid-row:2;
+}
+
+.overlay{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.75);
+justify-content:center;
+align-items:center;
+z-index:10;
+padding:20px;
+}
+
+.modal{
+width:min(92vw,450px);
+background:#0d2114;
+border:1px solid #3b8b53;
+border-radius:20px;
+padding:25px;
+}
+
+.modal h2{
+font-size:32px;
+margin-top:0;
+}
+
+.skin{
+padding:12px;
+margin:6px 0;
+border-radius:10px;
+background:#162d1d;
+cursor:pointer;
+}
+
+.skin.selected{
+outline:3px solid #fff;
+}
+
+.close{
+width:100%;
+margin-top:12px;
+background:#35dc6d;
+}
+
+@media(min-width:700px){
+.controls{
+display:none;
+}
 }
 </style>
 </head>
@@ -207,105 +260,188 @@ canvas {
 
 <div class="card" id="menu">
 
-    <input
-        id="name"
-        maxlength="12"
-        placeholder="Sinu nimi"
-    >
+<input
+id="name"
+maxlength="12"
+placeholder="Sinu nimi">
 
-    <button
-        class="create"
-        onclick="createRoom()"
-    >
-        🟢 LOO TUBA
-    </button>
+<select id="mode">
 
-    <input
-        id="roomInput"
-        maxlength="6"
-        placeholder="Room Code"
-    >
+<option value="classic">
+🍎 Classic
+</option>
 
-    <button
-        class="join"
-        onclick="joinRoom()"
-    >
-        🔵 LIITU TUPA
-    </button>
+<option value="battle">
+⚔️ Battle
+</option>
 
-    <div id="connection">
-        🟡 Ühendun serveriga...
-    </div>
+<option value="power">
+⚡ Power Rush
+</option>
+
+<option value="maze">
+🧱 Maze
+</option>
+
+<option value="last">
+💀 Last Snake
+</option>
+
+</select>
+
+<button
+class="create"
+onclick="createRoom()">
+🟢 LOO TUBA
+</button>
+
+<input
+id="roomInput"
+maxlength="6"
+placeholder="ROOM CODE">
+
+<button
+class="join"
+onclick="joinRoom()">
+🔵 LIITU TUPA
+</button>
+
+<button
+class="shopBtn"
+onclick="openShop()">
+🛒 SKINID
+</button>
+
+<div id="connection">
+🟡 Ühendan serveriga...
+</div>
 
 </div>
 
 
 <div class="card room" id="room">
 
-    <div class="roomTitle">
-        ROOM CODE
-    </div>
+<div class="modeName" id="modeName">
+Classic
+</div>
 
-    <div
-        class="code"
-        id="code"
-    >
-        ------
-    </div>
+<div>
+ROOM CODE
+</div>
 
-    <div
-        class="players"
-        id="players"
-    ></div>
+<div class="code" id="code">
+------
+</div>
 
-    <div id="status">
-        Ootan mängijaid...
-    </div>
+<div class="players" id="players"></div>
+
+<div id="status">
+Ootan mängijaid...
+</div>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+Score
+<b id="score">0</b>
+</div>
+
+<div class="stat">
+🪙 Coins
+<b id="coins">0</b>
+</div>
+
+<div class="stat">
+🛡️ Shield
+<b id="shield">OFF</b>
+</div>
 
 </div>
 
 
 <canvas
-    id="game"
-    width="600"
-    height="600"
-></canvas>
+id="game"
+width="600"
+height="600">
+</canvas>
 
 
 <div class="controls">
 
-    <button
-        class="up"
-        onclick="sendDirection('up')"
-    >
-        ⬆️
-    </button>
+<button
+class="up"
+onclick="sendDirection('up')">
+⬆️
+</button>
 
-    <button
-        class="left"
-        onclick="sendDirection('left')"
-    >
-        ⬅️
-    </button>
+<button
+class="left"
+onclick="sendDirection('left')">
+⬅️
+</button>
 
-    <button
-        class="down"
-        onclick="sendDirection('down')"
-    >
-        ⬇️
-    </button>
+<button
+class="down"
+onclick="sendDirection('down')">
+⬇️
+</button>
 
-    <button
-        class="right"
-        onclick="sendDirection('right')"
-    >
-        ➡️
-    </button>
+<button
+class="right"
+onclick="sendDirection('right')">
+➡️
+</button>
 
 </div>
 
-<div class="help">
-    Arvutil: WASD või nooled • Telefonil: nupud
+</div>
+
+
+<div class="overlay" id="shop">
+
+<div class="modal">
+
+<h2>🎨 Skinid</h2>
+
+<div
+class="skin selected"
+onclick="selectSkin('#43ff72',this)">
+🟢 Green
+</div>
+
+<div
+class="skin"
+onclick="selectSkin('#45a5ff',this)">
+🔵 Blue
+</div>
+
+<div
+class="skin"
+onclick="selectSkin('#ff4fd8',this)">
+🩷 Pink
+</div>
+
+<div
+class="skin"
+onclick="selectSkin('#ffd43b',this)">
+🟡 Gold
+</div>
+
+<div
+class="skin"
+onclick="selectSkin('#b45cff',this)">
+🟣 Purple
+</div>
+
+<button
+class="close"
+onclick="closeShop()">
+SULGE
+</button>
+
 </div>
 
 </div>
@@ -313,710 +449,776 @@ canvas {
 
 <script>
 
-/* =====================================================
-   RENDER MULTIPLAYER SERVER
-===================================================== */
-
 const SERVER_URL =
-    "wss://snake-riu3.onrender.com";
-
-
-/* =====================================================
-   MÄNGU MUUTUJAD
-===================================================== */
+"wss://snake-riu3.onrender.com";
 
 const canvas =
-    document.getElementById("game");
+document.getElementById("game");
 
 const ctx =
-    canvas.getContext("2d");
+canvas.getContext("2d");
 
-const GRID = 20;
+let socket=null;
+let myId=null;
+let roomCode=null;
 
-const CELL = 30;
+let selectedSkin="#43ff72";
 
-let socket = null;
-
-let myId = null;
-
-let roomCode = null;
-
-let gameState = {
-    players: {},
-    food: []
+let state={
+players:{},
+food:[],
+powerups:[],
+walls:[],
+width:30,
+height:30,
+mode:"classic"
 };
 
 
-/* =====================================================
-   SERVERIGA ÜHENDUS
-===================================================== */
+/* =========================
+ÜHENDUS
+========================= */
 
-function connect() {
+function connect(){
 
-    if (
-        socket &&
-        (
-            socket.readyState === WebSocket.OPEN ||
-            socket.readyState === WebSocket.CONNECTING
-        )
-    ) {
-        return;
-    }
+if(
+socket &&
+(
+socket.readyState===WebSocket.OPEN ||
+socket.readyState===WebSocket.CONNECTING
+)
+)return;
 
-    setConnection(
-        "🟡 Ühendan serveriga..."
-    );
+setConnection(
+"🟡 Ühendan serveriga..."
+);
 
-    socket = new WebSocket(
-        SERVER_URL
-    );
+socket=new WebSocket(SERVER_URL);
 
+socket.onopen=()=>{
+setConnection(
+"🟢 Serveriga ühendatud!"
+);
+};
 
-    socket.onopen = function() {
+socket.onmessage=(event)=>{
 
-        setConnection(
-            "🟢 Serveriga ühendatud!"
-        );
+let data;
 
-    };
+try{
+data=JSON.parse(event.data);
+}catch{
+return;
+}
 
+handleMessage(data);
 
-    socket.onmessage = function(event) {
+};
 
-        let data;
+socket.onerror=()=>{
+setConnection(
+"🔴 Serveri ühenduse viga"
+);
+};
 
-        try {
-            data = JSON.parse(event.data);
-        } catch {
-            return;
-        }
-
-        handleMessage(data);
-
-    };
-
-
-    socket.onerror = function() {
-
-        setConnection(
-            "🔴 Serveriga ühendamisel tekkis viga"
-        );
-
-    };
-
-
-    socket.onclose = function() {
-
-        setConnection(
-            "🔴 Serveriga ühendus katkes"
-        );
-
-    };
+socket.onclose=()=>{
+setConnection(
+"🔴 Serveriga ühendus katkes"
+);
+};
 
 }
 
 
-/* =====================================================
-   SERVERI SÕNUMID
-===================================================== */
+/* =========================
+SÕNUMID
+========================= */
 
-function handleMessage(data) {
+function handleMessage(data){
 
-    if (data.type === "connected") {
+if(data.type==="connected"){
+myId=data.id;
+}
 
-        myId = data.id;
+if(data.type==="roomCreated"){
+roomCode=data.room;
+showRoom(data.mode);
+}
 
-    }
+if(data.type==="roomJoined"){
+roomCode=data.room;
+showRoom(data.mode);
+}
 
+if(data.type==="state"){
 
-    if (data.type === "roomCreated") {
+state=data.state;
 
-        roomCode = data.room;
+updatePlayers();
+updateStats();
+draw();
 
-        showRoom();
+}
 
-    }
+if(data.type==="start"){
 
+document.getElementById(
+"status"
+).textContent=
+"🔥 MÄNG ALGAS!";
 
-    if (data.type === "roomJoined") {
+}
 
-        roomCode = data.room;
+if(data.type==="winner"){
 
-        showRoom();
+if(data.winner){
 
-    }
+alert(
+"🏆 Võitja: "+
+data.winner.name+
+"\nScore: "+
+data.winner.score
+);
 
+}
 
-    if (data.type === "state") {
+}
 
-        gameState =
-            data.state || {
-                players: {},
-                food: []
-            };
+if(data.type==="error"){
 
-        updatePlayers();
+alert(data.message);
 
-        draw();
-
-    }
-
-
-    if (data.type === "start") {
-
-        document.getElementById(
-            "status"
-        ).textContent =
-            "🔥 MÄNG ALGAS!";
-
-    }
-
-
-    if (data.type === "error") {
-
-        alert(
-            data.message || "Tekkis viga."
-        );
-
-    }
+}
 
 }
 
 
-/* =====================================================
-   LOO TUBA
-===================================================== */
+/* =========================
+LOO TUBA
+========================= */
 
-function createRoom() {
+function createRoom(){
 
-    const name =
-        document.getElementById(
-            "name"
-        ).value.trim();
+const name=
+document.getElementById(
+"name"
+).value.trim();
 
+const mode=
+document.getElementById(
+"mode"
+).value;
 
-    if (!name) {
+if(!name){
 
-        alert(
-            "Kirjuta kõigepealt oma nimi!"
-        );
+alert(
+"Kirjuta oma nimi!"
+);
 
-        return;
+return;
 
-    }
+}
 
+ensureConnection(()=>{
 
-    ensureConnection(
-        function() {
+send({
+type:"createRoom",
+name:name,
+mode:mode
+});
 
-            send({
-                type: "createRoom",
-                name: name
-            });
-
-        }
-    );
+});
 
 }
 
 
-/* =====================================================
-   LIITU TUPA
-===================================================== */
+/* =========================
+LIITU
+========================= */
 
-function joinRoom() {
+function joinRoom(){
 
-    const name =
-        document.getElementById(
-            "name"
-        ).value.trim();
+const name=
+document.getElementById(
+"name"
+).value.trim();
 
+const room=
+document.getElementById(
+"roomInput"
+).value
+.trim()
+.toUpperCase();
 
-    const room =
-        document.getElementById(
-            "roomInput"
-        ).value.trim()
-        .toUpperCase();
+if(!name){
 
+alert(
+"Kirjuta oma nimi!"
+);
 
-    if (!name) {
+return;
 
-        alert(
-            "Kirjuta kõigepealt oma nimi!"
-        );
+}
 
-        return;
+if(room.length!==6){
 
-    }
+alert(
+"Room Code peab olema 6 märki!"
+);
 
+return;
 
-    if (room.length !== 6) {
+}
 
-        alert(
-            "Room Code peab olema 6 tähemärki."
-        );
+ensureConnection(()=>{
 
-        return;
+send({
+type:"joinRoom",
+name:name,
+room:room
+});
 
-    }
-
-
-    ensureConnection(
-        function() {
-
-            send({
-                type: "joinRoom",
-                name: name,
-                room: room
-            });
-
-        }
-    );
+});
 
 }
 
 
-/* =====================================================
-   KINDLUSTA ÜHENDUS
-===================================================== */
+/* =========================
+ÜHENDUS
+========================= */
 
-function ensureConnection(callback) {
+function ensureConnection(callback){
 
-    if (
-        socket &&
-        socket.readyState === WebSocket.OPEN
-    ) {
+if(
+socket &&
+socket.readyState===WebSocket.OPEN
+){
 
-        callback();
+callback();
+return;
 
-        return;
+}
 
-    }
+connect();
 
+const timer=setInterval(()=>{
 
-    connect();
+if(
+socket &&
+socket.readyState===WebSocket.OPEN
+){
 
+clearInterval(timer);
 
-    const wait =
-        setInterval(
-            function() {
+callback();
 
-                if (
-                    socket &&
-                    socket.readyState ===
-                    WebSocket.OPEN
-                ) {
+}
 
-                    clearInterval(wait);
+},100);
 
-                    callback();
-
-                }
-
-            },
-            100
-        );
-
-
-    setTimeout(
-        function() {
-
-            clearInterval(wait);
-
-        },
-        10000
-    );
+setTimeout(()=>{
+clearInterval(timer);
+},10000);
 
 }
 
 
-/* =====================================================
-   SAADA SERVERILE
-===================================================== */
+/* =========================
+SAADA
+========================= */
 
-function send(data) {
+function send(data){
 
-    if (
-        socket &&
-        socket.readyState ===
-        WebSocket.OPEN
-    ) {
+if(
+socket &&
+socket.readyState===WebSocket.OPEN
+){
 
-        socket.send(
-            JSON.stringify(data)
-        );
+socket.send(
+JSON.stringify(data)
+);
 
-    }
+}
 
 }
 
 
-/* =====================================================
-   SUUNA MUUTMINE
-===================================================== */
+/* =========================
+LIIGU
+========================= */
 
-function sendDirection(direction) {
+function sendDirection(direction){
 
-    send({
-        type: "direction",
-        direction: direction
-    });
+send({
+type:"direction",
+direction:direction
+});
 
 }
 
 
-/* =====================================================
-   KLAVIATUUR
-===================================================== */
+/* =========================
+KLAVIATUUR
+========================= */
 
 document.addEventListener(
-    "keydown",
-    function(event) {
+"keydown",
+event=>{
 
-        const directions = {
+const keys={
 
-            ArrowUp: "up",
-            w: "up",
-            W: "up",
+ArrowUp:"up",
+w:"up",
+W:"up",
 
-            ArrowDown: "down",
-            s: "down",
-            S: "down",
+ArrowDown:"down",
+s:"down",
+S:"down",
 
-            ArrowLeft: "left",
-            a: "left",
-            A: "left",
+ArrowLeft:"left",
+a:"left",
+A:"left",
 
-            ArrowRight: "right",
-            d: "right",
-            D: "right"
+ArrowRight:"right",
+d:"right",
+D:"right"
 
-        };
+};
 
+const direction=
+keys[event.key];
 
-        const direction =
-            directions[event.key];
+if(direction){
 
+event.preventDefault();
 
-        if (direction) {
+sendDirection(direction);
 
-            event.preventDefault();
+}
 
-            sendDirection(
-                direction
-            );
-
-        }
-
-    }
+}
 );
 
 
-/* =====================================================
-   ROOMI NÄITAMINE
-===================================================== */
+/* =========================
+ROOM
+========================= */
 
-function showRoom() {
+function showRoom(mode){
 
-    document.getElementById(
-        "menu"
-    ).style.display =
-        "none";
+document.getElementById(
+"menu"
+).style.display="none";
 
+document.getElementById(
+"room"
+).style.display="block";
 
-    document.getElementById(
-        "room"
-    ).style.display =
-        "block";
+document.getElementById(
+"code"
+).textContent=
+roomCode;
 
+const names={
+classic:"🍎 CLASSIC",
+battle:"⚔️ BATTLE",
+power:"⚡ POWER RUSH",
+maze:"🧱 MAZE",
+last:"💀 LAST SNAKE"
+};
 
-    document.getElementById(
-        "code"
-    ).textContent =
-        roomCode;
-
-}
-
-
-/* =====================================================
-   MÄNGIJATE NIMEKIRI
-===================================================== */
-
-function updatePlayers() {
-
-    const container =
-        document.getElementById(
-            "players"
-        );
-
-
-    container.innerHTML = "";
-
-
-    const players =
-        Object.values(
-            gameState.players || {}
-        );
-
-
-    players.forEach(
-        function(player) {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "player";
-
-
-            div.style.border =
-                "2px solid " +
-                player.color;
-
-
-            const me =
-                player.id === myId
-                ? " ⭐"
-                : "";
-
-
-            div.textContent =
-                "🐍 " +
-                player.name +
-                me +
-                " • " +
-                player.score;
-
-
-            container.appendChild(
-                div
-            );
-
-        }
-    );
+document.getElementById(
+"modeName"
+).textContent=
+names[mode] || mode;
 
 }
 
 
-/* =====================================================
-   MÄNGULAUA JOONISTAMINE
-===================================================== */
+/* =========================
+PLAYERS
+========================= */
 
-function draw() {
+function updatePlayers(){
 
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+const container=
+document.getElementById(
+"players"
+);
 
+container.innerHTML="";
 
-    /* Taust */
+Object.values(
+state.players || {}
+).forEach(player=>{
 
-    ctx.fillStyle =
-        "#07150c";
+const div=
+document.createElement("div");
 
-    ctx.fillRect(
-        0,
-        0,
-        600,
-        600
-    );
+div.className="player";
 
+div.style.border=
+"2px solid "+
+player.color;
 
-    /* Grid */
+const me=
+player.id===myId
+?" ⭐"
+:"";
 
-    ctx.strokeStyle =
-        "rgba(90,220,120,.07)";
+div.textContent=
+"🐍 "+
+player.name+
+me+
+" • "+
+player.score;
 
+container.appendChild(div);
 
-    for (
-        let i = 0;
-        i <= GRID;
-        i++
-    ) {
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            i * CELL,
-            0
-        );
-
-        ctx.lineTo(
-            i * CELL,
-            600
-        );
-
-        ctx.stroke();
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            0,
-            i * CELL
-        );
-
-        ctx.lineTo(
-            600,
-            i * CELL
-        );
-
-        ctx.stroke();
-
-    }
-
-
-    /* Toit */
-
-    const food =
-        gameState.food || [];
-
-
-    food.forEach(
-        function(item) {
-
-            ctx.shadowColor =
-                "#ff3155";
-
-            ctx.shadowBlur =
-                22;
-
-            ctx.fillStyle =
-                "#ff3155";
-
-
-            ctx.beginPath();
-
-            ctx.arc(
-                item.x * CELL + 15,
-                item.y * CELL + 15,
-                10,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fill();
-
-            ctx.shadowBlur = 0;
-
-        }
-    );
-
-
-    /* Ussid */
-
-    const players =
-        Object.values(
-            gameState.players || {}
-        );
-
-
-    players.forEach(
-        function(player) {
-
-            if (!player.snake)
-                return;
-
-
-            player.snake.forEach(
-                function(part, index) {
-
-                    ctx.fillStyle =
-                        player.color;
-
-
-                    ctx.shadowColor =
-                        player.color;
-
-
-                    ctx.shadowBlur =
-                        index === 0
-                        ? 15
-                        : 5;
-
-
-                    ctx.beginPath();
-
-                    ctx.roundRect(
-                        part.x * CELL + 2,
-                        part.y * CELL + 2,
-                        CELL - 4,
-                        CELL - 4,
-                        8
-                    );
-
-                    ctx.fill();
-
-                    ctx.shadowBlur = 0;
-
-
-                    /* Pea */
-
-                    if (index === 0) {
-
-                        ctx.fillStyle =
-                            "#06100a";
-
-
-                        ctx.beginPath();
-
-                        ctx.arc(
-                            part.x * CELL + 10,
-                            part.y * CELL + 9,
-                            3,
-                            0,
-                            Math.PI * 2
-                        );
-
-                        ctx.fill();
-
-
-                        ctx.beginPath();
-
-                        ctx.arc(
-                            part.x * CELL + 20,
-                            part.y * CELL + 9,
-                            3,
-                            0,
-                            Math.PI * 2
-                        );
-
-                        ctx.fill();
-
-                    }
-
-                }
-            );
-
-        }
-    );
+});
 
 }
 
 
-/* =====================================================
-   ÜHENDUSE TEKST
-===================================================== */
+/* =========================
+STATS
+========================= */
 
-function setConnection(text) {
+function updateStats(){
 
-    document.getElementById(
-        "connection"
-    ).textContent =
-        text;
+const me=
+state.players &&
+state.players[myId];
+
+if(!me)return;
+
+document.getElementById(
+"score"
+).textContent=
+me.score;
+
+document.getElementById(
+"coins"
+).textContent=
+me.coins;
+
+document.getElementById(
+"shield"
+).textContent=
+me.shield
+?"ON"
+:"OFF";
 
 }
 
 
-/* =====================================================
-   ALUSTA
-===================================================== */
+/* =========================
+JOONISTA
+========================= */
+
+function draw(){
+
+const width=
+state.width || 30;
+
+const height=
+state.height || 30;
+
+const cell=
+600/width;
+
+ctx.fillStyle="#06120a";
+
+ctx.fillRect(
+0,
+0,
+600,
+600
+);
+
+
+/* GRID */
+
+ctx.strokeStyle=
+"rgba(100,230,130,.06)";
+
+for(
+let x=0;
+x<=width;
+x++
+){
+
+ctx.beginPath();
+
+ctx.moveTo(
+x*cell,
+0
+);
+
+ctx.lineTo(
+x*cell,
+600
+);
+
+ctx.stroke();
+
+}
+
+for(
+let y=0;
+y<=height;
+y++
+){
+
+ctx.beginPath();
+
+ctx.moveTo(
+0,
+y*cell
+);
+
+ctx.lineTo(
+600,
+y*cell
+);
+
+ctx.stroke();
+
+}
+
+
+/* WALLS */
+
+(state.walls||[]).forEach(wall=>{
+
+ctx.fillStyle="#33413a";
+
+ctx.fillRect(
+wall.x*cell+1,
+wall.y*cell+1,
+cell-2,
+cell-2
+);
+
+});
+
+
+/* FOOD */
+
+(state.food||[]).forEach(food=>{
+
+ctx.shadowColor="#ff3155";
+
+ctx.shadowBlur=20;
+
+ctx.fillStyle="#ff3155";
+
+ctx.beginPath();
+
+ctx.arc(
+food.x*cell+cell/2,
+food.y*cell+cell/2,
+cell*.3,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+ctx.shadowBlur=0;
+
+});
+
+
+/* POWERUPS */
+
+(state.powerups||[]).forEach(power=>{
+
+const colors={
+speed:"#48a8ff",
+shield:"#a65cff",
+coin:"#ffd43b"
+};
+
+const symbols={
+speed:"⚡",
+shield:"🛡️",
+coin:"🪙"
+};
+
+ctx.fillStyle=
+colors[power.type] ||
+"white";
+
+ctx.beginPath();
+
+ctx.arc(
+power.x*cell+cell/2,
+power.y*cell+cell/2,
+cell*.35,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+ctx.fillStyle="#06120a";
+
+ctx.font=
+`${cell*.55}px Arial`;
+
+ctx.textAlign="center";
+
+ctx.textBaseline="middle";
+
+ctx.fillText(
+symbols[power.type],
+power.x*cell+cell/2,
+power.y*cell+cell/2
+);
+
+});
+
+
+/* SNAKES */
+
+Object.values(
+state.players||{}
+).forEach(player=>{
+
+if(!player.snake)return;
+
+player.snake.forEach(
+(part,index)=>{
+
+let color=
+player.color;
+
+if(player.id===myId){
+color=selectedSkin;
+}
+
+ctx.fillStyle=color;
+
+ctx.shadowColor=color;
+
+ctx.shadowBlur=
+index===0
+?14
+:4;
+
+ctx.beginPath();
+
+ctx.roundRect(
+part.x*cell+2,
+part.y*cell+2,
+cell-4,
+cell-4,
+Math.max(4,cell*.2)
+);
+
+ctx.fill();
+
+ctx.shadowBlur=0;
+
+
+/* silmad */
+
+if(index===0){
+
+ctx.fillStyle="#06120a";
+
+ctx.beginPath();
+
+ctx.arc(
+part.x*cell+cell*.35,
+part.y*cell+cell*.32,
+cell*.08,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+ctx.beginPath();
+
+ctx.arc(
+part.x*cell+cell*.65,
+part.y*cell+cell*.32,
+cell*.08,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+}
+
+}
+);
+
+});
+
+}
+
+
+/* =========================
+SHOP
+========================= */
+
+function openShop(){
+
+document.getElementById(
+"shop"
+).style.display="flex";
+
+}
+
+function closeShop(){
+
+document.getElementById(
+"shop"
+).style.display="none";
+
+}
+
+function selectSkin(color,element){
+
+selectedSkin=color;
+
+document.querySelectorAll(
+".skin"
+).forEach(el=>{
+el.classList.remove(
+"selected"
+);
+});
+
+element.classList.add(
+"selected"
+);
+
+draw();
+
+}
+
+
+/* =========================
+STATUS
+========================= */
+
+function setConnection(text){
+
+document.getElementById(
+"connection"
+).textContent=text;
+
+}
+
+
+/* =========================
+START
+========================= */
 
 draw();
 
