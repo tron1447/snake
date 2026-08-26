@@ -1,306 +1,461 @@
 <!DOCTYPE html>
 <html lang="et">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0,user-scalable=no">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0,user-scalable=no">
 
 <title>Snake Online 🐍</title>
 
 <style>
+
 *{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
-    touch-action:none;
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+touch-action:none;
 }
 
 html,body{
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#020603;
-    color:white;
-    font-family:Arial,sans-serif;
+margin:0;
+width:100%;
+height:100%;
+overflow:hidden;
+background:#020604;
+font-family:Arial,sans-serif;
+color:white;
 }
 
 #game{
-    position:fixed;
-    inset:0;
-    width:100vw;
-    height:100vh;
-    display:block;
-    background:#06120a;
-}
-
-#ui{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-}
-
-.top{
-    position:absolute;
-    top:12px;
-    left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    gap:8px;
-    z-index:5;
-}
-
-.box{
-    background:rgba(5,15,8,.82);
-    border:1px solid rgba(80,255,130,.35);
-    backdrop-filter:blur(8px);
-    border-radius:14px;
-    padding:8px 13px;
-    min-width:85px;
-    text-align:center;
-    box-shadow:0 5px 20px rgba(0,0,0,.35);
-}
-
-.box small{
-    display:block;
-    color:#8ca893;
-    font-size:11px;
-}
-
-.box b{
-    font-size:18px;
+position:fixed;
+inset:0;
+width:100vw;
+height:100vh;
+background:#06120a;
 }
 
 #menu{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(28,100,48,.35),
-            rgba(0,0,0,.96)
-        );
-    z-index:20;
+position:fixed;
+inset:0;
+z-index:20;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:
+radial-gradient(
+circle,
+rgba(30,100,45,.5),
+rgba(0,0,0,.97)
+);
 }
 
-.menuCard{
-    width:min(92vw,430px);
-    background:rgba(8,22,12,.97);
-    border:1px solid #2d7344;
-    border-radius:24px;
-    padding:25px;
-    text-align:center;
-    box-shadow:0 20px 80px rgba(0,0,0,.65);
+.card{
+width:min(92vw,430px);
+
+padding:25px;
+
+border-radius:25px;
+
+background:rgba(7,22,12,.97);
+
+border:1px solid #32814b;
+
+box-shadow:
+0 20px 80px rgba(0,0,0,.7);
+
+text-align:center;
+}
+
+.logo{
+font-size:75px;
+
+filter:
+drop-shadow(
+0 0 20px #40ff76
+);
 }
 
 h1{
-    font-size:clamp(42px,11vw,68px);
-    margin:0 0 18px;
-    color:#63ff92;
-    text-shadow:
-        0 0 15px #38ff70,
-        0 0 40px rgba(56,255,112,.5);
+font-size:40px;
+
+margin:0 0 18px;
+
+color:#5cff8c;
+
+text-shadow:
+0 0 20px #35ff70;
 }
 
 input,select{
-    width:100%;
-    padding:15px;
-    margin:6px 0;
-    border-radius:13px;
-    border:1px solid #285c39;
-    outline:none;
-    background:#061009;
-    color:white;
-    font-size:18px;
-    text-align:center;
+
+width:100%;
+
+padding:15px;
+
+margin:6px 0;
+
+border-radius:13px;
+
+border:1px solid #285c39;
+
+background:#061009;
+
+color:white;
+
+font-size:18px;
+
+text-align:center;
+
+outline:none;
+
 }
 
 button{
-    width:100%;
-    border:0;
-    border-radius:13px;
-    padding:15px;
-    margin-top:8px;
-    font-size:18px;
-    font-weight:bold;
+
+border:0;
+
+border-radius:14px;
+
+padding:15px;
+
+font-size:18px;
+
+font-weight:bold;
+
+cursor:pointer;
+
 }
 
 .create{
-    background:#39df70;
-    color:#031008;
+
+width:100%;
+
+margin-top:8px;
+
+background:#3be174;
+
+color:#031008;
+
 }
 
 .join{
-    background:#398fff;
-    color:white;
+
+width:100%;
+
+margin-top:8px;
+
+background:#3e91ff;
+
+color:white;
+
 }
 
 #connection{
-    margin-top:12px;
-    color:#aaa;
-    font-size:14px;
+
+margin-top:12px;
+
+font-size:14px;
+
+color:#aaa;
+
+}
+
+#hud{
+
+position:fixed;
+
+top:10px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+z-index:5;
+
+display:flex;
+
+gap:7px;
+
+pointer-events:none;
+}
+
+.stat{
+
+min-width:75px;
+
+padding:7px 11px;
+
+border-radius:13px;
+
+background:rgba(4,14,7,.78);
+
+border:1px solid rgba(70,255,120,.3);
+
+backdrop-filter:blur(8px);
+
+text-align:center;
+}
+
+.stat small{
+
+display:block;
+
+color:#8fa693;
+
+font-size:10px;
+
+}
+
+.stat b{
+
+font-size:18px;
+
 }
 
 #room{
-    display:none;
+
+position:fixed;
+
+top:75px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+z-index:5;
+
+display:none;
+
+padding:7px 15px;
+
+background:rgba(4,14,7,.82);
+
+border:1px solid rgba(70,255,120,.3);
+
+border-radius:13px;
+
+text-align:center;
+
+pointer-events:none;
 }
 
-.roomCode{
-    color:#65ff98;
-    font-size:32px;
-    font-weight:bold;
-    letter-spacing:6px;
+#roomCode{
+
+font-size:25px;
+
+font-weight:bold;
+
+letter-spacing:5px;
+
+color:#60ff92;
 }
 
 #players{
-    margin-top:8px;
-    color:#aaa;
+
+font-size:12px;
+
+color:#aaa;
+
+margin-top:3px;
 }
 
 #message{
-    margin-top:8px;
-    color:#b8c8bb;
+
+font-size:12px;
+
+color:#8cffaa;
+
+margin-top:3px;
 }
 
-.controls{
-    position:absolute;
-    left:20px;
-    bottom:25px;
-    width:170px;
-    height:170px;
-    pointer-events:auto;
+#controls{
+
+position:fixed;
+
+left:18px;
+
+bottom:20px;
+
+width:175px;
+
+height:175px;
+
+z-index:10;
+
 }
 
-.control{
-    position:absolute;
-    width:58px;
-    height:58px;
-    border-radius:18px;
-    border:1px solid rgba(120,255,160,.25);
-    background:rgba(16,48,26,.78);
-    color:white;
-    font-size:27px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    user-select:none;
-    box-shadow:0 5px 20px rgba(0,0,0,.3);
+.ctrl{
+
+position:absolute;
+
+width:58px;
+
+height:58px;
+
+border-radius:18px;
+
+background:rgba(16,50,27,.82);
+
+border:1px solid rgba(100,255,140,.35);
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:27px;
+
+color:white;
+
+user-select:none;
+
 }
 
-.control:active{
-    background:rgba(45,120,65,.9);
-    transform:scale(.92);
+.ctrl:active{
+
+background:#2c7b43;
+
+transform:scale(.9);
+
 }
 
 .up{
-    top:0;
-    left:56px;
+left:58px;
+top:0;
 }
 
 .left{
-    top:56px;
-    left:0;
+left:0;
+top:58px;
 }
 
 .down{
-    top:112px;
-    left:56px;
+left:58px;
+top:116px;
 }
 
 .right{
-    top:56px;
-    left:112px;
+left:116px;
+top:58px;
 }
 
 #boost{
-    position:absolute;
-    right:20px;
-    bottom:35px;
-    width:85px;
-    height:85px;
-    border-radius:50%;
-    pointer-events:auto;
-    background:rgba(40,120,255,.75);
-    border:2px solid #68b1ff;
-    color:white;
-    font-size:28px;
-    box-shadow:0 0 25px rgba(50,140,255,.45);
+
+position:fixed;
+
+right:20px;
+
+bottom:35px;
+
+z-index:10;
+
+width:82px;
+
+height:82px;
+
+border-radius:50%;
+
+background:
+radial-gradient(
+circle,
+#3e9cff,
+#1858a0
+);
+
+border:2px solid #83c8ff;
+
+color:white;
+
+font-size:28px;
+
+box-shadow:
+0 0 30px rgba(50,150,255,.45);
 }
 
 #boost:active{
-    transform:scale(.9);
+
+transform:scale(.9);
+
 }
 
 #death{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:30;
-    background:rgba(0,0,0,.7);
-    align-items:center;
-    justify-content:center;
-    text-align:center;
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+z-index:30;
+
+align-items:center;
+
+justify-content:center;
+
+background:rgba(0,0,0,.72);
+
+text-align:center;
 }
 
 .deathCard{
-    background:#101811;
-    border:1px solid #3c7149;
-    padding:30px;
-    border-radius:22px;
+
+background:#0b180f;
+
+border:1px solid #39784a;
+
+border-radius:22px;
+
+padding:30px;
+
 }
 
 .deathCard h2{
-    font-size:38px;
-    margin:0 0 10px;
-}
 
-#loading{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:50;
-    background:#020603;
-    font-size:25px;
+font-size:40px;
+
+margin:0;
 }
 
 @media(min-width:800px){
 
-    .controls{
-        opacity:.65;
-    }
+#controls,
+#boost{
 
-    #boost{
-        opacity:.65;
-    }
+opacity:.7;
+
 }
+
+}
+
 </style>
+
 </head>
+
 
 <body>
 
-<canvas id="game"></canvas>
 
-<div id="loading">
-    🐍 Ühendan serveriga...
-</div>
+<canvas id="game"></canvas>
 
 
 <div id="menu">
 
-<div class="menuCard">
+<div class="card">
 
-<h1>🐍</h1>
+<div class="logo">🐍</div>
 
-<h2> SNAKE ONLINE</h2>
+<h1>SNAKE ONLINE</h1>
 
 <input
-    id="name"
-    maxlength="12"
-    placeholder="Sinu nimi">
+id="name"
+maxlength="12"
+placeholder="Sinu nimi">
 
 <select id="mode">
 
@@ -327,24 +482,28 @@ button{
 </select>
 
 <button
-    class="create"
-    onclick="createRoom()">
-    🟢 LOO TUBA
+class="create"
+onclick="createRoom()">
+
+🟢 LOO TUBA
+
 </button>
 
 <input
-    id="roomInput"
-    maxlength="6"
-    placeholder="ROOM CODE">
+id="roomInput"
+maxlength="6"
+placeholder="ROOM CODE">
 
 <button
-    class="join"
-    onclick="joinRoom()">
-    🔵 LIITU TUPA
+class="join"
+onclick="joinRoom()">
+
+🔵 LIITU TUPA
+
 </button>
 
 <div id="connection">
-🟡 Ühendan...
+🟡 Ühendan serveriga...
 </div>
 
 </div>
@@ -352,46 +511,40 @@ button{
 </div>
 
 
-<div id="ui">
+<div id="hud">
 
-<div class="top">
+<div class="stat">
 
-<div class="box">
 <small>SCORE</small>
+
 <b id="score">0</b>
+
 </div>
 
-<div class="box">
-<small>🪙</small>
+<div class="stat">
+
+<small>🪙 COINS</small>
+
 <b id="coins">0</b>
-</div>
-
-<div class="box">
-<small>🏆</small>
-<b id="playersCount">0</b>
-</div>
 
 </div>
 
+<div class="stat">
 
-<div
-    id="room"
-    class="box"
-    style="
-        position:absolute;
-        top:75px;
-        left:50%;
-        transform:translateX(-50%);
-        text-align:center;
-    ">
+<small>👥</small>
 
-<div style="font-size:10px;color:#8ca893">
-ROOM
+<b id="count">0</b>
+
 </div>
 
-<div
-    id="roomCode"
-    class="roomCode">
+</div>
+
+
+<div id="room">
+
+<div>ROOM</div>
+
+<div id="roomCode">
 ------
 </div>
 
@@ -404,60 +557,49 @@ ROOM
 </div>
 
 
-<div class="controls">
+<div id="controls">
 
 <div
-    class="control up"
-    ontouchstart="control('up')"
-    onclick="control('up')">
+class="ctrl up"
+data-dir="up">
 ⬆️
 </div>
 
 <div
-    class="control left"
-    ontouchstart="control('left')"
-    onclick="control('left')">
+class="ctrl left"
+data-dir="left">
 ⬅️
 </div>
 
 <div
-    class="control down"
-    ontouchstart="control('down')"
-    onclick="control('down')">
+class="ctrl down"
+data-dir="down">
 ⬇️
 </div>
 
 <div
-    class="control right"
-    ontouchstart="control('right')"
-    onclick="control('right')">
+class="ctrl right"
+data-dir="right">
 ➡️
 </div>
 
 </div>
 
 
-<button
-    id="boost"
-    ontouchstart="boost()"
-    onclick="boost()">
+<button id="boost">
 ⚡
 </button>
-
-</div>
 
 
 <div id="death">
 
 <div class="deathCard">
 
-<h2>💀 OOPS!</h2>
+<h2>💀</h2>
 
-<p>Su uss sai pihta.</p>
+<p>Su uss sai pihta!</p>
 
-<p id="respawnText">
-Respawn...
-</p>
+<p>Respawn...</p>
 
 </div>
 
@@ -466,30 +608,69 @@ Respawn...
 
 <script>
 
+
+/* =========================
+SERVER
+========================= */
+
 const SERVER_URL =
 "wss://snake-riu3.onrender.com";
 
 
-/* ================================
-   CANVAS
-================================ */
+let socket=null;
+
+let myId=null;
+
+let roomCode=null;
+
+
+let state={
+
+width:150,
+
+height:150,
+
+players:{},
+
+food:[],
+
+powerups:[],
+
+walls:[],
+
+mode:"classic"
+
+};
+
+
+/* =========================
+CANVAS
+========================= */
 
 const canvas =
-document.getElementById("game");
+document.getElementById(
+"game"
+);
 
 const ctx =
 canvas.getContext("2d");
 
 let W=innerWidth;
+
 let H=innerHeight;
+
 
 function resize(){
 
 W=innerWidth;
+
 H=innerHeight;
 
 const dpr=
-Math.min(devicePixelRatio||1,2);
+Math.min(
+devicePixelRatio||1,
+2
+);
 
 canvas.width=
 Math.floor(W*dpr);
@@ -497,14 +678,23 @@ Math.floor(W*dpr);
 canvas.height=
 Math.floor(H*dpr);
 
-canvas.style.width=W+"px";
-canvas.style.height=H+"px";
+canvas.style.width=
+W+"px";
+
+canvas.style.height=
+H+"px";
 
 ctx.setTransform(
-dpr,0,0,dpr,0,0
+dpr,
+0,
+0,
+dpr,
+0,
+0
 );
 
 }
+
 
 addEventListener(
 "resize",
@@ -514,42 +704,19 @@ resize
 resize();
 
 
-/* ================================
-   MÄNG
-================================ */
-
-let socket=null;
-let myId=null;
-let roomCode=null;
-
-let state={
-players:{},
-food:[],
-powerups:[],
-walls:[],
-width:100,
-height:100
-};
-
-let boostLocal=false;
-
-
-/* ================================
-   SERVER
-================================ */
+/* =========================
+CONNECT
+========================= */
 
 function connect(){
 
-socket=
+socket =
 new WebSocket(
 SERVER_URL
 );
 
-socket.onopen=()=>{
 
-document.getElementById(
-"loading"
-).style.display="none";
+socket.onopen=()=>{
 
 document.getElementById(
 "connection"
@@ -558,15 +725,22 @@ document.getElementById(
 
 };
 
+
 socket.onmessage=e=>{
 
 let data;
 
 try{
-data=JSON.parse(e.data);
+
+data=
+JSON.parse(e.data);
+
 }catch{
+
 return;
+
 }
+
 
 if(data.type==="connected"){
 
@@ -574,21 +748,31 @@ myId=data.id;
 
 }
 
-if(data.type==="roomCreated"){
+
+if(
+data.type==="roomCreated" ||
+data.type==="roomJoined"
+){
 
 roomCode=data.room;
 
-showRoom();
+document.getElementById(
+"menu"
+).style.display=
+"none";
+
+document.getElementById(
+"room"
+).style.display=
+"block";
+
+document.getElementById(
+"roomCode"
+).textContent=
+roomCode;
 
 }
 
-if(data.type==="roomJoined"){
-
-roomCode=data.room;
-
-showRoom();
-
-}
 
 if(data.type==="state"){
 
@@ -596,9 +780,8 @@ state=data.state;
 
 updateUI();
 
-draw();
-
 }
+
 
 if(data.type==="start"){
 
@@ -609,31 +792,39 @@ document.getElementById(
 
 }
 
+
 if(data.type==="winner"){
 
 alert(
 "🏆 Võitja: "+
-(data.winner?.name||"???")
+data.winner.name+
+"\nScore: "+
+data.winner.score
 );
 
 }
 
+
 if(data.type==="error"){
 
-alert(data.message);
+alert(
+data.message
+);
 
 }
 
 };
+
 
 socket.onerror=()=>{
 
 document.getElementById(
 "connection"
 ).textContent=
-"🔴 Serveriga ühendus ebaõnnestus";
+"🔴 Serveri viga";
 
 };
+
 
 socket.onclose=()=>{
 
@@ -647,15 +838,16 @@ document.getElementById(
 }
 
 
-/* ================================
-   SAADA
-================================ */
+/* =========================
+SEND
+========================= */
 
 function send(data){
 
 if(
 socket &&
-socket.readyState===WebSocket.OPEN
+socket.readyState===
+WebSocket.OPEN
 ){
 
 socket.send(
@@ -667,64 +859,72 @@ JSON.stringify(data)
 }
 
 
-/* ================================
-   CREATE
-================================ */
+/* =========================
+ROOM
+========================= */
 
 function createRoom(){
 
-const name=
+const name =
 document.getElementById(
 "name"
 ).value.trim();
 
-const mode=
+const mode =
 document.getElementById(
 "mode"
 ).value;
 
+
 if(!name){
 
-alert("Kirjuta nimi!");
+alert(
+"Kirjuta nimi!"
+);
 
 return;
 
 }
 
+
 send({
+
 type:"createRoom",
-name,
-mode
+
+name:name,
+
+mode:mode
+
 });
 
 }
 
 
-/* ================================
-   JOIN
-================================ */
-
 function joinRoom(){
 
-const name=
+const name =
 document.getElementById(
 "name"
 ).value.trim();
 
-const room=
+const room =
 document.getElementById(
 "roomInput"
 ).value
 .trim()
 .toUpperCase();
 
+
 if(!name){
 
-alert("Kirjuta nimi!");
+alert(
+"Kirjuta nimi!"
+);
 
 return;
 
 }
+
 
 if(room.length!==6){
 
@@ -736,62 +936,181 @@ return;
 
 }
 
+
 send({
+
 type:"joinRoom",
-name,
-room
+
+name:name,
+
+room:room
+
 });
 
 }
 
 
-/* ================================
-   ROOM
-================================ */
+/* =========================
+CONTROLS
+========================= */
 
-function showRoom(){
-
-document.getElementById(
-"menu"
-).style.display="none";
-
-document.getElementById(
-"room"
-).style.display="block";
-
-document.getElementById(
-"roomCode"
-).textContent=
-roomCode;
-
-}
-
-
-/* ================================
-   CONTROLS
-================================ */
-
-function control(direction){
+function direction(
+dir
+){
 
 send({
+
 type:"direction",
-direction
+
+direction:dir
+
 });
 
 }
 
 
-/* ================================
-   BOOST
-================================ */
+document
+.querySelectorAll(".ctrl")
+.forEach(
+button=>{
 
-function boost(){
+let last=0;
 
-boostLocal=true;
+function press(e){
 
-setTimeout(()=>{
-boostLocal=false;
-},500);
+if(e){
+
+e.preventDefault();
+
+e.stopPropagation();
+
+}
+
+const now=
+Date.now();
+
+if(
+now-last<80
+)
+return;
+
+last=now;
+
+direction(
+button.dataset.dir
+);
+
+}
+
+button.addEventListener(
+"touchstart",
+press,
+{
+passive:false
+}
+);
+
+button.addEventListener(
+"mousedown",
+press
+);
+
+}
+);
+
+
+/* =========================
+BOOST
+========================= */
+
+document
+.getElementById("boost")
+.addEventListener(
+"touchstart",
+e=>{
+
+e.preventDefault();
+
+send({
+type:"boost"
+});
+
+},
+{
+passive:false
+}
+);
+
+
+document
+.getElementById("boost")
+.addEventListener(
+"click",
+()=>{
+
+send({
+type:"boost"
+});
+
+}
+);
+
+
+/* =========================
+KEYBOARD
+========================= */
+
+document.addEventListener(
+"keydown",
+e=>{
+
+const map={
+
+ArrowUp:"up",
+
+w:"up",
+
+W:"up",
+
+ArrowDown:"down",
+
+s:"down",
+
+S:"down",
+
+ArrowLeft:"left",
+
+a:"left",
+
+A:"left",
+
+ArrowRight:"right",
+
+d:"right",
+
+D:"right"
+
+};
+
+
+if(
+map[e.key]
+){
+
+e.preventDefault();
+
+direction(
+map[e.key]
+);
+
+}
+
+
+if(
+e.code==="Space"
+){
+
+e.preventDefault();
 
 send({
 type:"boost"
@@ -799,63 +1118,21 @@ type:"boost"
 
 }
 
-
-/* ================================
-   KEYBOARD
-================================ */
-
-addEventListener(
-"keydown",
-e=>{
-
-const map={
-
-ArrowUp:"up",
-w:"up",
-W:"up",
-
-ArrowDown:"down",
-s:"down",
-S:"down",
-
-ArrowLeft:"left",
-a:"left",
-A:"left",
-
-ArrowRight:"right",
-d:"right",
-D:"right"
-
-};
-
-if(map[e.key]){
-
-e.preventDefault();
-
-control(
-map[e.key]
-);
-
-}
-
-if(e.code==="Space"){
-
-boost();
-
-}
-
 }
 );
 
 
-/* ================================
-   UI
-================================ */
+/* =========================
+UI
+========================= */
 
 function updateUI(){
 
-const me=
-state.players?.[myId];
+const me =
+state.players?.[
+myId
+];
+
 
 if(me){
 
@@ -869,66 +1146,59 @@ document.getElementById(
 ).textContent=
 me.coins;
 
-}
-
-const players=
-Object.values(
-state.players||{}
-);
 
 document.getElementById(
-"playersCount"
+"death"
+).style.display=
+me.alive
+?"none"
+:"flex";
+
+}
+
+
+document.getElementById(
+"count"
 ).textContent=
-players.length;
+Object.keys(
+state.players||{}
+).length;
+
 
 document.getElementById(
 "players"
 ).textContent=
-players
-.map(p=>
+Object.values(
+state.players||{}
+)
+.map(
+p=>
 "🐍 "+
 p.name+
 " "+p.score
 )
 .join(" • ");
 
-if(
-me &&
-!me.alive
-){
-
-document.getElementById(
-"death"
-).style.display=
-"flex";
-
-document.getElementById(
-"respawnText"
-).textContent=
-me.respawnTimer>0
-? "Respawn..."
-: "Väljas";
-
-}else{
-
-document.getElementById(
-"death"
-).style.display=
-"none";
-
-}
-
 }
 
 
-/* ================================
-   KAAMERA
-================================ */
+/* =========================
+CAMERA
+========================= */
+
+let camera={
+x:0,
+y:0
+};
+
 
 function getCamera(){
 
-const me=
-state.players?.[myId];
+const me =
+state.players?.[
+myId
+];
+
 
 if(
 !me ||
@@ -936,117 +1206,136 @@ if(
 !me.snake.length
 ){
 
-return {
-x:0,
-y:0,
-zoom:1
-};
+return camera;
 
 }
 
-const head=
+
+const head =
 me.snake[0];
 
+
+/*
+    maailma pikslites
+*/
+
+const WORLD_CELL=20;
+
 const worldW=
-state.width*20;
+state.width*
+WORLD_CELL;
 
 const worldH=
-state.height*20;
+state.height*
+WORLD_CELL;
 
 
 /*
-    Kaamera sihtpunkt
-    on sinu pea.
+    KAAMERA ON ROHKEM ZOOM OUT
 */
 
-let cameraX=
-head.x*20 -
-W/2;
-
-let cameraY=
-head.y*20 -
-H/2;
+let zoom=0.68;
 
 
 /*
-    Kaamera ei lähe maailmast välja.
-*/
-
-cameraX=
-Math.max(
-0,
-Math.min(
-cameraX,
-worldW-W
-)
-);
-
-cameraY=
-Math.max(
-0,
-Math.min(
-cameraY,
-worldH-H
-)
-);
-
-
-/*
-    Kui mängija liigub,
-    kaamera liigub sujuvalt.
+    pikema ussi puhul
+    veel rohkem välja
 */
 
 if(
-!window.cam
-){
+me.snake.length>20
+)
+zoom=.60;
 
-window.cam={
-x:cameraX,
-y:cameraY
-};
+if(
+me.snake.length>40
+)
+zoom=.53;
 
-}
-
-window.cam.x +=
-(cameraX-window.cam.x)*0.12;
-
-window.cam.y +=
-(cameraY-window.cam.y)*0.12;
+if(
+me.snake.length>70
+)
+zoom=.47;
 
 
-/*
-    Suurem uss =
-    natuke rohkem välja zoom.
-*/
+const viewW=
+W/zoom;
 
-const length=
-me.snake.length;
+const viewH=
+H/zoom;
 
-let zoom=1;
 
-if(length>15)
-zoom=.92;
+let targetX=
+head.x*
+WORLD_CELL+
+WORLD_CELL/2-
+viewW/2;
 
-if(length>30)
-zoom=.84;
 
-if(length>50)
-zoom=.76;
+let targetY=
+head.y*
+WORLD_CELL+
+WORLD_CELL/2-
+viewH/2;
+
+
+targetX=
+Math.max(
+0,
+Math.min(
+targetX,
+worldW-viewW
+)
+);
+
+
+targetY=
+Math.max(
+0,
+Math.min(
+targetY,
+worldH-viewH
+)
+);
+
+
+camera.x +=
+(
+targetX-camera.x
+)*
+.14;
+
+
+camera.y +=
+(
+targetY-camera.y
+)*
+.14;
+
 
 return {
-x:window.cam.x,
-y:window.cam.y,
-zoom
+
+x:camera.x,
+
+y:camera.y,
+
+zoom:zoom
+
 };
 
 }
 
 
-/* ================================
-   DRAW
-================================ */
+/* =========================
+DRAW
+========================= */
 
 function draw(){
+
+requestAnimationFrame(
+draw
+);
+
 
 ctx.clearRect(
 0,
@@ -1055,41 +1344,54 @@ W,
 H
 );
 
-const camera=
+
+const cam=
 getCamera();
+
+const CELL=20;
+
 
 ctx.save();
 
+
+/*
+    zoom around screen center
+*/
+
 ctx.translate(
--W*(camera.zoom-1)/2,
--H*(camera.zoom-1)/2
+W/2,
+H/2
 );
 
 ctx.scale(
-camera.zoom,
-camera.zoom
+cam.zoom,
+cam.zoom
 );
 
 ctx.translate(
--camera.x,
--camera.y
+-W/2,
+-H/2
+);
+
+
+ctx.translate(
+-cam.x,
+-cam.y
 );
 
 
 /*
-    MAAILMA SUURUS
+    maailma
 */
 
 const worldW=
-state.width*20;
+state.width*
+CELL;
 
 const worldH=
-state.height*20;
+state.height*
+CELL;
 
-
-/*
-    TAUST
-*/
 
 ctx.fillStyle=
 "#07150c";
@@ -1103,52 +1405,65 @@ worldH
 
 
 /*
-    GRIDI
+    grid
 */
 
 ctx.strokeStyle=
-"rgba(80,220,120,.07)";
+"rgba(100,255,130,.045)";
 
 ctx.lineWidth=1;
 
+
+const startX=
+Math.floor(
+cam.x/CELL
+)*CELL;
+
+const startY=
+Math.floor(
+cam.y/CELL
+)*CELL;
+
+
 for(
-let x=0;
-x<=state.width;
-x++
+let x=startX;
+x<cam.x+W/cam.zoom+CELL;
+x+=CELL
 ){
 
 ctx.beginPath();
 
 ctx.moveTo(
-x*20,
-0
+x,
+cam.y
 );
 
 ctx.lineTo(
-x*20,
-worldH
+x,
+cam.y+H/cam.zoom
 );
 
 ctx.stroke();
 
 }
 
+
 for(
-let y=0;
-y<=state.height;
-y++
+let y=startY;
+y<cam.y+H/cam.zoom+CELL;
+y+=CELL
 ){
 
 ctx.beginPath();
 
 ctx.moveTo(
-0,
-y*20
+cam.x,
+y
 );
 
 ctx.lineTo(
-worldW,
-y*20
+cam.x+W/cam.zoom,
+y
 );
 
 ctx.stroke();
@@ -1157,13 +1472,13 @@ ctx.stroke();
 
 
 /*
-    ÄÄR
+    BORDER
 */
 
 ctx.strokeStyle=
-"#38df70";
+"#3ee878";
 
-ctx.lineWidth=8;
+ctx.lineWidth=7;
 
 ctx.strokeRect(
 0,
@@ -1177,17 +1492,18 @@ worldH
     WALLS
 */
 
-(state.walls||[]).forEach(
+(state.walls||[])
+.forEach(
 wall=>{
 
 ctx.fillStyle=
-"#39453d";
+"#3a493f";
 
 ctx.fillRect(
-wall.x*20,
-wall.y*20,
-20,
-20
+wall.x*CELL,
+wall.y*CELL,
+CELL,
+CELL
 );
 
 }
@@ -1198,8 +1514,18 @@ wall.y*20,
     FOOD
 */
 
-(state.food||[]).forEach(
+(state.food||[])
+.forEach(
 food=>{
+
+const x=
+food.x*CELL+
+CELL/2;
+
+const y=
+food.y*CELL+
+CELL/2;
+
 
 ctx.shadowColor=
 "#ff3155";
@@ -1209,12 +1535,13 @@ ctx.shadowBlur=18;
 ctx.fillStyle=
 "#ff3155";
 
+
 ctx.beginPath();
 
 ctx.arc(
-food.x*20+10,
-food.y*20+10,
-6,
+x,
+y,
+CELL*.3,
 0,
 Math.PI*2
 );
@@ -1231,36 +1558,59 @@ ctx.shadowBlur=0;
     POWERUPS
 */
 
-const powerColors={
-speed:"#4ba8ff",
-shield:"#b25cff",
+const colors={
+
+speed:"#42a5ff",
+
+shield:"#b65cff",
+
 coin:"#ffd43b"
+
 };
 
-const powerIcons={
+
+const icons={
+
 speed:"⚡",
+
 shield:"🛡️",
+
 coin:"🪙"
+
 };
 
-(state.powerups||[]).forEach(
+
+(state.powerups||[])
+.forEach(
 power=>{
 
+const x=
+power.x*CELL+
+CELL/2;
+
+const y=
+power.y*CELL+
+CELL/2;
+
+
 ctx.fillStyle=
-powerColors[power.type]||
-"white";
+colors[
+power.type
+];
+
 
 ctx.shadowColor=
 ctx.fillStyle;
 
-ctx.shadowBlur=12;
+ctx.shadowBlur=15;
+
 
 ctx.beginPath();
 
 ctx.arc(
-power.x*20+10,
-power.y*20+10,
-8,
+x,
+y,
+CELL*.38,
 0,
 Math.PI*2
 );
@@ -1269,18 +1619,24 @@ ctx.fill();
 
 ctx.shadowBlur=0;
 
-ctx.font="13px Arial";
 
-ctx.textAlign="center";
+ctx.font=
+"14px Arial";
 
-ctx.textBaseline="middle";
+ctx.textAlign=
+"center";
 
-ctx.fillStyle="#000";
+ctx.textBaseline=
+"middle";
+
+ctx.fillStyle="#06120a";
 
 ctx.fillText(
-powerIcons[power.type],
-power.x*20+10,
-power.y*20+10
+icons[
+power.type
+],
+x,
+y
 );
 
 }
@@ -1293,11 +1649,13 @@ power.y*20+10
 
 Object.values(
 state.players||{}
-).forEach(
+)
+.forEach(
 player=>{
 
 if(!player.snake)
 return;
+
 
 player.snake.forEach(
 (part,index)=>{
@@ -1305,33 +1663,46 @@ player.snake.forEach(
 let color=
 player.color;
 
-if(player.id===myId){
 
-color="#55ff83";
+if(
+player.id===myId
+){
 
-if(boostLocal){
-color="#63aaff";
+color=
+"#55ff83";
+
+if(
+player.boost>0
+){
+
+color=
+"#5aaeff";
+
 }
 
 }
 
-ctx.fillStyle=color;
 
-ctx.shadowColor=color;
+ctx.fillStyle=
+color;
+
+ctx.shadowColor=
+color;
 
 ctx.shadowBlur=
 index===0
-?16
-:4;
+?18
+:5;
+
 
 ctx.beginPath();
 
 ctx.roundRect(
-part.x*20+2,
-part.y*20+2,
-16,
-16,
-5
+part.x*CELL+2,
+part.y*CELL+2,
+CELL-4,
+CELL-4,
+6
 );
 
 ctx.fill();
@@ -1345,31 +1716,60 @@ ctx.shadowBlur=0;
 
 if(index===0){
 
-ctx.fillStyle="#06120a";
+ctx.fillStyle=
+"#06120a";
+
 
 ctx.beginPath();
 
 ctx.arc(
-part.x*20+7,
-part.y*20+7,
-2,
+part.x*CELL+6,
+part.y*CELL+6,
+2.5,
 0,
 Math.PI*2
 );
 
 ctx.fill();
 
+
 ctx.beginPath();
 
 ctx.arc(
-part.x*20+13,
-part.y*20+7,
-2,
+part.x*CELL+14,
+part.y*CELL+6,
+2.5,
 0,
 Math.PI*2
 );
 
 ctx.fill();
+
+
+/*
+    shield ring
+*/
+
+if(player.shield){
+
+ctx.strokeStyle=
+"#b65cff";
+
+ctx.lineWidth=3;
+
+ctx.beginPath();
+
+ctx.arc(
+part.x*CELL+10,
+part.y*CELL+10,
+13,
+0,
+Math.PI*2
+);
+
+ctx.stroke();
+
+}
 
 }
 
@@ -1381,23 +1781,16 @@ ctx.fill();
 
 ctx.restore();
 
-
-/*
-    Kaamera liikumine
-*/
-
-requestAnimationFrame(
-draw
-);
-
 }
 
 
-/* ================================
-   START
-================================ */
+/* =========================
+START
+========================= */
 
 connect();
+
+draw();
 
 </script>
 
