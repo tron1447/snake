@@ -2,268 +2,305 @@
 <html lang="et">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Snake Online 2.0 🐍</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0,user-scalable=no">
+
+<title>Snake Online 🐍</title>
 
 <style>
 *{
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:none;
 }
 
-body{
-margin:0;
-min-height:100vh;
-background:
-radial-gradient(circle at top,#174d28,#06100a 55%,#020403);
-font-family:Arial,sans-serif;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#020603;
+    color:white;
+    font-family:Arial,sans-serif;
 }
 
-.app{
-width:min(95vw,760px);
-padding:15px;
-text-align:center;
+#game{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    display:block;
+    background:#06120a;
+}
+
+#ui{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+}
+
+.top{
+    position:absolute;
+    top:12px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:8px;
+    z-index:5;
+}
+
+.box{
+    background:rgba(5,15,8,.82);
+    border:1px solid rgba(80,255,130,.35);
+    backdrop-filter:blur(8px);
+    border-radius:14px;
+    padding:8px 13px;
+    min-width:85px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,.35);
+}
+
+.box small{
+    display:block;
+    color:#8ca893;
+    font-size:11px;
+}
+
+.box b{
+    font-size:18px;
+}
+
+#menu{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(28,100,48,.35),
+            rgba(0,0,0,.96)
+        );
+    z-index:20;
+}
+
+.menuCard{
+    width:min(92vw,430px);
+    background:rgba(8,22,12,.97);
+    border:1px solid #2d7344;
+    border-radius:24px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 20px 80px rgba(0,0,0,.65);
 }
 
 h1{
-font-size:clamp(38px,9vw,65px);
-margin:5px 0 15px;
-text-shadow:0 0 25px #35ff76;
-}
-
-.card{
-background:rgba(10,25,15,.96);
-border:1px solid #2a6840;
-border-radius:20px;
-padding:18px;
-margin-bottom:15px;
-box-shadow:0 15px 50px rgba(0,0,0,.4);
+    font-size:clamp(42px,11vw,68px);
+    margin:0 0 18px;
+    color:#63ff92;
+    text-shadow:
+        0 0 15px #38ff70,
+        0 0 40px rgba(56,255,112,.5);
 }
 
 input,select{
-width:100%;
-padding:14px;
-margin:5px 0;
-border-radius:12px;
-border:1px solid #2c593a;
-background:#061009;
-color:white;
-font-size:18px;
-text-align:center;
+    width:100%;
+    padding:15px;
+    margin:6px 0;
+    border-radius:13px;
+    border:1px solid #285c39;
+    outline:none;
+    background:#061009;
+    color:white;
+    font-size:18px;
+    text-align:center;
 }
 
 button{
-border:0;
-border-radius:12px;
-padding:14px;
-font-size:17px;
-font-weight:bold;
-cursor:pointer;
-transition:.15s;
-}
-
-button:hover{
-transform:translateY(-2px);
-}
-
-button:active{
-transform:scale(.95);
+    width:100%;
+    border:0;
+    border-radius:13px;
+    padding:15px;
+    margin-top:8px;
+    font-size:18px;
+    font-weight:bold;
 }
 
 .create{
-width:100%;
-background:#39df70;
-color:#031008;
-margin-top:8px;
+    background:#39df70;
+    color:#031008;
 }
 
 .join{
-width:100%;
-background:#3f91ff;
-color:white;
-margin-top:8px;
-}
-
-.shopBtn{
-width:100%;
-background:#f4b72f;
-color:#151000;
-margin-top:8px;
+    background:#398fff;
+    color:white;
 }
 
 #connection{
-margin-top:12px;
-font-size:14px;
-color:#aaa;
+    margin-top:12px;
+    color:#aaa;
+    font-size:14px;
 }
 
-.room{
-display:none;
+#room{
+    display:none;
 }
 
-.modeName{
-font-size:24px;
-font-weight:bold;
-margin:4px;
+.roomCode{
+    color:#65ff98;
+    font-size:32px;
+    font-weight:bold;
+    letter-spacing:6px;
 }
 
-.code{
-font-size:38px;
-font-weight:bold;
-letter-spacing:7px;
-color:#62ff98;
-text-shadow:0 0 18px rgba(98,255,152,.5);
+#players{
+    margin-top:8px;
+    color:#aaa;
 }
 
-.players{
-display:flex;
-justify-content:center;
-gap:8px;
-flex-wrap:wrap;
-margin-top:12px;
-}
-
-.player{
-padding:8px 12px;
-border-radius:10px;
-background:#14291b;
-}
-
-#status{
-margin-top:12px;
-color:#bbb;
-}
-
-.stats{
-display:flex;
-justify-content:space-around;
-gap:8px;
-margin-bottom:12px;
-}
-
-.stat{
-flex:1;
-background:#102318;
-border-radius:12px;
-padding:9px;
-}
-
-.stat b{
-display:block;
-font-size:20px;
-}
-
-canvas{
-display:block;
-width:100%;
-aspect-ratio:1;
-background:#06120a;
-border:4px solid #35dc6d;
-border-radius:20px;
-box-shadow:0 0 35px rgba(53,220,109,.2);
+#message{
+    margin-top:8px;
+    color:#b8c8bb;
 }
 
 .controls{
-display:grid;
-grid-template-columns:70px 70px 70px;
-grid-template-rows:70px 70px;
-justify-content:center;
-gap:8px;
-margin-top:15px;
+    position:absolute;
+    left:20px;
+    bottom:25px;
+    width:170px;
+    height:170px;
+    pointer-events:auto;
 }
 
-.controls button{
-background:#173923;
-color:white;
-font-size:27px;
-border:1px solid #326845;
+.control{
+    position:absolute;
+    width:58px;
+    height:58px;
+    border-radius:18px;
+    border:1px solid rgba(120,255,160,.25);
+    background:rgba(16,48,26,.78);
+    color:white;
+    font-size:27px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    user-select:none;
+    box-shadow:0 5px 20px rgba(0,0,0,.3);
+}
+
+.control:active{
+    background:rgba(45,120,65,.9);
+    transform:scale(.92);
 }
 
 .up{
-grid-column:2;
+    top:0;
+    left:56px;
 }
 
 .left{
-grid-column:1;
-grid-row:2;
+    top:56px;
+    left:0;
 }
 
 .down{
-grid-column:2;
-grid-row:2;
+    top:112px;
+    left:56px;
 }
 
 .right{
-grid-column:3;
-grid-row:2;
+    top:56px;
+    left:112px;
 }
 
-.overlay{
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.75);
-justify-content:center;
-align-items:center;
-z-index:10;
-padding:20px;
+#boost{
+    position:absolute;
+    right:20px;
+    bottom:35px;
+    width:85px;
+    height:85px;
+    border-radius:50%;
+    pointer-events:auto;
+    background:rgba(40,120,255,.75);
+    border:2px solid #68b1ff;
+    color:white;
+    font-size:28px;
+    box-shadow:0 0 25px rgba(50,140,255,.45);
 }
 
-.modal{
-width:min(92vw,450px);
-background:#0d2114;
-border:1px solid #3b8b53;
-border-radius:20px;
-padding:25px;
+#boost:active{
+    transform:scale(.9);
 }
 
-.modal h2{
-font-size:32px;
-margin-top:0;
+#death{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:30;
+    background:rgba(0,0,0,.7);
+    align-items:center;
+    justify-content:center;
+    text-align:center;
 }
 
-.skin{
-padding:12px;
-margin:6px 0;
-border-radius:10px;
-background:#162d1d;
-cursor:pointer;
+.deathCard{
+    background:#101811;
+    border:1px solid #3c7149;
+    padding:30px;
+    border-radius:22px;
 }
 
-.skin.selected{
-outline:3px solid #fff;
+.deathCard h2{
+    font-size:38px;
+    margin:0 0 10px;
 }
 
-.close{
-width:100%;
-margin-top:12px;
-background:#35dc6d;
+#loading{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    background:#020603;
+    font-size:25px;
 }
 
-@media(min-width:700px){
-.controls{
-display:none;
-}
+@media(min-width:800px){
+
+    .controls{
+        opacity:.65;
+    }
+
+    #boost{
+        opacity:.65;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<canvas id="game"></canvas>
 
-<h1>🐍 SNAKE ONLINE</h1>
+<div id="loading">
+    🐍 Ühendan serveriga...
+</div>
 
-<div class="card" id="menu">
+
+<div id="menu">
+
+<div class="menuCard">
+
+<h1>🐍</h1>
+
+<h2> SNAKE ONLINE</h2>
 
 <input
-id="name"
-maxlength="12"
-placeholder="Sinu nimi">
+    id="name"
+    maxlength="12"
+    placeholder="Sinu nimi">
 
 <select id="mode">
 
@@ -290,157 +327,137 @@ placeholder="Sinu nimi">
 </select>
 
 <button
-class="create"
-onclick="createRoom()">
-🟢 LOO TUBA
+    class="create"
+    onclick="createRoom()">
+    🟢 LOO TUBA
 </button>
 
 <input
-id="roomInput"
-maxlength="6"
-placeholder="ROOM CODE">
+    id="roomInput"
+    maxlength="6"
+    placeholder="ROOM CODE">
 
 <button
-class="join"
-onclick="joinRoom()">
-🔵 LIITU TUPA
-</button>
-
-<button
-class="shopBtn"
-onclick="openShop()">
-🛒 SKINID
+    class="join"
+    onclick="joinRoom()">
+    🔵 LIITU TUPA
 </button>
 
 <div id="connection">
-🟡 Ühendan serveriga...
+🟡 Ühendan...
 </div>
 
-</div>
-
-
-<div class="card room" id="room">
-
-<div class="modeName" id="modeName">
-Classic
-</div>
-
-<div>
-ROOM CODE
-</div>
-
-<div class="code" id="code">
-------
-</div>
-
-<div class="players" id="players"></div>
-
-<div id="status">
-Ootan mängijaid...
 </div>
 
 </div>
 
 
-<div class="stats">
+<div id="ui">
 
-<div class="stat">
-Score
+<div class="top">
+
+<div class="box">
+<small>SCORE</small>
 <b id="score">0</b>
 </div>
 
-<div class="stat">
-🪙 Coins
+<div class="box">
+<small>🪙</small>
 <b id="coins">0</b>
 </div>
 
-<div class="stat">
-🛡️ Shield
-<b id="shield">OFF</b>
+<div class="box">
+<small>🏆</small>
+<b id="playersCount">0</b>
 </div>
 
 </div>
 
 
-<canvas
-id="game"
-width="600"
-height="600">
-</canvas>
+<div
+    id="room"
+    class="box"
+    style="
+        position:absolute;
+        top:75px;
+        left:50%;
+        transform:translateX(-50%);
+        text-align:center;
+    ">
+
+<div style="font-size:10px;color:#8ca893">
+ROOM
+</div>
+
+<div
+    id="roomCode"
+    class="roomCode">
+------
+</div>
+
+<div id="players">
+</div>
+
+<div id="message">
+</div>
+
+</div>
 
 
 <div class="controls">
 
-<button
-class="up"
-onclick="sendDirection('up')">
+<div
+    class="control up"
+    ontouchstart="control('up')"
+    onclick="control('up')">
 ⬆️
-</button>
+</div>
 
-<button
-class="left"
-onclick="sendDirection('left')">
+<div
+    class="control left"
+    ontouchstart="control('left')"
+    onclick="control('left')">
 ⬅️
-</button>
+</div>
 
-<button
-class="down"
-onclick="sendDirection('down')">
+<div
+    class="control down"
+    ontouchstart="control('down')"
+    onclick="control('down')">
 ⬇️
-</button>
+</div>
 
-<button
-class="right"
-onclick="sendDirection('right')">
+<div
+    class="control right"
+    ontouchstart="control('right')"
+    onclick="control('right')">
 ➡️
-</button>
-
 </div>
 
 </div>
 
-
-<div class="overlay" id="shop">
-
-<div class="modal">
-
-<h2>🎨 Skinid</h2>
-
-<div
-class="skin selected"
-onclick="selectSkin('#43ff72',this)">
-🟢 Green
-</div>
-
-<div
-class="skin"
-onclick="selectSkin('#45a5ff',this)">
-🔵 Blue
-</div>
-
-<div
-class="skin"
-onclick="selectSkin('#ff4fd8',this)">
-🩷 Pink
-</div>
-
-<div
-class="skin"
-onclick="selectSkin('#ffd43b',this)">
-🟡 Gold
-</div>
-
-<div
-class="skin"
-onclick="selectSkin('#b45cff',this)">
-🟣 Purple
-</div>
 
 <button
-class="close"
-onclick="closeShop()">
-SULGE
+    id="boost"
+    ontouchstart="boost()"
+    onclick="boost()">
+⚡
 </button>
+
+</div>
+
+
+<div id="death">
+
+<div class="deathCard">
+
+<h2>💀 OOPS!</h2>
+
+<p>Su uss sai pihta.</p>
+
+<p id="respawnText">
+Respawn...
+</p>
 
 </div>
 
@@ -452,110 +469,133 @@ SULGE
 const SERVER_URL =
 "wss://snake-riu3.onrender.com";
 
+
+/* ================================
+   CANVAS
+================================ */
+
 const canvas =
 document.getElementById("game");
 
 const ctx =
 canvas.getContext("2d");
 
+let W=innerWidth;
+let H=innerHeight;
+
+function resize(){
+
+W=innerWidth;
+H=innerHeight;
+
+const dpr=
+Math.min(devicePixelRatio||1,2);
+
+canvas.width=
+Math.floor(W*dpr);
+
+canvas.height=
+Math.floor(H*dpr);
+
+canvas.style.width=W+"px";
+canvas.style.height=H+"px";
+
+ctx.setTransform(
+dpr,0,0,dpr,0,0
+);
+
+}
+
+addEventListener(
+"resize",
+resize
+);
+
+resize();
+
+
+/* ================================
+   MÄNG
+================================ */
+
 let socket=null;
 let myId=null;
 let roomCode=null;
-
-let selectedSkin="#43ff72";
 
 let state={
 players:{},
 food:[],
 powerups:[],
 walls:[],
-width:30,
-height:30,
-mode:"classic"
+width:100,
+height:100
 };
 
+let boostLocal=false;
 
-/* =========================
-ÜHENDUS
-========================= */
+
+/* ================================
+   SERVER
+================================ */
 
 function connect(){
 
-if(
-socket &&
-(
-socket.readyState===WebSocket.OPEN ||
-socket.readyState===WebSocket.CONNECTING
-)
-)return;
-
-setConnection(
-"🟡 Ühendan serveriga..."
+socket=
+new WebSocket(
+SERVER_URL
 );
-
-socket=new WebSocket(SERVER_URL);
 
 socket.onopen=()=>{
-setConnection(
-"🟢 Serveriga ühendatud!"
-);
+
+document.getElementById(
+"loading"
+).style.display="none";
+
+document.getElementById(
+"connection"
+).textContent=
+"🟢 Serveriga ühendatud!";
+
 };
 
-socket.onmessage=(event)=>{
+socket.onmessage=e=>{
 
 let data;
 
 try{
-data=JSON.parse(event.data);
+data=JSON.parse(e.data);
 }catch{
 return;
 }
 
-handleMessage(data);
-
-};
-
-socket.onerror=()=>{
-setConnection(
-"🔴 Serveri ühenduse viga"
-);
-};
-
-socket.onclose=()=>{
-setConnection(
-"🔴 Serveriga ühendus katkes"
-);
-};
-
-}
-
-
-/* =========================
-SÕNUMID
-========================= */
-
-function handleMessage(data){
-
 if(data.type==="connected"){
+
 myId=data.id;
+
 }
 
 if(data.type==="roomCreated"){
+
 roomCode=data.room;
-showRoom(data.mode);
+
+showRoom();
+
 }
 
 if(data.type==="roomJoined"){
+
 roomCode=data.room;
-showRoom(data.mode);
+
+showRoom();
+
 }
 
 if(data.type==="state"){
 
 state=data.state;
 
-updatePlayers();
-updateStats();
+updateUI();
+
 draw();
 
 }
@@ -563,7 +603,7 @@ draw();
 if(data.type==="start"){
 
 document.getElementById(
-"status"
+"message"
 ).textContent=
 "🔥 MÄNG ALGAS!";
 
@@ -571,16 +611,10 @@ document.getElementById(
 
 if(data.type==="winner"){
 
-if(data.winner){
-
 alert(
 "🏆 Võitja: "+
-data.winner.name+
-"\nScore: "+
-data.winner.score
+(data.winner?.name||"???")
 );
-
-}
 
 }
 
@@ -590,142 +624,32 @@ alert(data.message);
 
 }
 
-}
+};
 
+socket.onerror=()=>{
 
-/* =========================
-LOO TUBA
-========================= */
-
-function createRoom(){
-
-const name=
 document.getElementById(
-"name"
-).value.trim();
+"connection"
+).textContent=
+"🔴 Serveriga ühendus ebaõnnestus";
 
-const mode=
+};
+
+socket.onclose=()=>{
+
 document.getElementById(
-"mode"
-).value;
+"connection"
+).textContent=
+"🔴 Ühendus katkes";
 
-if(!name){
-
-alert(
-"Kirjuta oma nimi!"
-);
-
-return;
-
-}
-
-ensureConnection(()=>{
-
-send({
-type:"createRoom",
-name:name,
-mode:mode
-});
-
-});
+};
 
 }
 
 
-/* =========================
-LIITU
-========================= */
-
-function joinRoom(){
-
-const name=
-document.getElementById(
-"name"
-).value.trim();
-
-const room=
-document.getElementById(
-"roomInput"
-).value
-.trim()
-.toUpperCase();
-
-if(!name){
-
-alert(
-"Kirjuta oma nimi!"
-);
-
-return;
-
-}
-
-if(room.length!==6){
-
-alert(
-"Room Code peab olema 6 märki!"
-);
-
-return;
-
-}
-
-ensureConnection(()=>{
-
-send({
-type:"joinRoom",
-name:name,
-room:room
-});
-
-});
-
-}
-
-
-/* =========================
-ÜHENDUS
-========================= */
-
-function ensureConnection(callback){
-
-if(
-socket &&
-socket.readyState===WebSocket.OPEN
-){
-
-callback();
-return;
-
-}
-
-connect();
-
-const timer=setInterval(()=>{
-
-if(
-socket &&
-socket.readyState===WebSocket.OPEN
-){
-
-clearInterval(timer);
-
-callback();
-
-}
-
-},100);
-
-setTimeout(()=>{
-clearInterval(timer);
-},10000);
-
-}
-
-
-/* =========================
-SAADA
-========================= */
+/* ================================
+   SAADA
+================================ */
 
 function send(data){
 
@@ -743,29 +667,148 @@ JSON.stringify(data)
 }
 
 
-/* =========================
-LIIGU
-========================= */
+/* ================================
+   CREATE
+================================ */
 
-function sendDirection(direction){
+function createRoom(){
+
+const name=
+document.getElementById(
+"name"
+).value.trim();
+
+const mode=
+document.getElementById(
+"mode"
+).value;
+
+if(!name){
+
+alert("Kirjuta nimi!");
+
+return;
+
+}
 
 send({
-type:"direction",
-direction:direction
+type:"createRoom",
+name,
+mode
 });
 
 }
 
 
-/* =========================
-KLAVIATUUR
-========================= */
+/* ================================
+   JOIN
+================================ */
 
-document.addEventListener(
+function joinRoom(){
+
+const name=
+document.getElementById(
+"name"
+).value.trim();
+
+const room=
+document.getElementById(
+"roomInput"
+).value
+.trim()
+.toUpperCase();
+
+if(!name){
+
+alert("Kirjuta nimi!");
+
+return;
+
+}
+
+if(room.length!==6){
+
+alert(
+"Room Code peab olema 6 märki!"
+);
+
+return;
+
+}
+
+send({
+type:"joinRoom",
+name,
+room
+});
+
+}
+
+
+/* ================================
+   ROOM
+================================ */
+
+function showRoom(){
+
+document.getElementById(
+"menu"
+).style.display="none";
+
+document.getElementById(
+"room"
+).style.display="block";
+
+document.getElementById(
+"roomCode"
+).textContent=
+roomCode;
+
+}
+
+
+/* ================================
+   CONTROLS
+================================ */
+
+function control(direction){
+
+send({
+type:"direction",
+direction
+});
+
+}
+
+
+/* ================================
+   BOOST
+================================ */
+
+function boost(){
+
+boostLocal=true;
+
+setTimeout(()=>{
+boostLocal=false;
+},500);
+
+send({
+type:"boost"
+});
+
+}
+
+
+/* ================================
+   KEYBOARD
+================================ */
+
+addEventListener(
 "keydown",
-event=>{
+e=>{
 
-const keys={
+const map={
 
 ArrowUp:"up",
 w:"up",
@@ -785,14 +828,19 @@ D:"right"
 
 };
 
-const direction=
-keys[event.key];
+if(map[e.key]){
 
-if(direction){
+e.preventDefault();
 
-event.preventDefault();
+control(
+map[e.key]
+);
 
-sendDirection(direction);
+}
+
+if(e.code==="Space"){
+
+boost();
 
 }
 
@@ -800,97 +848,16 @@ sendDirection(direction);
 );
 
 
-/* =========================
-ROOM
-========================= */
+/* ================================
+   UI
+================================ */
 
-function showRoom(mode){
-
-document.getElementById(
-"menu"
-).style.display="none";
-
-document.getElementById(
-"room"
-).style.display="block";
-
-document.getElementById(
-"code"
-).textContent=
-roomCode;
-
-const names={
-classic:"🍎 CLASSIC",
-battle:"⚔️ BATTLE",
-power:"⚡ POWER RUSH",
-maze:"🧱 MAZE",
-last:"💀 LAST SNAKE"
-};
-
-document.getElementById(
-"modeName"
-).textContent=
-names[mode] || mode;
-
-}
-
-
-/* =========================
-PLAYERS
-========================= */
-
-function updatePlayers(){
-
-const container=
-document.getElementById(
-"players"
-);
-
-container.innerHTML="";
-
-Object.values(
-state.players || {}
-).forEach(player=>{
-
-const div=
-document.createElement("div");
-
-div.className="player";
-
-div.style.border=
-"2px solid "+
-player.color;
+function updateUI(){
 
 const me=
-player.id===myId
-?" ⭐"
-:"";
+state.players?.[myId];
 
-div.textContent=
-"🐍 "+
-player.name+
-me+
-" • "+
-player.score;
-
-container.appendChild(div);
-
-});
-
-}
-
-
-/* =========================
-STATS
-========================= */
-
-function updateStats(){
-
-const me=
-state.players &&
-state.players[myId];
-
-if(!me)return;
+if(me){
 
 document.getElementById(
 "score"
@@ -902,62 +869,264 @@ document.getElementById(
 ).textContent=
 me.coins;
 
+}
+
+const players=
+Object.values(
+state.players||{}
+);
+
 document.getElementById(
-"shield"
+"playersCount"
 ).textContent=
-me.shield
-?"ON"
-:"OFF";
+players.length;
+
+document.getElementById(
+"players"
+).textContent=
+players
+.map(p=>
+"🐍 "+
+p.name+
+" "+p.score
+)
+.join(" • ");
+
+if(
+me &&
+!me.alive
+){
+
+document.getElementById(
+"death"
+).style.display=
+"flex";
+
+document.getElementById(
+"respawnText"
+).textContent=
+me.respawnTimer>0
+? "Respawn..."
+: "Väljas";
+
+}else{
+
+document.getElementById(
+"death"
+).style.display=
+"none";
+
+}
 
 }
 
 
-/* =========================
-JOONISTA
-========================= */
+/* ================================
+   KAAMERA
+================================ */
+
+function getCamera(){
+
+const me=
+state.players?.[myId];
+
+if(
+!me ||
+!me.snake ||
+!me.snake.length
+){
+
+return {
+x:0,
+y:0,
+zoom:1
+};
+
+}
+
+const head=
+me.snake[0];
+
+const worldW=
+state.width*20;
+
+const worldH=
+state.height*20;
+
+
+/*
+    Kaamera sihtpunkt
+    on sinu pea.
+*/
+
+let cameraX=
+head.x*20 -
+W/2;
+
+let cameraY=
+head.y*20 -
+H/2;
+
+
+/*
+    Kaamera ei lähe maailmast välja.
+*/
+
+cameraX=
+Math.max(
+0,
+Math.min(
+cameraX,
+worldW-W
+)
+);
+
+cameraY=
+Math.max(
+0,
+Math.min(
+cameraY,
+worldH-H
+)
+);
+
+
+/*
+    Kui mängija liigub,
+    kaamera liigub sujuvalt.
+*/
+
+if(
+!window.cam
+){
+
+window.cam={
+x:cameraX,
+y:cameraY
+};
+
+}
+
+window.cam.x +=
+(cameraX-window.cam.x)*0.12;
+
+window.cam.y +=
+(cameraY-window.cam.y)*0.12;
+
+
+/*
+    Suurem uss =
+    natuke rohkem välja zoom.
+*/
+
+const length=
+me.snake.length;
+
+let zoom=1;
+
+if(length>15)
+zoom=.92;
+
+if(length>30)
+zoom=.84;
+
+if(length>50)
+zoom=.76;
+
+return {
+x:window.cam.x,
+y:window.cam.y,
+zoom
+};
+
+}
+
+
+/* ================================
+   DRAW
+================================ */
 
 function draw(){
 
-const width=
-state.width || 30;
+ctx.clearRect(
+0,
+0,
+W,
+H
+);
 
-const height=
-state.height || 30;
+const camera=
+getCamera();
 
-const cell=
-600/width;
+ctx.save();
 
-ctx.fillStyle="#06120a";
+ctx.translate(
+-W*(camera.zoom-1)/2,
+-H*(camera.zoom-1)/2
+);
+
+ctx.scale(
+camera.zoom,
+camera.zoom
+);
+
+ctx.translate(
+-camera.x,
+-camera.y
+);
+
+
+/*
+    MAAILMA SUURUS
+*/
+
+const worldW=
+state.width*20;
+
+const worldH=
+state.height*20;
+
+
+/*
+    TAUST
+*/
+
+ctx.fillStyle=
+"#07150c";
 
 ctx.fillRect(
 0,
 0,
-600,
-600
+worldW,
+worldH
 );
 
 
-/* GRID */
+/*
+    GRIDI
+*/
 
 ctx.strokeStyle=
-"rgba(100,230,130,.06)";
+"rgba(80,220,120,.07)";
+
+ctx.lineWidth=1;
 
 for(
 let x=0;
-x<=width;
+x<=state.width;
 x++
 ){
 
 ctx.beginPath();
 
 ctx.moveTo(
-x*cell,
+x*20,
 0
 );
 
 ctx.lineTo(
-x*cell,
-600
+x*20,
+worldH
 );
 
 ctx.stroke();
@@ -966,7 +1135,7 @@ ctx.stroke();
 
 for(
 let y=0;
-y<=height;
+y<=state.height;
 y++
 ){
 
@@ -974,12 +1143,12 @@ ctx.beginPath();
 
 ctx.moveTo(
 0,
-y*cell
+y*20
 );
 
 ctx.lineTo(
-600,
-y*cell
+worldW,
+y*20
 );
 
 ctx.stroke();
@@ -987,38 +1156,65 @@ ctx.stroke();
 }
 
 
-/* WALLS */
+/*
+    ÄÄR
+*/
 
-(state.walls||[]).forEach(wall=>{
+ctx.strokeStyle=
+"#38df70";
 
-ctx.fillStyle="#33413a";
+ctx.lineWidth=8;
 
-ctx.fillRect(
-wall.x*cell+1,
-wall.y*cell+1,
-cell-2,
-cell-2
+ctx.strokeRect(
+0,
+0,
+worldW,
+worldH
 );
 
-});
+
+/*
+    WALLS
+*/
+
+(state.walls||[]).forEach(
+wall=>{
+
+ctx.fillStyle=
+"#39453d";
+
+ctx.fillRect(
+wall.x*20,
+wall.y*20,
+20,
+20
+);
+
+}
+);
 
 
-/* FOOD */
+/*
+    FOOD
+*/
 
-(state.food||[]).forEach(food=>{
+(state.food||[]).forEach(
+food=>{
 
-ctx.shadowColor="#ff3155";
+ctx.shadowColor=
+"#ff3155";
 
-ctx.shadowBlur=20;
+ctx.shadowBlur=18;
 
-ctx.fillStyle="#ff3155";
+ctx.fillStyle=
+"#ff3155";
 
 ctx.beginPath();
 
 ctx.arc(
-food.x*cell+cell/2,
-food.y*cell+cell/2,
-cell*.3,
+food.x*20+10,
+food.y*20+10,
+6,
 0,
 Math.PI*2
 );
@@ -1027,66 +1223,81 @@ ctx.fill();
 
 ctx.shadowBlur=0;
 
-});
+}
+);
 
 
-/* POWERUPS */
+/*
+    POWERUPS
+*/
 
-(state.powerups||[]).forEach(power=>{
-
-const colors={
-speed:"#48a8ff",
-shield:"#a65cff",
+const powerColors={
+speed:"#4ba8ff",
+shield:"#b25cff",
 coin:"#ffd43b"
 };
 
-const symbols={
+const powerIcons={
 speed:"⚡",
 shield:"🛡️",
 coin:"🪙"
 };
 
+(state.powerups||[]).forEach(
+power=>{
+
 ctx.fillStyle=
-colors[power.type] ||
+powerColors[power.type]||
 "white";
+
+ctx.shadowColor=
+ctx.fillStyle;
+
+ctx.shadowBlur=12;
 
 ctx.beginPath();
 
 ctx.arc(
-power.x*cell+cell/2,
-power.y*cell+cell/2,
-cell*.35,
+power.x*20+10,
+power.y*20+10,
+8,
 0,
 Math.PI*2
 );
 
 ctx.fill();
 
-ctx.fillStyle="#06120a";
+ctx.shadowBlur=0;
 
-ctx.font=
-`${cell*.55}px Arial`;
+ctx.font="13px Arial";
 
 ctx.textAlign="center";
 
 ctx.textBaseline="middle";
 
+ctx.fillStyle="#000";
+
 ctx.fillText(
-symbols[power.type],
-power.x*cell+cell/2,
-power.y*cell+cell/2
+powerIcons[power.type],
+power.x*20+10,
+power.y*20+10
 );
 
-});
+}
+);
 
 
-/* SNAKES */
+/*
+    SNAKES
+*/
 
 Object.values(
 state.players||{}
-).forEach(player=>{
+).forEach(
+player=>{
 
-if(!player.snake)return;
+if(!player.snake)
+return;
 
 player.snake.forEach(
 (part,index)=>{
@@ -1095,7 +1306,13 @@ let color=
 player.color;
 
 if(player.id===myId){
-color=selectedSkin;
+
+color="#55ff83";
+
+if(boostLocal){
+color="#63aaff";
+}
+
 }
 
 ctx.fillStyle=color;
@@ -1104,17 +1321,17 @@ ctx.shadowColor=color;
 
 ctx.shadowBlur=
 index===0
-?14
+?16
 :4;
 
 ctx.beginPath();
 
 ctx.roundRect(
-part.x*cell+2,
-part.y*cell+2,
-cell-4,
-cell-4,
-Math.max(4,cell*.2)
+part.x*20+2,
+part.y*20+2,
+16,
+16,
+5
 );
 
 ctx.fill();
@@ -1122,7 +1339,9 @@ ctx.fill();
 ctx.shadowBlur=0;
 
 
-/* silmad */
+/*
+    silmad
+*/
 
 if(index===0){
 
@@ -1131,9 +1350,9 @@ ctx.fillStyle="#06120a";
 ctx.beginPath();
 
 ctx.arc(
-part.x*cell+cell*.35,
-part.y*cell+cell*.32,
-cell*.08,
+part.x*20+7,
+part.y*20+7,
+2,
 0,
 Math.PI*2
 );
@@ -1143,9 +1362,9 @@ ctx.fill();
 ctx.beginPath();
 
 ctx.arc(
-part.x*cell+cell*.65,
-part.y*cell+cell*.32,
-cell*.08,
+part.x*20+13,
+part.y*20+7,
+2,
 0,
 Math.PI*2
 );
@@ -1159,68 +1378,24 @@ ctx.fill();
 
 });
 
-}
+
+ctx.restore();
 
 
-/* =========================
-SHOP
-========================= */
+/*
+    Kaamera liikumine
+*/
 
-function openShop(){
-
-document.getElementById(
-"shop"
-).style.display="flex";
-
-}
-
-function closeShop(){
-
-document.getElementById(
-"shop"
-).style.display="none";
-
-}
-
-function selectSkin(color,element){
-
-selectedSkin=color;
-
-document.querySelectorAll(
-".skin"
-).forEach(el=>{
-el.classList.remove(
-"selected"
-);
-});
-
-element.classList.add(
-"selected"
+requestAnimationFrame(
+draw
 );
 
-draw();
-
 }
 
 
-/* =========================
-STATUS
-========================= */
-
-function setConnection(text){
-
-document.getElementById(
-"connection"
-).textContent=text;
-
-}
-
-
-/* =========================
-START
-========================= */
-
-draw();
+/* ================================
+   START
+================================ */
 
 connect();
 
