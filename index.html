@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="et">
-
 <head>
 
 <meta charset="UTF-8">
 
 <meta
 name="viewport"
-content="width=device-width,initial-scale=1.0,user-scalable=no"
+content="width=device-width,initial-scale=1,user-scalable=no"
 >
 
-<title>Snake Arena 🐍</title>
+<title>Snake Arena</title>
 
 <style>
 
@@ -36,12 +35,10 @@ width:100%;
 height:100%;
 }
 
-#menu,
-#lobby{
-
+.screen{
 position:fixed;
 inset:0;
-z-index:20;
+z-index:50;
 
 display:flex;
 align-items:center;
@@ -49,43 +46,43 @@ justify-content:center;
 
 background:
 radial-gradient(
-circle,
-rgba(20,90,40,.65),
-rgba(0,0,0,.98)
+circle at center,
+#123c1d,
+#020604 70%
 );
-
 }
 
 .card{
-
-width:min(92vw,450px);
+width:min(92vw,470px);
 
 padding:30px;
 
 border-radius:28px;
 
 background:
-rgba(4,17,9,.97);
+rgba(4,15,8,.96);
 
 border:
-1px solid #39824d;
+1px solid #3cff72;
 
 box-shadow:
-0 30px 100px #000;
+0 0 80px rgba(50,255,100,.12);
 
 text-align:center;
-
 }
 
 .logo{
-font-size:80px;
-filter:drop-shadow(0 0 25px #45ff72);
+font-size:75px;
+filter:
+drop-shadow(0 0 25px #48ff7c);
 }
 
 h1{
-font-size:40px;
-color:#5cff8b;
 margin:5px 0 20px;
+
+font-size:40px;
+
+color:#5cff8b;
 }
 
 input,select{
@@ -98,7 +95,8 @@ margin:6px 0;
 
 border-radius:13px;
 
-border:1px solid #315f3d;
+border:
+1px solid #2b6239;
 
 background:#061008;
 
@@ -107,7 +105,6 @@ color:white;
 font-size:18px;
 
 text-align:center;
-
 }
 
 button{
@@ -127,125 +124,112 @@ font-size:18px;
 font-weight:bold;
 
 cursor:pointer;
-
 }
 
-.create{
-background:#43eb77;
+.green{
+background:#45ef78;
 color:#031008;
 }
 
-.join{
-background:#438eff;
+.blue{
+background:#438fff;
 color:white;
 }
 
-#status{
-margin-top:12px;
-color:#91a99a;
+.purple{
+background:#a44dff;
+color:white;
 }
 
-/* LOBBY */
+.red{
+background:#40171b;
+color:#ff8e95;
+}
+
+#status{
+margin-top:10px;
+color:#8ca596;
+}
+
+#skinPreview{
+
+height:75px;
+
+display:flex;
+
+align-items:center;
+justify-content:center;
+
+gap:10px;
+
+margin:10px;
+}
+
+.skin{
+
+width:42px;
+height:42px;
+
+border-radius:50%;
+
+border:3px solid transparent;
+
+cursor:pointer;
+
+transition:.2s;
+}
+
+.skin.selected{
+border-color:white;
+transform:scale(1.18);
+box-shadow:
+0 0 20px currentColor;
+}
 
 #lobby{
 display:none;
 }
 
-.lobbyCard{
+.roomCode{
 
-width:min(94vw,500px);
+font-size:52px;
 
-padding:30px;
-
-background:#06130a;
-
-border:
-1px solid #3c8150;
-
-border-radius:28px;
-
-text-align:center;
-
-}
-
-.roomTitle{
-font-size:32px;
-color:#62ff91;
-font-weight:bold;
-}
-
-#roomCodeBig{
-
-font-size:48px;
-
-letter-spacing:9px;
+letter-spacing:8px;
 
 color:#66ff98;
 
-margin:15px 0;
-
+margin:15px;
 }
 
-.copy{
+.playerRow{
 
-background:#183420;
+display:flex;
 
-color:#a8ffbb;
-
-}
-
-#lobbyPlayers{
-margin:15px 0;
-text-align:left;
-}
-
-.lobbyPlayer{
+align-items:center;
 
 padding:10px;
 
 margin:5px 0;
 
-background:#0b1e10;
-
 border-radius:12px;
 
-display:flex;
-gap:10px;
-align-items:center;
-
+background:#0b1d10;
 }
 
-.dot{
+.playerDot{
 
-width:14px;
-height:14px;
+width:15px;
+height:15px;
+
 border-radius:50%;
 
+margin-right:10px;
 }
 
 .host{
 margin-left:auto;
-color:#ffd85b;
-font-size:12px;
+color:#ffd95b;
 }
-
-#start{
-
-background:#45ee7b;
-color:#031008;
-
-font-size:20px;
-
-}
-
-#leave{
-
-background:#321519;
-color:#ff8990;
-
-}
-
-/* HUD */
 
 #hud{
 
@@ -256,40 +240,34 @@ left:50%;
 
 transform:translateX(-50%);
 
-z-index:10;
+z-index:20;
 
 display:flex;
 
 gap:7px;
 
 pointer-events:none;
-
 }
 
 .stat{
 
-padding:7px 14px;
-
 background:
-rgba(3,14,7,.82);
+rgba(3,15,7,.85);
 
 border:
-1px solid rgba(90,255,130,.3);
+1px solid rgba(100,255,140,.3);
 
 border-radius:12px;
 
-text-align:center;
+padding:7px 13px;
 
+text-align:center;
 }
 
 .stat small{
-
 display:block;
-
-font-size:10px;
-
-color:#91a695;
-
+font-size:9px;
+color:#91a497;
 }
 
 .stat b{
@@ -300,91 +278,72 @@ font-size:18px;
 
 position:fixed;
 
-top:12px;
 right:12px;
+top:12px;
 
-z-index:10;
+z-index:20;
 
-width:190px;
+width:200px;
 
 padding:12px;
 
+border-radius:16px;
+
 background:
-rgba(3,14,7,.82);
+rgba(3,15,7,.86);
 
 border:
-1px solid rgba(90,255,130,.3);
-
-border-radius:15px;
-
+1px solid rgba(100,255,140,.3);
 }
 
 #leaderboard h3{
-
 margin:0 0 8px;
-
-color:#68ff98;
-
-font-size:16px;
-
+color:#66ff98;
 }
 
 .rank{
-
 display:flex;
-
 justify-content:space-between;
-
 font-size:12px;
-
-padding:4px 0;
-
+padding:4px;
 }
-
-/* BOOST */
 
 #boost{
 
 position:fixed;
 
 right:25px;
-bottom:30px;
+bottom:28px;
 
-z-index:12;
+z-index:30;
 
-width:90px;
-height:90px;
+width:95px;
+height:95px;
 
 border-radius:50%;
 
 background:
 radial-gradient(
 circle,
-#4aa8ff,
-#12549d
+#54b4ff,
+#0e4d94
 );
 
 border:
-2px solid #8dceff;
+2px solid #9bd8ff;
 
 color:white;
 
-font-size:30px;
+font-size:28px;
 
 box-shadow:
-0 0 35px rgba(50,150,255,.5);
-
+0 0 35px rgba(50,150,255,.55);
 }
 
 #boost span{
-
 display:block;
-
 font-size:9px;
-
 }
-
-/* JOYSTICK */
 
 #joystick{
 
@@ -393,19 +352,18 @@ position:fixed;
 left:25px;
 bottom:25px;
 
+z-index:30;
+
 width:155px;
 height:155px;
-
-z-index:12;
 
 border-radius:50%;
 
 background:
-rgba(50,255,100,.08);
+rgba(60,255,110,.08);
 
 border:
-2px solid rgba(90,255,130,.2);
-
+2px solid rgba(100,255,140,.25);
 }
 
 #stick{
@@ -421,10 +379,85 @@ top:45px;
 border-radius:50%;
 
 background:
-rgba(70,255,120,.5);
+rgba(80,255,130,.5);
 
 border:
-2px solid #7dff9e;
+2px solid #8bffa8;
+}
+
+#powers{
+
+position:fixed;
+
+left:50%;
+bottom:15px;
+
+transform:translateX(-50%);
+
+z-index:25;
+
+display:flex;
+
+gap:7px;
+}
+
+.power{
+
+width:55px;
+height:55px;
+
+padding:0;
+
+border-radius:50%;
+
+font-size:22px;
+
+background:#122319;
+
+color:white;
+
+border:1px solid #4d8159;
+}
+
+#dead{
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+z-index:100;
+
+align-items:center;
+justify-content:center;
+
+background:
+rgba(0,0,0,.65);
+
+text-align:center;
+}
+
+.deadCard{
+
+background:#09150c;
+
+border:1px solid #48ff78;
+
+border-radius:25px;
+
+padding:30px;
+}
+
+@media(max-width:700px){
+
+#leaderboard{
+width:145px;
+}
+
+#powers{
+bottom:10px;
+}
 
 }
 
@@ -436,58 +469,7 @@ display:none;
 
 }
 
-@media(max-width:700px){
-
-#leaderboard{
-
-width:150px;
-
-font-size:11px;
-
-}
-
-.stat{
-padding:6px 9px;
-}
-
-}
-
-/* DEATH */
-
-#dead{
-
-display:none;
-
-position:fixed;
-
-inset:0;
-
-z-index:30;
-
-align-items:center;
-
-justify-content:center;
-
-background:rgba(0,0,0,.65);
-
-text-align:center;
-
-}
-
-.deadCard{
-
-padding:30px;
-
-border-radius:25px;
-
-background:#09150c;
-
-border:1px solid #39814d;
-
-}
-
 </style>
-
 </head>
 
 <body>
@@ -497,7 +479,7 @@ border:1px solid #39814d;
 
 <!-- MENU -->
 
-<div id="menu">
+<div id="menu" class="screen">
 
 <div class="card">
 
@@ -507,8 +489,8 @@ border:1px solid #39814d;
 
 <input
 id="name"
-maxlength="14"
 placeholder="Sinu nimi"
+maxlength="16"
 >
 
 <select id="mode">
@@ -527,28 +509,32 @@ placeholder="Sinu nimi"
 
 </select>
 
+<h3>🎨 Vali skin</h3>
+
+<div id="skinPreview"></div>
+
 <button
-class="create"
+class="green"
 onclick="createRoom()"
 >
-🟢 LOO TUBA
+🟢 LOO ROOM
 </button>
 
 <input
 id="room"
-maxlength="6"
 placeholder="ROOM CODE"
+maxlength="6"
 >
 
 <button
-class="join"
+class="blue"
 onclick="joinRoom()"
 >
-🔵 LIITU TUPA
+🔵 LIITU ROOMI
 </button>
 
 <div id="status">
-🟡 Ühendan...
+Ühendan serveriga...
 </div>
 
 </div>
@@ -558,44 +544,44 @@ onclick="joinRoom()"
 
 <!-- LOBBY -->
 
-<div id="lobby">
+<div id="lobby" class="screen">
 
-<div class="lobbyCard">
+<div class="card">
 
-<div class="roomTitle">
-🐍 SNAKE ROOM
-</div>
+<h1>🐍 ROOM</h1>
 
-<p>
-Jaga seda koodi sõpradega:
-</p>
+<p>Jaga sõpradega koodi:</p>
 
-<div id="roomCodeBig">
+<div
+id="roomCodeBig"
+class="roomCode"
+>
 ------
 </div>
 
 <button
-class="copy"
-onclick="copyCode()"
+class="purple"
+onclick="copyRoom()"
 >
 📋 KOPI KOOD
 </button>
 
-<div id="lobbyPlayers"></div>
+<div id="players"></div>
 
 <p id="waiting">
-⏳ Ootame mängijaid...
+Ootame mängijaid...
 </p>
 
 <button
 id="start"
+class="green"
 onclick="startGame()"
 >
 🚀 START GAME
 </button>
 
 <button
-id="leave"
+class="red"
 onclick="location.reload()"
 >
 ← LAHKU
@@ -614,9 +600,7 @@ onclick="location.reload()"
 
 <small>SCORE</small>
 
-<b id="score">
-0
-</b>
+<b id="score">0</b>
 
 </div>
 
@@ -624,9 +608,7 @@ onclick="location.reload()"
 
 <small>LENGTH</small>
 
-<b id="length">
-35
-</b>
+<b id="length">40</b>
 
 </div>
 
@@ -634,9 +616,7 @@ onclick="location.reload()"
 
 <small>RANK</small>
 
-<b id="rank">
--
-</b>
+<b id="rank">-</b>
 
 </div>
 
@@ -647,18 +627,40 @@ onclick="location.reload()"
 
 <div id="leaderboard">
 
-<h3>🏆 LEADERBOARD</h3>
+<h3>🏆 TOP 8</h3>
 
 <div id="board"></div>
 
 </div>
 
 
-<!-- JOYSTICK -->
+<!-- POWERS -->
 
-<div id="joystick">
+<div id="powers">
 
-<div id="stick"></div>
+<button
+class="power"
+onclick="usePower('shield')"
+title="Shield"
+>
+🛡️
+</button>
+
+<button
+class="power"
+onclick="usePower('magnet')"
+title="Magnet"
+>
+🧲
+</button>
+
+<button
+class="power"
+onclick="usePower('speed')"
+title="Speed"
+>
+⚡
+</button>
 
 </div>
 
@@ -676,6 +678,15 @@ BOOST
 </button>
 
 
+<!-- JOYSTICK -->
+
+<div id="joystick">
+
+<div id="stick"></div>
+
+</div>
+
+
 <!-- DEAD -->
 
 <div id="dead">
@@ -686,9 +697,7 @@ BOOST
 
 <h2>SAID PIHTA!</h2>
 
-<p>
-Respawn...
-</p>
+<p>Respawn...</p>
 
 </div>
 
@@ -700,34 +709,55 @@ Respawn...
 const SERVER =
 "wss://snake-riu3.onrender.com";
 
+const SKINS = [
+
+"#4dff75",
+"#42a5ff",
+"#ff4fd8",
+"#ffd43b",
+"#ff7043",
+"#b45cff",
+"#00e5ff",
+"#ff3d71",
+"#ffffff",
+"#8cff00",
+"#ff9f1c",
+"#00ffc8"
+
+];
+
+let selectedSkin =
+Number(
+localStorage.getItem(
+"snakeSkin"
+) || 0
+);
+
+let coins =
+Number(
+localStorage.getItem(
+"snakeCoins"
+) || 0
+);
+
 let ws;
-
 let myId=null;
-
 let roomCode=null;
-
 let host=false;
-
-let gameStarted=false;
+let started=false;
 
 let state={
-world:5000,
+world:8000,
 players:{},
 food:[]
 };
-
-const canvas =
-document.getElementById("game");
-
-const ctx =
-canvas.getContext("2d");
 
 let W=innerWidth;
 let H=innerHeight;
 
 let camera={
-x:2500,
-y:2500
+x:4000,
+y:4000
 };
 
 let mouse={
@@ -735,53 +765,77 @@ x:innerWidth/2,
 y:innerHeight/2
 };
 
-let boosting=false;
+let boost=false;
 
 
-/* RESIZE */
+/* SKINS */
 
-function resize(){
+function renderSkins(){
 
-W=innerWidth;
-H=innerHeight;
-
-canvas.width=W*devicePixelRatio;
-canvas.height=H*devicePixelRatio;
-
-canvas.style.width=W+"px";
-canvas.style.height=H+"px";
-
-ctx.setTransform(
-devicePixelRatio,
-0,
-0,
-devicePixelRatio,
-0,
-0
+const box=
+document.getElementById(
+"skinPreview"
 );
+
+box.innerHTML="";
+
+SKINS.forEach(
+(color,i)=>{
+
+const el=
+document.createElement(
+"div"
+);
+
+el.className=
+"skin";
+
+el.style.background=
+color;
+
+if(i===selectedSkin){
+el.classList.add(
+"selected"
+);
+}
+
+el.onclick=()=>{
+
+selectedSkin=i;
+
+localStorage.setItem(
+"snakeSkin",
+i
+);
+
+renderSkins();
+
+};
+
+box.appendChild(el);
+
+});
 
 }
 
-addEventListener(
-"resize",
-resize
-);
-
-resize();
+renderSkins();
 
 
 /* CONNECT */
 
 function connect(){
 
-ws=new WebSocket(SERVER);
+ws=
+new WebSocket(
+SERVER
+);
 
 ws.onopen=()=>{
 
 document.getElementById(
 "status"
 ).textContent=
-"🟢 Serveriga ühendatud";
+"🟢 Online";
 
 };
 
@@ -790,12 +844,16 @@ ws.onmessage=e=>{
 let data;
 
 try{
-data=JSON.parse(e.data);
-}catch{
+data=
+JSON.parse(e.data);
+}
+catch{
 return;
 }
 
-if(data.type==="connected"){
+if(
+data.type==="connected"
+){
 
 myId=data.id;
 
@@ -806,17 +864,22 @@ data.type==="roomCreated" ||
 data.type==="roomJoined"
 ){
 
-roomCode=data.room;
+roomCode=
+data.room;
 
-host=data.host;
+host=
+data.host;
 
 showLobby();
 
 }
 
-if(data.type==="lobby"){
+if(
+data.type==="lobby"
+){
 
-roomCode=data.room;
+roomCode=
+data.room;
 
 host=
 data.hostId===myId;
@@ -825,28 +888,36 @@ updateLobby(data);
 
 }
 
-if(data.type==="gameStarted"){
+if(
+data.type==="gameStarted"
+){
 
-gameStarted=true;
+started=true;
 
 document.getElementById(
 "lobby"
-).style.display="none";
+).style.display=
+"none";
 
 }
 
-if(data.type==="state"){
+if(
+data.type==="state"
+){
 
-state=data.state;
+state=
+data.state;
 
-gameStarted=
+started=
 data.state.started;
 
-updateGameUI();
+updateUI();
 
 }
 
-if(data.type==="error"){
+if(
+data.type==="error"
+){
 
 alert(data.message);
 
@@ -859,11 +930,13 @@ ws.onclose=()=>{
 document.getElementById(
 "status"
 ).textContent=
-"🔴 Serveriga ühendus katkes";
+"🔴 Server offline";
 
 };
 
 }
+
+connect();
 
 
 /* SEND */
@@ -892,13 +965,7 @@ function createRoom(){
 const name=
 document
 .getElementById("name")
-.value
-.trim();
-
-const mode=
-document
-.getElementById("mode")
-.value;
+.value.trim();
 
 if(!name){
 
@@ -907,7 +974,6 @@ alert(
 );
 
 return;
-
 }
 
 send({
@@ -916,7 +982,13 @@ type:"createRoom",
 
 name,
 
-mode
+mode:
+document
+.getElementById("mode")
+.value,
+
+skin:
+selectedSkin
 
 });
 
@@ -930,8 +1002,7 @@ function joinRoom(){
 const name=
 document
 .getElementById("name")
-.value
-.trim();
+.value.trim();
 
 const room=
 document
@@ -947,17 +1018,6 @@ alert(
 );
 
 return;
-
-}
-
-if(room.length!==6){
-
-alert(
-"Room Code peab olema 6 märki!"
-);
-
-return;
-
 }
 
 send({
@@ -966,7 +1026,10 @@ type:"joinRoom",
 
 name,
 
-room
+room,
+
+skin:
+selectedSkin
 
 });
 
@@ -979,37 +1042,26 @@ function showLobby(){
 
 document.getElementById(
 "menu"
-).style.display="none";
+).style.display=
+"none";
 
 document.getElementById(
 "lobby"
-).style.display="flex";
+).style.display=
+"flex";
 
 document.getElementById(
 "roomCodeBig"
 ).textContent=
 roomCode;
 
-document.getElementById(
-"start"
-).style.display=
-host?"block":"none";
-
 }
-
-
-/* UPDATE LOBBY */
 
 function updateLobby(data){
 
-document.getElementById(
-"roomCodeBig"
-).textContent=
-data.room;
-
 const box=
 document.getElementById(
-"lobbyPlayers"
+"players"
 );
 
 box.innerHTML="";
@@ -1018,33 +1070,43 @@ data.players.forEach(
 p=>{
 
 const row=
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 row.className=
-"lobbyPlayer";
+"playerRow";
 
 const dot=
-document.createElement("span");
+document.createElement(
+"span"
+);
 
-dot.className="dot";
+dot.className=
+"playerDot";
 
 dot.style.background=
-p.color;
+p.skin;
 
 const name=
-document.createElement("span");
+document.createElement(
+"span"
+);
 
 name.textContent=
 p.name;
 
 row.appendChild(dot);
-
 row.appendChild(name);
 
-if(p.id===data.hostId){
+if(
+p.id===data.hostId
+){
 
 const h=
-document.createElement("span");
+document.createElement(
+"span"
+);
 
 h.className="host";
 
@@ -1065,14 +1127,16 @@ data.hostId===myId;
 document.getElementById(
 "start"
 ).style.display=
-host?"block":"none";
+host
+?"block"
+:"none";
 
 document.getElementById(
 "waiting"
 ).textContent=
 host
 ?
-"👑 Sina oled host – vajuta START GAME kui sõbrad on kohal."
+"👑 Sina oled host."
 :
 "⏳ Ootame hosti...";
 
@@ -1081,15 +1145,14 @@ host
 
 /* COPY */
 
-function copyCode(){
+function copyRoom(){
 
 navigator.clipboard
 .writeText(roomCode)
 .then(()=>{
 
 alert(
-"Room Code kopeeritud: "+
-roomCode
+"Room code kopeeritud!"
 );
 
 });
@@ -1101,16 +1164,6 @@ roomCode
 
 function startGame(){
 
-if(!host){
-
-alert(
-"Ainult host saab alustada!"
-);
-
-return;
-
-}
-
 send({
 type:"startGame"
 });
@@ -1118,30 +1171,9 @@ type:"startGame"
 }
 
 
-/* MOUSE */
+/* AIM */
 
-addEventListener(
-"mousemove",
-e=>{
-
-mouse.x=e.clientX;
-mouse.y=e.clientY;
-
-});
-
-function sendAim(){
-
-if(!gameStarted)
-return;
-
-const cx=W/2;
-const cy=H/2;
-
-const angle=
-Math.atan2(
-mouse.y-cy,
-mouse.x-cx
-);
+function aim(angle){
 
 send({
 
@@ -1153,17 +1185,36 @@ angle
 
 }
 
-setInterval(
-sendAim,
-50
+setInterval(()=>{
+
+if(!started)return;
+
+const angle=
+Math.atan2(
+mouse.y-H/2,
+mouse.x-W/2
 );
 
+aim(angle);
 
-/* CLICK BOOST */
+},40);
+
+
+addEventListener(
+"mousemove",
+e=>{
+
+mouse.x=e.clientX;
+mouse.y=e.clientY;
+
+});
+
+
+/* BOOST */
 
 function setBoost(value){
 
-boosting=value;
+boost=value;
 
 send({
 
@@ -1176,34 +1227,13 @@ active:value
 }
 
 addEventListener(
-"mousedown",
-e=>{
-
-if(e.button===0)
-setBoost(true);
-
-});
-
-addEventListener(
-"mouseup",
-e=>{
-
-if(e.button===0)
-setBoost(false);
-
-});
-
-
-/* SPACE */
-
-addEventListener(
 "keydown",
 e=>{
 
 if(
-e.code==="Space" ||
 e.code==="ShiftLeft" ||
-e.code==="ShiftRight"
+e.code==="ShiftRight" ||
+e.code==="Space"
 ){
 
 e.preventDefault();
@@ -1219,9 +1249,9 @@ addEventListener(
 e=>{
 
 if(
-e.code==="Space" ||
 e.code==="ShiftLeft" ||
-e.code==="ShiftRight"
+e.code==="ShiftRight" ||
+e.code==="Space"
 ){
 
 e.preventDefault();
@@ -1233,7 +1263,34 @@ setBoost(false);
 });
 
 
-/* BOOST BUTTON */
+/* MOUSE BOOST */
+
+addEventListener(
+"mousedown",
+e=>{
+
+if(e.button===0){
+
+setBoost(true);
+
+}
+
+});
+
+addEventListener(
+"mouseup",
+e=>{
+
+if(e.button===0){
+
+setBoost(false);
+
+}
+
+});
+
+
+/* MOBILE BOOST */
 
 const boostButton=
 document.getElementById(
@@ -1277,23 +1334,21 @@ document.getElementById(
 "stick"
 );
 
-let joyActive=false;
+let joystickActive=false;
 
-function joystickMove(
+function moveJoystick(
 x,
 y
 ){
 
-const rect=
+const r=
 joystick.getBoundingClientRect();
 
 const cx=
-rect.left+
-rect.width/2;
+r.left+r.width/2;
 
 const cy=
-rect.top+
-rect.height/2;
+r.top+r.height/2;
 
 let dx=x-cx;
 let dy=y-cy;
@@ -1319,15 +1374,9 @@ stick.style.left=
 stick.style.top=
 45+dy+"px";
 
-const angle=
-Math.atan2(dy,dx);
-
-send({
-
-type:"aim",
-angle
-
-});
+aim(
+Math.atan2(dy,dx)
+);
 
 }
 
@@ -1335,11 +1384,11 @@ joystick.addEventListener(
 "touchstart",
 e=>{
 
-joyActive=true;
+joystickActive=true;
 
 const t=e.touches[0];
 
-joystickMove(
+moveJoystick(
 t.clientX,
 t.clientY
 );
@@ -1352,13 +1401,13 @@ joystick.addEventListener(
 "touchmove",
 e=>{
 
-if(!joyActive)return;
+if(!joystickActive)return;
 
 e.preventDefault();
 
 const t=e.touches[0];
 
-joystickMove(
+moveJoystick(
 t.clientX,
 t.clientY
 );
@@ -1371,7 +1420,7 @@ joystick.addEventListener(
 "touchend",
 ()=>{
 
-joyActive=false;
+joystickActive=false;
 
 stick.style.left="45px";
 stick.style.top="45px";
@@ -1381,17 +1430,29 @@ stick.style.top="45px";
 );
 
 
-/* GAME UI */
+/* POWER */
 
-function updateGameUI(){
+function usePower(power){
+
+send({
+
+type:"powerup",
+
+power
+
+});
+
+}
+
+
+/* UI */
+
+function updateUI(){
 
 const me=
-state.players[
-myId
-];
+state.players[myId];
 
-if(!me)
-return;
+if(!me)return;
 
 document.getElementById(
 "score"
@@ -1403,24 +1464,12 @@ document.getElementById(
 ).textContent=
 Math.floor(me.length);
 
-if(!me.alive){
-
 document.getElementById(
 "dead"
 ).style.display=
-"flex";
-
-}else{
-
-document.getElementById(
-"dead"
-).style.display=
-"none";
-
-}
-
-
-/* RANK */
+me.alive
+?"none"
+:"flex";
 
 const players=
 Object.values(
@@ -1432,7 +1481,7 @@ players.sort(
 b.score-a.score
 );
 
-const rank=
+const myRank=
 players.findIndex(
 p=>p.id===myId
 )+1;
@@ -1440,10 +1489,7 @@ p=>p.id===myId
 document.getElementById(
 "rank"
 ).textContent=
-rank;
-
-
-/* BOARD */
+myRank;
 
 const board=
 document.getElementById(
@@ -1458,7 +1504,9 @@ players
 (p,i)=>{
 
 const row=
-document.createElement("div");
+document.createElement(
+"div"
+);
 
 row.className="rank";
 
@@ -1467,7 +1515,6 @@ row.innerHTML=
 <span>
 ${i+1}. ${escapeHTML(p.name)}
 </span>
-
 <b>
 ${p.score}
 </b>
@@ -1480,48 +1527,63 @@ board.appendChild(row);
 }
 
 
-/* ESCAPE */
-
-function escapeHTML(str){
-
-return String(str)
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;");
-
-}
-
-
 /* CAMERA */
 
 function updateCamera(){
 
 const me=
-state.players[
-myId
-];
+state.players[myId];
 
-if(!me)
-return;
-
-const targetX=
-me.x;
-
-const targetY=
-me.y;
+if(!me)return;
 
 camera.x +=
-(targetX-camera.x)
-*.12;
+(me.x-camera.x)*.12;
 
 camera.y +=
-(targetY-camera.y)
-*.12;
+(me.y-camera.y)*.12;
 
 }
 
 
-/* DRAW WORLD */
+/* DRAW */
+
+const canvas=
+document.getElementById(
+"game"
+);
+
+const ctx=
+canvas.getContext("2d");
+
+function resize(){
+
+W=innerWidth;
+H=innerHeight;
+
+canvas.width=
+W*devicePixelRatio;
+
+canvas.height=
+H*devicePixelRatio;
+
+ctx.setTransform(
+devicePixelRatio,
+0,
+0,
+devicePixelRatio,
+0,
+0
+);
+
+}
+
+addEventListener(
+"resize",
+resize
+);
+
+resize();
+
 
 function draw(){
 
@@ -1530,27 +1592,29 @@ draw
 );
 
 ctx.clearRect(
-0,
-0,
-W,
-H
+0,0,W,H
 );
+
+if(!started){
+
+ctx.fillStyle=
+"#020604";
+
+ctx.fillRect(
+0,0,W,H
+);
+
+return;
+
+}
 
 updateCamera();
 
+const me=
+state.players[myId];
+
 const zoom=
-Math.min(
-1.15,
-Math.max(
-0.72,
-1.0-
-Math.log(
-(state.players[myId]?.length||35)
-/
-35
-)*0.08
-)
-);
+1.15;
 
 ctx.save();
 
@@ -1570,10 +1634,10 @@ ctx.translate(
 );
 
 
-/* BACKGROUND */
+/* WORLD */
 
 ctx.fillStyle=
-"#06150a";
+"#06170a";
 
 ctx.fillRect(
 0,
@@ -1585,27 +1649,28 @@ state.world
 
 /* GRID */
 
-const grid=100;
-
 ctx.strokeStyle=
-"rgba(80,255,120,.035)";
+"rgba(100,255,130,.035)";
 
 ctx.lineWidth=2;
 
-const startX=
-Math.floor(
-(camera.x-W/2/zoom)/
-grid
-)*grid;
+const grid=120;
 
-const endX=
-camera.x+
-W/2/zoom+
-grid;
+const left=
+camera.x-W/2/zoom;
+
+const right=
+camera.x+W/2/zoom;
+
+const top=
+camera.y-H/2/zoom;
+
+const bottom=
+camera.y+H/2/zoom;
 
 for(
-let x=startX;
-x<endX;
+let x=Math.floor(left/grid)*grid;
+x<right;
 x+=grid
 ){
 
@@ -1613,44 +1678,33 @@ ctx.beginPath();
 
 ctx.moveTo(
 x,
-camera.y-H/2/zoom
+top
 );
 
 ctx.lineTo(
 x,
-camera.y+H/2/zoom
+bottom
 );
 
 ctx.stroke();
 
 }
 
-const startY=
-Math.floor(
-(camera.y-H/2/zoom)/
-grid
-)*grid;
-
-const endY=
-camera.y+
-H/2/zoom+
-grid;
-
 for(
-let y=startY;
-y<endY;
+let y=Math.floor(top/grid)*grid;
+y<bottom;
 y+=grid
 ){
 
 ctx.beginPath();
 
 ctx.moveTo(
-camera.x-W/2/zoom,
+left,
 y
 );
 
 ctx.lineTo(
-camera.x+W/2/zoom,
+right,
 y
 );
 
@@ -1664,7 +1718,7 @@ ctx.stroke();
 ctx.strokeStyle=
 "#45ff72";
 
-ctx.lineWidth=18;
+ctx.lineWidth=22;
 
 ctx.strokeRect(
 0,
@@ -1677,32 +1731,44 @@ state.world
 /* FOOD */
 
 for(
-const food of state.food
+const f of state.food
 ){
+
+if(
+f.x<left-30 ||
+f.x>right+30 ||
+f.y<top-30 ||
+f.y>bottom+30
+)continue;
+
+let color;
+
+if(f.type==="gold")
+color="#fff34f";
+else if(f.type==="rare")
+color="#c45cff";
+else if(f.type==="death")
+color="#ff743d";
+else if(f.type==="boost")
+color="#52b6ff";
+else
+color="#ff4f75";
+
+ctx.fillStyle=color;
+
+ctx.shadowColor=color;
+
+ctx.shadowBlur=
+f.type==="gold"
+?25
+:12;
 
 ctx.beginPath();
 
-ctx.fillStyle=
-food.value>=5
-?
-"#fff15a"
-:
-"#ff4f79";
-
-ctx.shadowColor=
-ctx.fillStyle;
-
-ctx.shadowBlur=
-food.value>=5
-?
-18
-:
-10;
-
 ctx.arc(
-food.x,
-food.y,
-food.size,
+f.x,
+f.y,
+f.size,
 0,
 Math.PI*2
 );
@@ -1721,53 +1787,44 @@ Object.values(
 state.players
 );
 
-players.sort(
-(a,b)=>
-a.length-b.length
-);
-
 for(
-const player of players
+const p of players
 ){
 
-if(!player.snake)
-continue;
+if(
+!p.snake ||
+!p.snake.length
+)continue;
 
-const snake=
-player.snake;
+const color=p.skin;
 
 for(
-let i=snake.length-1;
+let i=p.snake.length-1;
 i>=0;
 i--
 ){
 
-const part=
-snake[i];
+const part=p.snake[i];
 
-const t=
-i/snake.length;
+const progress=
+i/p.snake.length;
 
 const radius=
 Math.max(
-5,
-11-t*3
+5.5,
+13-progress*5
 );
 
-ctx.beginPath();
+ctx.fillStyle=color;
 
-ctx.fillStyle=
-player.color;
-
-ctx.shadowColor=
-player.color;
+ctx.shadowColor=color;
 
 ctx.shadowBlur=
-player.id===myId
-?
-14
-:
-7;
+p.id===myId
+?18
+:8;
+
+ctx.beginPath();
 
 ctx.arc(
 part.x,
@@ -1784,85 +1841,86 @@ ctx.fill();
 ctx.shadowBlur=0;
 
 
-/* HEAD */
+/* SHIELD */
 
-if(
-snake.length &&
-player.alive
-){
+if(p.shield>0){
 
-const head=
-snake[0];
+ctx.strokeStyle=
+"rgba(80,180,255,.8)";
 
-ctx.fillStyle=
-player.color;
+ctx.lineWidth=4;
 
 ctx.beginPath();
 
 ctx.arc(
-head.x,
-head.y,
-14,
+p.x,
+p.y,
+24,
 0,
 Math.PI*2
 );
 
-ctx.fill();
-
-
-/* EYES */
-
-const angle=
-player.angle;
-
-const ex=
-Math.cos(angle);
-
-const ey=
-Math.sin(angle);
-
-const sx=
--Math.sin(angle);
-
-const sy=
-Math.cos(angle);
-
-ctx.fillStyle=
-"#061008";
-
-ctx.beginPath();
-
-ctx.arc(
-head.x+
-ex*7+
-sx*5,
-head.y+
-ey*7+
-sy*5,
-3,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-ctx.beginPath();
-
-ctx.arc(
-head.x+
-ex*7-
-sx*5,
-head.y+
-ey*7-
-sy*5,
-3,
-0,
-Math.PI*2
-);
-
-ctx.fill();
+ctx.stroke();
 
 }
+
+
+/* HEAD */
+
+if(p.alive){
+
+ctx.fillStyle=color;
+
+ctx.beginPath();
+
+ctx.arc(
+p.x,
+p.y,
+16,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+
+const ex=
+Math.cos(p.angle);
+
+const ey=
+Math.sin(p.angle);
+
+const sx=
+-Math.sin(p.angle);
+
+const sy=
+Math.cos(p.angle);
+
+ctx.fillStyle="#061008";
+
+ctx.beginPath();
+
+ctx.arc(
+p.x+ex*8+sx*5,
+p.y+ey*8+sy*5,
+3.5,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+ctx.beginPath();
+
+ctx.arc(
+p.x+ex*8-sx*5,
+p.y+ey*8-sy*5,
+3.5,
+0,
+Math.PI*2
+);
+
+ctx.fill();
 
 }
 
@@ -1874,24 +1932,81 @@ ctx.font=
 
 ctx.textAlign="center";
 
-for(
-const player of players
-){
-
-if(
-!player.snake ||
-!player.snake.length
-)
-continue;
-
 ctx.fillStyle=
 "rgba(255,255,255,.8)";
 
 ctx.fillText(
-player.name,
-player.x,
-player.y-24
+p.name,
+p.x,
+p.y-28
 );
+
+}
+
+
+/* MINIMAP */
+
+ctx.restore();
+
+drawMinimap();
+
+}
+
+function drawMinimap(){
+
+if(!started)return;
+
+const size=130;
+
+const x=
+W-size-15;
+
+const y=
+H-size-15;
+
+ctx.save();
+
+ctx.fillStyle=
+"rgba(0,0,0,.6)";
+
+ctx.fillRect(
+x,
+y,
+size,
+size
+);
+
+ctx.strokeStyle=
+"rgba(90,255,130,.5)";
+
+ctx.strokeRect(
+x,
+y,
+size,
+size
+);
+
+const me=
+state.players[myId];
+
+if(me){
+
+ctx.fillStyle=
+me.skin;
+
+ctx.beginPath();
+
+ctx.arc(
+x+
+me.x/state.world*size,
+y+
+me.y/state.world*size,
+5,
+0,
+Math.PI*2
+);
+
+ctx.fill();
 
 }
 
@@ -1899,7 +2014,14 @@ ctx.restore();
 
 }
 
-connect();
+function escapeHTML(str){
+
+return String(str)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;");
+
+}
 
 draw();
 
