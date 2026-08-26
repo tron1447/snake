@@ -3,854 +3,1069 @@ const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 3000;
 
-const WIDTH = 150;
-const HEIGHT = 150;
-const TICK = 100;
-const MAX_PLAYERS = 8;
+const WORLD = 5000;
+const MAX_PLAYERS = 20;
+const TICK = 50;
+
+const rooms = {};
 
 const COLORS = [
-  "#42ff72",
-  "#43a5ff",
+  "#45ff72",
+  "#42a5ff",
   "#ff4fd8",
   "#ffd43b",
   "#ff7043",
   "#b65cff",
   "#00e5ff",
-  "#ff3d71"
-];
-
-const MODES = [
-  "classic",
-  "battle",
-  "power",
-  "maze",
-  "last"
+  "#ff3d71",
+  "#ffffff",
+  "#8cff00"
 ];
 
 const server = http.createServer((req, res) => {
   res.writeHead(200, {
     "Content-Type": "text/plain; charset=utf-8"
   });
-  res.end("🐍 Snake Online töötab!");
+
+  res.end("Snake Online Server 🐍");
 });
 
 const wss = new WebSocket.Server({ server });
 
-const rooms = {};
-
 function send(ws, data) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
+  if (ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(data));
   }
 }
 
-function makeId() {
+function id() {
   return Math.random().toString(36).slice(2, 10);
 }
 
-function makeRoomCode() {
+function roomCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
   let code;
 
   do {
     code = "";
+
     for (let i = 0; i < 6; i++) {
-      code += chars[Math.floor(Math.random() * chars.length)];
+      code += chars[
+        Math.floor(Math.random() * chars.length)
+      ];
     }
+
   } while (rooms[code]);
 
   return code;
 }
 
-function validDirection(direction) {
-  return ["up", "down", "left", "right"].includes(direction);
+function random(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function createFood(room, amount = 1) {
+
+  for (let i = 0; i < amount; i++) {
+
+    room.food.push({
+      x: random(100, WORLD - 100),
+      y: random(100, WORLD - 100),
+      value: Math.random() < 0.08 ? 5 : 1,
+      size: Math.random() < 0.08 ? 8 : 5
+    });
+
+  }
 }
 
 function createRoom(mode) {
-  return {
+
+  const room = {
     code: "",
-    mode: MODES.includes(mode) ? mode : "classic",
+    mode: mode || "classic",
+
     hostId: null,
-    players: {},
+
     clients: new Set(),
+    players: {},
+
     food: [],
-    powerups: [],
-    walls: [],
+
     started: false,
+
     interval: null
   };
+
+  createFood(room, 500);
+
+  return room;
 }
 
-function randomPosition(room) {
-  for (let i = 0; i < 1000; i++) {
+function distance(a, b) {
+
+  return Math.hypot(
+    a.x - b.x,
+    a.y - b.y
+  );
+
+}
+
+function spawnPosition(room) {
+
+  for (let tries = 0; tries < 100; tries++) {
+
     const p = {
-      x: Math.floor(Math.random() * WIDTH),
-      y: Math.floor(Math.random() * HEIGHT)
+      x: random(400, WORLD - 400),
+      y: random(400, WORLD - 400)
     };
 
-    const wall = room.walls.some(
-      w => w.x === p.x && w.y === p.y
-    );
+    let good = true;
 
-    const snake = Object.values(room.players).some(
-      player =>
-        player.alive &&
-        player.snake.some(
-          part => part.x === p.x && part.y === p.y
-        )
-    );
+    for (const player of Object.values(room.players)) {
 
-    if (!wall && !snake) return p;
+      if (!player.snake.length) continue;
+
+      if (
+        distance(
+          p,
+          player.snake[0]
+        ) < 400
+      ) {
+        good = false;
+        break;
+      }
+
+    }
+
+    if (good) return p;
+
   }
 
   return {
-    x: Math.floor(WIDTH / 2),
-    y: Math.floor(HEIGHT / 2)
+    x: WORLD / 2,
+    y: WORLD / 2
   };
 }
 
-function createMaze() {
-  const walls = [];
+function createPlayer(
+  id,
+  name,
+  colorIndex,
+  room
+) {
 
-  for (let x = 15; x < WIDTH - 15; x++) {
-    if (x < 65 || x > 85) {
-      walls.push({ x, y: 45 });
-    }
+  const spawn = spawnPosition(room);
 
-    if (x < 45 || x > 65) {
-      walls.push({ x, y: 105 });
-    }
-  }
+  const angle =
+    Math.random() * Math.PI * 2;
 
-  for (let y = 15; y < HEIGHT - 15; y++) {
-    if (y < 65 || y > 85) {
-      walls.push({ x: 45, y });
-    }
+  const player = {
 
-    if (y < 45 || y > 65) {
-      walls.push({ x: 105, y });
-    }
-  }
-
-  return walls;
-}
-
-function startPosition(index) {
-  const positions = [
-    { x: 20, y: 20 },
-    { x: WIDTH - 21, y: HEIGHT - 21 },
-    { x: WIDTH - 21, y: 20 },
-    { x: 20, y: HEIGHT - 21 },
-    { x: 75, y: 20 },
-    { x: 75, y: HEIGHT - 21 },
-    { x: 20, y: 75 },
-    { x: WIDTH - 21, y: 75 }
-  ];
-
-  return positions[index % positions.length];
-}
-
-function startDirection(index) {
-  const dirs = [
-    "right",
-    "left",
-    "left",
-    "right",
-    "down",
-    "up",
-    "right",
-    "left"
-  ];
-
-  return dirs[index % dirs.length];
-}
-
-function createPlayer(id, name, index) {
-  const start = startPosition(index);
-  const direction = startDirection(index);
-
-  let bx = 0;
-  let by = 0;
-
-  if (direction === "right") bx = -1;
-  if (direction === "left") bx = 1;
-  if (direction === "down") by = -1;
-  if (direction === "up") by = 1;
-
-  return {
     id,
-    name: String(name || "Player")
-      .replace(/[<>]/g, "")
-      .slice(0, 12),
 
-    color: COLORS[index % COLORS.length],
+    name:
+      String(name || "Player")
+        .replace(/[<>]/g, "")
+        .slice(0, 14),
 
-    snake: [
-      { x: start.x, y: start.y },
-      { x: start.x + bx, y: start.y + by },
-      { x: start.x + bx * 2, y: start.y + by * 2 }
-    ],
+    color:
+      COLORS[colorIndex % COLORS.length],
 
-    direction,
-    nextDirection: direction,
+    x: spawn.x,
+    y: spawn.y,
+
+    angle,
+
+    targetAngle: angle,
+
+    speed: 3.4,
+
+    boost: false,
 
     score: 0,
-    coins: 0,
+
+    length: 35,
 
     alive: true,
 
-    respawnTimer: 0,
+    snake: [],
 
-    shield: false,
+    respawn: 0,
 
-    boost: 0,
-
-    boostCooldown: 0
+    lastBoost: 0
   };
+
+  for (
+    let i = 0;
+    i < player.length;
+    i++
+  ) {
+
+    player.snake.push({
+
+      x:
+        player.x -
+        Math.cos(angle) * i * 9,
+
+      y:
+        player.y -
+        Math.sin(angle) * i * 9
+
+    });
+
+  }
+
+  return player;
 }
 
-function addFood(room) {
-  room.food.push(randomPosition(room));
-}
+function addDeathFood(room, player) {
 
-function addPowerup(room) {
-  const p = randomPosition(room);
+  for (
+    let i = 0;
+    i < Math.min(
+      100,
+      Math.floor(player.length / 2)
+    );
+    i++
+  ) {
 
-  const types = ["speed", "shield", "coin"];
+    const p =
+      player.snake[
+        Math.floor(
+          Math.random() *
+          player.snake.length
+        )
+      ];
 
-  room.powerups.push({
-    x: p.x,
-    y: p.y,
-    type: types[Math.floor(Math.random() * types.length)]
-  });
-}
+    if (!p) continue;
 
-function resetPlayer(room, player) {
-  const index =
-    Object.keys(room.players).indexOf(player.id);
+    room.food.push({
 
-  const start = startPosition(index);
-  const direction = startDirection(index);
+      x: p.x + random(-15, 15),
+      y: p.y + random(-15, 15),
 
-  let bx = 0;
-  let by = 0;
+      value: 3,
+      size: 9
+    });
 
-  if (direction === "right") bx = -1;
-  if (direction === "left") bx = 1;
-  if (direction === "down") by = -1;
-  if (direction === "up") by = 1;
+  }
 
-  player.snake = [
-    { x: start.x, y: start.y },
-    { x: start.x + bx, y: start.y + by },
-    { x: start.x + bx * 2, y: start.y + by * 2 }
-  ];
-
-  player.direction = direction;
-  player.nextDirection = direction;
-
-  player.alive = true;
-  player.respawnTimer = 0;
-  player.shield = false;
-  player.boost = 0;
-  player.boostCooldown = 0;
 }
 
 function killPlayer(room, player) {
-  if (!player.alive) return;
 
-  if (player.shield) {
-    player.shield = false;
-    return;
-  }
+  if (!player.alive) return;
 
   player.alive = false;
 
-  if (room.mode === "battle" || room.mode === "last") {
-    player.respawnTimer = -1;
-  } else {
-    player.respawnTimer = 25;
-  }
+  addDeathFood(room, player);
+
+  player.snake = [];
+
+  player.respawn = 100;
 }
 
-function nextHead(player) {
-  const head = {
-    x: player.snake[0].x,
-    y: player.snake[0].y
-  };
+function respawnPlayer(room, player) {
 
-  if (player.direction === "up") head.y--;
-  if (player.direction === "down") head.y++;
-  if (player.direction === "left") head.x--;
-  if (player.direction === "right") head.x++;
+  const p = spawnPosition(room);
 
-  return head;
+  player.x = p.x;
+  player.y = p.y;
+
+  player.angle =
+    Math.random() *
+    Math.PI *
+    2;
+
+  player.targetAngle =
+    player.angle;
+
+  player.length = 35;
+
+  player.score = 0;
+
+  player.alive = true;
+
+  player.boost = false;
+
+  player.snake = [];
+
+  for (
+    let i = 0;
+    i < player.length;
+    i++
+  ) {
+
+    player.snake.push({
+
+      x:
+        player.x -
+        Math.cos(player.angle) *
+        i * 9,
+
+      y:
+        player.y -
+        Math.sin(player.angle) *
+        i * 9
+
+    });
+
+  }
+
+}
+
+function angleDifference(a, b) {
+
+  let d = b - a;
+
+  while (d > Math.PI) {
+    d -= Math.PI * 2;
+  }
+
+  while (d < -Math.PI) {
+    d += Math.PI * 2;
+  }
+
+  return d;
 }
 
 function movePlayer(room, player) {
-  if (!player.alive) {
-    if (player.respawnTimer > 0) {
-      player.respawnTimer--;
 
-      if (player.respawnTimer <= 0) {
-        resetPlayer(room, player);
-      }
+  if (!player.alive) {
+
+    player.respawn--;
+
+    if (player.respawn <= 0) {
+      respawnPlayer(room, player);
     }
 
     return;
   }
 
-  if (!validDirection(player.direction)) {
-    player.direction = "right";
-  }
+  let turn =
+    angleDifference(
+      player.angle,
+      player.targetAngle
+    );
 
-  if (validDirection(player.nextDirection)) {
-    const opposite = {
-      up: "down",
-      down: "up",
-      left: "right",
-      right: "left"
-    };
+  const maxTurn =
+    player.boost
+      ? 0.085
+      : 0.065;
 
-    if (
-      player.nextDirection !==
-      opposite[player.direction]
-    ) {
-      player.direction = player.nextDirection;
+  turn =
+    Math.max(
+      -maxTurn,
+      Math.min(maxTurn, turn)
+    );
+
+  player.angle += turn;
+
+  let speed =
+    player.boost
+      ? 6.2
+      : 3.4;
+
+  if (player.boost) {
+
+    player.length -= 0.055;
+
+    if (player.length < 18) {
+      player.boost = false;
     }
+
   }
 
-  const head = nextHead(player);
+  player.x +=
+    Math.cos(player.angle) *
+    speed;
+
+  player.y +=
+    Math.sin(player.angle) *
+    speed;
+
+  const margin = 40;
 
   if (
-    head.x < 0 ||
-    head.y < 0 ||
-    head.x >= WIDTH ||
-    head.y >= HEIGHT
+    player.x < margin ||
+    player.y < margin ||
+    player.x > WORLD - margin ||
+    player.y > WORLD - margin
   ) {
-    killPlayer(room, player);
+
+    killPlayer(
+      room,
+      player
+    );
+
     return;
   }
 
-  const wall = room.walls.some(
-    w => w.x === head.x && w.y === head.y
-  );
-
-  if (wall) {
-    killPlayer(room, player);
-    return;
-  }
-
-  for (const other of Object.values(room.players)) {
-    if (!other.alive) continue;
-
-    for (const part of other.snake) {
-      if (
-        part.x === head.x &&
-        part.y === head.y
-      ) {
-        killPlayer(room, player);
-        return;
-      }
-    }
-  }
-
-  player.snake.unshift(head);
-
-  const foodIndex = room.food.findIndex(
-    food =>
-      food.x === head.x &&
-      food.y === head.y
-  );
-
-  if (foodIndex !== -1) {
-    room.food.splice(foodIndex, 1);
-
-    player.score++;
-    player.coins++;
-
-    addFood(room);
-  } else {
-    player.snake.pop();
-  }
-
-  const powerIndex = room.powerups.findIndex(
-    power =>
-      power.x === head.x &&
-      power.y === head.y
-  );
-
-  if (powerIndex !== -1) {
-    const power = room.powerups[powerIndex];
-
-    room.powerups.splice(powerIndex, 1);
-
-    if (power.type === "speed") {
-      player.boost = 80;
-    }
-
-    if (power.type === "shield") {
-      player.shield = true;
-    }
-
-    if (power.type === "coin") {
-      player.coins += 10;
-      player.score += 2;
-    }
-  }
-
-  if (player.boost > 0) {
-    player.boost--;
-  }
-
-  if (player.boostCooldown > 0) {
-    player.boostCooldown--;
-  }
-}
-
-function boostPlayer(player) {
-  if (!player || !player.alive) return;
-
-  if (player.boostCooldown > 0) return;
-
-  player.boost = Math.max(player.boost, 30);
-  player.boostCooldown = 45;
-}
-
-function startGame(room) {
-  if (room.started) return;
-
-  room.started = true;
-
-  room.food = [];
-  room.powerups = [];
-
-  room.walls =
-    room.mode === "maze"
-      ? createMaze()
-      : [];
-
-  for (let i = 0; i < 30; i++) {
-    addFood(room);
-  }
-
-  if (room.mode === "power") {
-    for (let i = 0; i < 12; i++) {
-      addPowerup(room);
-    }
-  }
-
-  broadcast(room);
-
-  room.clients.forEach(client => {
-    send(client, {
-      type: "gameStarted"
-    });
+  player.snake.unshift({
+    x: player.x,
+    y: player.y
   });
 
-  room.interval = setInterval(
-    () => gameTick(room),
-    TICK
-  );
+  const wanted =
+    Math.max(
+      18,
+      Math.floor(player.length)
+    );
+
+  while (
+    player.snake.length >
+    wanted
+  ) {
+
+    player.snake.pop();
+
+  }
+
+  eatFood(room, player);
+
 }
 
-function gameTick(room) {
-  if (!room.started) return;
+function eatFood(room, player) {
 
-  Object.values(room.players).forEach(
-    player => movePlayer(room, player)
-  );
+  for (
+    let i = room.food.length - 1;
+    i >= 0;
+    i--
+  ) {
 
-  Object.values(room.players).forEach(
-    player => {
-      if (
-        player.alive &&
-        player.boost > 0 &&
-        Math.random() < 0.65
-      ) {
-        movePlayer(room, player);
-      }
+    const food =
+      room.food[i];
+
+    if (
+      distance(
+        player,
+        food
+      ) <
+      18
+    ) {
+
+      player.score +=
+        food.value;
+
+      player.length +=
+        food.value * 0.9;
+
+      room.food.splice(i, 1);
+
     }
-  );
 
-  if (
-    room.mode === "power" &&
-    Math.random() < 0.04 &&
-    room.powerups.length < 15
-  ) {
-    addPowerup(room);
   }
 
-  checkWinner(room);
-
-  broadcast(room);
 }
 
-function checkWinner(room) {
-  if (
-    room.mode !== "battle" &&
-    room.mode !== "last"
-  ) {
-    return;
-  }
+function checkCollisions(room) {
 
   const players =
     Object.values(room.players);
 
-  if (players.length < 2) return;
+  for (const player of players) {
 
-  const alive =
-    players.filter(p => p.alive);
+    if (!player.alive) continue;
 
-  if (alive.length === 1) {
-    finishGame(room, alive[0]);
+    const head = {
+      x: player.x,
+      y: player.y
+    };
+
+    for (const other of players) {
+
+      if (!other.alive) continue;
+
+      if (player.id === other.id) continue;
+
+      for (
+        let i = 4;
+        i < other.snake.length;
+        i += 2
+      ) {
+
+        const part =
+          other.snake[i];
+
+        if (
+          distance(
+            head,
+            part
+          ) < 14
+        ) {
+
+          killPlayer(
+            room,
+            player
+          );
+
+          break;
+
+        }
+
+      }
+
+      if (!player.alive) break;
+
+    }
+
   }
+
 }
 
-function finishGame(room, winner) {
+function tick(room) {
+
   if (!room.started) return;
 
-  room.started = false;
+  for (
+    const player of Object.values(
+      room.players
+    )
+  ) {
 
-  clearInterval(room.interval);
+    movePlayer(
+      room,
+      player
+    );
 
-  room.clients.forEach(client => {
-    send(client, {
-      type: "winner",
-      winner: {
-        name: winner.name,
-        score: winner.score
-      }
-    });
-  });
+  }
 
-  setTimeout(() => {
-    if (!rooms[room.code]) return;
+  checkCollisions(room);
 
-    Object.values(room.players).forEach(player => {
-      player.score = 0;
-      player.coins = 0;
-      player.alive = true;
-      player.respawnTimer = 0;
-    });
+  while (room.food.length < 500) {
+    createFood(room, 20);
+  }
 
-    broadcastLobby(room);
-  }, 3500);
+  broadcastState(room);
+
 }
 
-function getRoomState(room) {
+function state(room) {
+
   const players = {};
 
-  Object.values(room.players).forEach(player => {
-    players[player.id] = {
-      id: player.id,
-      name: player.name,
-      color: player.color,
-      snake: player.snake,
-      direction: player.direction,
-      score: player.score,
-      coins: player.coins,
-      alive: player.alive,
-      respawnTimer: player.respawnTimer,
-      shield: player.shield,
-      boost: player.boost
+  for (
+    const p of Object.values(
+      room.players
+    )
+  ) {
+
+    players[p.id] = {
+
+      id: p.id,
+
+      name: p.name,
+
+      color: p.color,
+
+      x: p.x,
+
+      y: p.y,
+
+      angle: p.angle,
+
+      score: p.score,
+
+      length: p.length,
+
+      alive: p.alive,
+
+      snake: p.snake
+
     };
-  });
+
+  }
 
   return {
-    width: WIDTH,
-    height: HEIGHT,
-    mode: room.mode,
-    started: room.started,
-    hostId: room.hostId,
+
+    world: WORLD,
+
     players,
+
     food: room.food,
-    powerups: room.powerups,
-    walls: room.walls
+
+    started: room.started,
+
+    hostId: room.hostId,
+
+    mode: room.mode
+
   };
+
 }
 
-function broadcast(room) {
-  const data = {
+function broadcastState(room) {
+
+  const packet = {
     type: "state",
-    state: getRoomState(room)
+    state: state(room)
   };
 
-  room.clients.forEach(client => {
-    send(client, data);
-  });
+  for (
+    const client of room.clients
+  ) {
+
+    send(
+      client,
+      packet
+    );
+
+  }
+
 }
 
 function broadcastLobby(room) {
-  const data = {
-    type: "lobby",
-    room: room.code,
-    mode: room.mode,
-    hostId: room.hostId,
-    started: room.started,
-    players: Object.values(room.players).map(p => ({
+
+  const players =
+    Object.values(
+      room.players
+    ).map(p => ({
+
       id: p.id,
       name: p.name,
       color: p.color
-    }))
+
+    }));
+
+  const packet = {
+
+    type: "lobby",
+
+    room: room.code,
+
+    hostId: room.hostId,
+
+    players,
+
+    mode: room.mode
+
   };
 
-  room.clients.forEach(client => {
-    send(client, data);
-  });
+  for (
+    const client of room.clients
+  ) {
+
+    send(
+      client,
+      packet
+    );
+
+  }
+
 }
 
-wss.on("connection", ws => {
-  const playerId = makeId();
+function startRoom(room) {
 
-  ws.playerId = playerId;
-  ws.room = null;
+  if (room.started) return;
 
-  send(ws, {
-    type: "connected",
-    id: playerId
-  });
+  room.started = true;
 
-  ws.on("message", raw => {
-    let data;
+  room.interval =
+    setInterval(
+      () => tick(room),
+      TICK
+    );
 
-    try {
-      data = JSON.parse(raw.toString());
-    } catch {
-      return;
-    }
+  for (
+    const client of room.clients
+  ) {
 
-    if (data.type === "createRoom") {
-      if (ws.room) return;
+    send(
+      client,
+      {
+        type: "gameStarted"
+      }
+    );
 
-      const code = makeRoomCode();
+  }
 
-      const room = createRoom(data.mode);
+}
 
-      room.code = code;
-      room.hostId = playerId;
+wss.on(
+  "connection",
+  ws => {
 
-      rooms[code] = room;
+    const playerId = id();
 
-      ws.room = code;
+    ws.playerId = playerId;
 
-      room.clients.add(ws);
+    ws.room = null;
 
-      room.players[playerId] =
-        createPlayer(
-          playerId,
-          data.name,
+    send(
+      ws,
+      {
+        type: "connected",
+        id: playerId
+      }
+    );
+
+    ws.on(
+      "message",
+      raw => {
+
+        let data;
+
+        try {
+
+          data =
+            JSON.parse(
+              raw.toString()
+            );
+
+        } catch {
+
+          return;
+
+        }
+
+        if (
+          data.type ===
+          "createRoom"
+        ) {
+
+          if (ws.room) return;
+
+          const code =
+            roomCode();
+
+          const room =
+            createRoom(
+              data.mode
+            );
+
+          room.code =
+            code;
+
+          room.hostId =
+            playerId;
+
+          rooms[code] =
+            room;
+
+          ws.room =
+            code;
+
+          room.clients.add(
+            ws
+          );
+
+          room.players[playerId] =
+            createPlayer(
+              playerId,
+              data.name,
+              0,
+              room
+            );
+
+          send(
+            ws,
+            {
+              type:
+                "roomCreated",
+
+              room:
+                code,
+
+              host:
+                true
+            }
+          );
+
+          broadcastLobby(
+            room
+          );
+
+          return;
+
+        }
+
+        if (
+          data.type ===
+          "joinRoom"
+        ) {
+
+          const code =
+            String(
+              data.room || ""
+            )
+            .trim()
+            .toUpperCase();
+
+          const room =
+            rooms[code];
+
+          if (!room) {
+
+            send(
+              ws,
+              {
+                type: "error",
+                message:
+                  "Roomi ei leitud."
+              }
+            );
+
+            return;
+
+          }
+
+          if (
+            room.started
+          ) {
+
+            send(
+              ws,
+              {
+                type: "error",
+                message:
+                  "Mäng on juba alanud."
+              }
+            );
+
+            return;
+
+          }
+
+          if (
+            Object.keys(
+              room.players
+            ).length >=
+            MAX_PLAYERS
+          ) {
+
+            send(
+              ws,
+              {
+                type: "error",
+                message:
+                  "Tuba on täis."
+              }
+            );
+
+            return;
+
+          }
+
+          ws.room =
+            code;
+
+          room.clients.add(
+            ws
+          );
+
+          const index =
+            Object.keys(
+              room.players
+            ).length;
+
+          room.players[playerId] =
+            createPlayer(
+              playerId,
+              data.name,
+              index,
+              room
+            );
+
+          send(
+            ws,
+            {
+              type:
+                "roomJoined",
+
+              room:
+                code,
+
+              host:
+                false
+            }
+          );
+
+          broadcastLobby(
+            room
+          );
+
+          return;
+
+        }
+
+        if (
+          data.type ===
+          "startGame"
+        ) {
+
+          const room =
+            rooms[ws.room];
+
+          if (!room) return;
+
+          if (
+            room.hostId !==
+            playerId
+          ) {
+
+            send(
+              ws,
+              {
+                type: "error",
+                message:
+                  "Ainult host saab mängu alustada."
+              }
+            );
+
+            return;
+
+          }
+
+          startRoom(room);
+
+          return;
+
+        }
+
+        if (
+          data.type ===
+          "aim"
+        ) {
+
+          const room =
+            rooms[ws.room];
+
+          if (!room) return;
+
+          const player =
+            room.players[
+              playerId
+            ];
+
+          if (!player) return;
+
+          if (
+            typeof data.angle ===
+            "number"
+          ) {
+
+            player.targetAngle =
+              data.angle;
+
+          }
+
+          return;
+
+        }
+
+        if (
+          data.type ===
+          "boost"
+        ) {
+
+          const room =
+            rooms[ws.room];
+
+          if (!room) return;
+
+          const player =
+            room.players[
+              playerId
+            ];
+
+          if (!player) return;
+
+          player.boost =
+            Boolean(
+              data.active
+            );
+
+          return;
+
+        }
+
+      }
+    );
+
+    ws.on(
+      "close",
+      () => {
+
+        const code =
+          ws.room;
+
+        if (!code) return;
+
+        const room =
+          rooms[code];
+
+        if (!room) return;
+
+        delete room.players[
+          playerId
+        ];
+
+        room.clients.delete(
+          ws
+        );
+
+        if (
+          room.hostId ===
+          playerId
+        ) {
+
+          const remaining =
+            Object.keys(
+              room.players
+            );
+
+          room.hostId =
+            remaining[0] ||
+            null;
+
+        }
+
+        if (
+          room.clients.size ===
           0
-        );
+        ) {
 
-      send(ws, {
-        type: "roomCreated",
-        room: code,
-        mode: room.mode,
-        host: true
-      });
+          clearInterval(
+            room.interval
+          );
 
-      /*
-       * OLULINE:
-       * SIIN EI KÄIVITATA startGame().
-       * Mäng jääb lobby'sse.
-       */
+          delete rooms[code];
 
-      broadcastLobby(room);
+          return;
 
-      return;
-    }
+        }
 
-    if (data.type === "joinRoom") {
-      if (ws.room) return;
+        if (
+          room.started
+        ) {
 
-      const code = String(
-        data.room || ""
-      )
-        .trim()
-        .toUpperCase();
+          broadcastState(
+            room
+          );
 
-      const room = rooms[code];
+        } else {
 
-      if (!room) {
-        send(ws, {
-          type: "error",
-          message: "Sellist Room Code'i ei ole."
-        });
+          broadcastLobby(
+            room
+          );
 
-        return;
+        }
+
       }
+    );
 
-      if (
-        Object.keys(room.players).length >=
-        MAX_PLAYERS
-      ) {
-        send(ws, {
-          type: "error",
-          message: "Tuba on täis."
-        });
+  }
+);
 
-        return;
-      }
+server.listen(
+  PORT,
+  () => {
 
-      if (room.started) {
-        send(ws, {
-          type: "error",
-          message: "Mäng on juba alanud."
-        });
+    console.log(
+      "🐍 Snake server running on " +
+      PORT
+    );
 
-        return;
-      }
-
-      ws.room = code;
-
-      room.clients.add(ws);
-
-      const index =
-        Object.keys(room.players).length;
-
-      room.players[playerId] =
-        createPlayer(
-          playerId,
-          data.name,
-          index
-        );
-
-      send(ws, {
-        type: "roomJoined",
-        room: code,
-        mode: room.mode,
-        host: false
-      });
-
-      broadcastLobby(room);
-
-      return;
-    }
-
-    if (data.type === "startGame") {
-      if (!ws.room) return;
-
-      const room = rooms[ws.room];
-
-      if (!room) return;
-
-      if (room.hostId !== playerId) {
-        send(ws, {
-          type: "error",
-          message:
-            "Ainult Roomi looja saab mängu alustada."
-        });
-
-        return;
-      }
-
-      if (room.started) return;
-
-      if (
-        Object.keys(room.players).length < 1
-      ) {
-        return;
-      }
-
-      startGame(room);
-
-      return;
-    }
-
-    if (data.type === "direction") {
-      if (!ws.room) return;
-
-      const room = rooms[ws.room];
-
-      if (!room || !room.started) return;
-
-      const player =
-        room.players[playerId];
-
-      if (!player) return;
-
-      const direction = data.direction;
-
-      if (!validDirection(direction)) {
-        return;
-      }
-
-      const opposite = {
-        up: "down",
-        down: "up",
-        left: "right",
-        right: "left"
-      };
-
-      if (
-        direction !==
-        opposite[player.direction]
-      ) {
-        player.nextDirection =
-          direction;
-      }
-
-      return;
-    }
-
-    if (data.type === "boost") {
-      if (!ws.room) return;
-
-      const room = rooms[ws.room];
-
-      if (!room || !room.started) return;
-
-      const player =
-        room.players[playerId];
-
-      boostPlayer(player);
-
-      return;
-    }
-  });
-
-  ws.on("close", () => {
-    if (!ws.room) return;
-
-    const room = rooms[ws.room];
-
-    if (!room) return;
-
-    delete room.players[playerId];
-
-    room.clients.delete(ws);
-
-    /*
-     * Kui host lahkub, valitakse uus host.
-     */
-
-    if (room.hostId === playerId) {
-      const remaining =
-        Object.keys(room.players);
-
-      room.hostId =
-        remaining.length
-          ? remaining[0]
-          : null;
-    }
-
-    if (room.clients.size === 0) {
-      clearInterval(room.interval);
-      delete rooms[ws.room];
-      return;
-    }
-
-    if (room.started) {
-      broadcast(room);
-    } else {
-      broadcastLobby(room);
-    }
-  });
-});
-
-server.listen(PORT, () => {
-  console.log(
-    `🐍 Snake Online töötab pordil ${PORT}`
-  );
-});
+  }
+);
