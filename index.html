@@ -1,517 +1,317 @@
 <!DOCTYPE html>
 <html lang="et">
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Snake Arena</title>
 
 <style>
-
 *{
-box-sizing:border-box;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-margin:0;
-width:100%;
-height:100%;
-overflow:hidden;
-background:#020503;
-font-family:Arial,sans-serif;
-color:white;
-touch-action:none;
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#020603;
+  color:white;
+  font-family:Arial,sans-serif;
+  touch-action:none;
 }
 
 canvas{
-position:fixed;
-inset:0;
-width:100%;
-height:100%;
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
 }
 
 .screen{
-position:fixed;
-inset:0;
-z-index:100;
-display:flex;
-align-items:center;
-justify-content:center;
-background:
-radial-gradient(
-circle at center,
-#174f27,
-#020503 70%
-);
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at center,#12471e 0%,#030803 72%);
 }
 
 .card{
-width:min(94vw,480px);
-padding:30px;
-border-radius:28px;
-
-background:
-rgba(3,13,6,.97);
-
-border:
-1px solid rgba(93,255,130,.7);
-
-box-shadow:
-0 0 100px rgba(50,255,100,.2);
-
-text-align:center;
+  width:min(94vw,470px);
+  padding:28px;
+  border-radius:28px;
+  background:rgba(3,12,5,.97);
+  border:1px solid rgba(91,255,125,.65);
+  box-shadow:0 0 80px rgba(50,255,100,.18);
+  text-align:center;
 }
 
 .logo{
-font-size:75px;
-filter:drop-shadow(
-0 0 20px #55ff77
-);
-animation:float 2s infinite ease-in-out;
+  font-size:72px;
+  animation:float 2s ease-in-out infinite;
 }
 
 @keyframes float{
-
-0%,100%{
-transform:translateY(0);
-}
-
-50%{
-transform:translateY(-9px);
-}
-
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-9px)}
 }
 
 h1{
-margin:5px 0 20px;
-color:#63ff89;
-font-size:36px;
+  margin:5px 0 18px;
+  color:#64ff8a;
+  font-size:36px;
 }
 
 input,select{
-
-width:100%;
-padding:15px;
-margin:6px 0;
-
-border-radius:13px;
-
-border:
-1px solid #285832;
-
-background:#071008;
-
-color:white;
-
-font-size:17px;
-
-text-align:center;
+  width:100%;
+  padding:14px;
+  margin:5px 0;
+  border-radius:12px;
+  border:1px solid #285b34;
+  background:#071008;
+  color:white;
+  font-size:17px;
+  text-align:center;
+  outline:none;
 }
 
 button{
-
-width:100%;
-padding:15px;
-
-margin-top:8px;
-
-border:0;
-
-border-radius:13px;
-
-font-size:17px;
-
-font-weight:bold;
-
-cursor:pointer;
+  width:100%;
+  padding:14px;
+  margin-top:8px;
+  border:0;
+  border-radius:12px;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 .green{
-background:#52ff7a;
-color:#031008;
+  background:#55ff79;
+  color:#031007;
 }
 
 .blue{
-background:#3f91ff;
-color:white;
+  background:#418eff;
+  color:white;
 }
 
 .purple{
-background:#a74fff;
-color:white;
+  background:#a64cff;
+  color:white;
 }
 
 .red{
-background:#3b1519;
-color:#ff9ca3;
+  background:#35151a;
+  color:#ff9da6;
 }
 
-#skinPreview{
-
-display:flex;
-justify-content:center;
-flex-wrap:wrap;
-
-gap:9px;
-
-margin:12px;
+#skins{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:9px;
+  margin:14px 0;
 }
 
 .skin{
-
-width:38px;
-height:38px;
-
-border-radius:50%;
-
-border:
-3px solid transparent;
-
-cursor:pointer;
-
-transition:.15s;
-}
-
-.skin:hover{
-transform:scale(1.15);
+  width:37px;
+  height:37px;
+  border-radius:50%;
+  border:3px solid transparent;
+  cursor:pointer;
 }
 
 .skin.selected{
-
-border-color:white;
-
-box-shadow:
-0 0 18px currentColor;
-
-transform:scale(1.2);
+  border-color:white;
+  box-shadow:0 0 20px currentColor;
+  transform:scale(1.15);
 }
 
 #lobby{
-display:none;
+  display:none;
 }
 
 .roomCode{
-
-font-size:52px;
-
-letter-spacing:9px;
-
-color:#5eff88;
-
-text-shadow:
-0 0 20px #5eff88;
-
-margin:12px;
+  font-size:50px;
+  letter-spacing:8px;
+  color:#5cff87;
+  text-shadow:0 0 20px #5cff87;
+  margin:10px;
 }
 
 .player{
-
-display:flex;
-
-align-items:center;
-
-padding:10px;
-
-margin:5px;
-
-border-radius:11px;
-
-background:#0a1c0e;
+  display:flex;
+  align-items:center;
+  background:#09170c;
+  padding:10px;
+  margin:5px;
+  border-radius:10px;
+  text-align:left;
 }
 
-.dot{
-
-width:16px;
-height:16px;
-
-border-radius:50%;
-
-margin-right:10px;
+.playerDot{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  margin-right:10px;
 }
 
-.host{
-margin-left:auto;
-}
-
-#status{
-margin-top:12px;
-color:#91a696;
+.crown{
+  margin-left:auto;
 }
 
 #hud{
-
-position:fixed;
-
-top:12px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-z-index:20;
-
-display:flex;
-
-gap:7px;
-
-pointer-events:none;
+  position:fixed;
+  z-index:20;
+  top:12px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:7px;
+  pointer-events:none;
 }
 
 .stat{
-
-padding:8px 13px;
-
-border-radius:12px;
-
-background:
-rgba(2,14,6,.9);
-
-border:
-1px solid rgba(100,255,140,.3);
-
-text-align:center;
+  min-width:75px;
+  padding:7px 10px;
+  text-align:center;
+  border-radius:11px;
+  background:rgba(2,14,6,.9);
+  border:1px solid rgba(100,255,140,.3);
 }
 
 .stat small{
-
-display:block;
-
-font-size:9px;
-
-color:#9cac9f;
+  display:block;
+  color:#98aa9d;
+  font-size:9px;
 }
 
 .stat b{
-font-size:18px;
+  font-size:17px;
 }
 
 #leaderboard{
-
-position:fixed;
-
-top:12px;
-
-right:12px;
-
-z-index:20;
-
-width:190px;
-
-padding:12px;
-
-border-radius:16px;
-
-background:
-rgba(2,14,6,.9);
-
-border:
-1px solid rgba(100,255,140,.3);
+  position:fixed;
+  z-index:20;
+  right:12px;
+  top:12px;
+  width:185px;
+  padding:11px;
+  border-radius:15px;
+  background:rgba(2,14,6,.9);
+  border:1px solid rgba(100,255,140,.3);
 }
 
 #leaderboard h3{
-
-margin:0 0 7px;
-
-color:#65ff8b;
+  margin:0 0 7px;
+  color:#65ff8a;
 }
 
 .rank{
-
-display:flex;
-
-justify-content:space-between;
-
-padding:3px;
-
-font-size:12px;
+  display:flex;
+  justify-content:space-between;
+  padding:3px;
+  font-size:12px;
 }
 
 #boost{
-
-position:fixed;
-
-right:25px;
-
-bottom:25px;
-
-z-index:30;
-
-width:105px;
-
-height:105px;
-
-border-radius:50%;
-
-background:
-radial-gradient(
-circle,
-#61c5ff,
-#07519c
-);
-
-border:
-2px solid #a6e1ff;
-
-color:white;
-
-font-size:28px;
-
-box-shadow:
-0 0 35px
-rgba(50,160,255,.55);
+  position:fixed;
+  z-index:30;
+  right:24px;
+  bottom:25px;
+  width:105px;
+  height:105px;
+  border-radius:50%;
+  background:radial-gradient(circle,#65c8ff,#07509b);
+  border:2px solid #a6e4ff;
+  color:white;
+  font-size:28px;
+  box-shadow:0 0 35px rgba(50,160,255,.55);
 }
 
 #boost span{
-
-display:block;
-
-font-size:9px;
+  display:block;
+  font-size:9px;
 }
 
 #joystick{
-
-position:fixed;
-
-left:25px;
-
-bottom:25px;
-
-z-index:30;
-
-width:150px;
-
-height:150px;
-
-border-radius:50%;
-
-background:
-rgba(70,255,120,.07);
-
-border:
-2px solid rgba(100,255,140,.3);
+  position:fixed;
+  z-index:30;
+  left:24px;
+  bottom:25px;
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:rgba(80,255,130,.07);
+  border:2px solid rgba(100,255,140,.3);
 }
 
 #stick{
-
-position:absolute;
-
-left:42px;
-
-top:42px;
-
-width:64px;
-
-height:64px;
-
-border-radius:50%;
-
-background:
-rgba(80,255,130,.5);
-
-border:
-2px solid #9bffae;
-}
-
-#dead{
-
-display:none;
-
-position:fixed;
-
-inset:0;
-
-z-index:200;
-
-align-items:center;
-
-justify-content:center;
-
-background:
-rgba(0,0,0,.65);
-}
-
-.deadCard{
-
-padding:30px;
-
-border-radius:25px;
-
-background:#09150c;
-
-border:
-1px solid #4cff78;
-
-text-align:center;
+  position:absolute;
+  left:42px;
+  top:42px;
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  background:rgba(80,255,130,.5);
+  border:2px solid #a1ffb3;
 }
 
 #toast{
-
-position:fixed;
-
-left:50%;
-
-top:18%;
-
-transform:
-translate(-50%,-50%)
-scale(.8);
-
-z-index:300;
-
-padding:13px 22px;
-
-border-radius:30px;
-
-background:
-rgba(5,20,9,.95);
-
-border:
-1px solid #5eff88;
-
-opacity:0;
-
-pointer-events:none;
-
-transition:.25s;
+  position:fixed;
+  z-index:500;
+  left:50%;
+  top:18%;
+  transform:translate(-50%,-50%) scale(.8);
+  padding:13px 22px;
+  border-radius:30px;
+  background:rgba(4,18,8,.96);
+  border:1px solid #60ff88;
+  opacity:0;
+  transition:.2s;
+  pointer-events:none;
 }
 
 #toast.show{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
 
-opacity:1;
+#dead{
+  display:none;
+  position:fixed;
+  z-index:200;
+  inset:0;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.55);
+}
 
-transform:
-translate(-50%,-50%)
-scale(1);
+.deadCard{
+  padding:30px;
+  text-align:center;
+  border-radius:25px;
+  background:#08140b;
+  border:1px solid #55ff79;
 }
 
 @media(max-width:700px){
-
-#leaderboard{
-width:145px;
-}
-
-#powers{
-display:none;
-}
-
+  #leaderboard{
+    width:145px;
+  }
 }
 
 @media(min-width:701px){
-
-#joystick{
-display:none;
+  #joystick{
+    display:none;
+  }
 }
-
-}
-
 </style>
-
 </head>
 
 <body>
@@ -520,1398 +320,2172 @@ display:none;
 
 <div id="toast"></div>
 
+<!-- MENU -->
 <div id="menu" class="screen">
 
-<div class="card">
+  <div class="card">
 
-<div class="logo">🐍</div>
+    <div class="logo">🐍</div>
 
-<h1>SNAKE ARENA</h1>
+    <h1>SNAKE ARENA</h1>
 
-<input
-id="name"
-maxlength="16"
-placeholder="Sinu nimi">
+    <input id="name" maxlength="16" placeholder="Sinu nimi">
 
-<select id="mode">
+    <select id="mode">
+      <option value="classic">🍎 Classic</option>
+      <option value="battle">⚔️ Battle</option>
+      <option value="power">⚡ Power Arena</option>
+    </select>
 
-<option value="classic">
-🍎 Classic
-</option>
+    <h3>🎨 SKIN</h3>
 
-<option value="battle">
-⚔️ Battle
-</option>
+    <div id="skins"></div>
 
-<option value="power">
-⚡ Power Arena
-</option>
+    <button class="green" onclick="createRoom()">
+      🟢 LOO ROOM
+    </button>
 
-</select>
+    <input id="room" maxlength="6" placeholder="ROOM CODE">
 
-<h3>🎨 VALI SKIN</h3>
+    <button class="blue" onclick="joinRoom()">
+      🔵 LIITU ROOMI
+    </button>
 
-<div id="skinPreview"></div>
+    <p id="connection">
+      🔄 Ühendan serveriga...
+    </p>
 
-<button
-class="green"
-onclick="createRoom()">
-
-🟢 LOO ROOM
-
-</button>
-
-<input
-id="room"
-maxlength="6"
-placeholder="ROOM CODE">
-
-<button
-class="blue"
-onclick="joinRoom()">
-
-🔵 LIITU ROOMI
-
-</button>
-
-<div id="status">
-🔄 Ühendan serveriga...
-</div>
+  </div>
 
 </div>
 
-</div>
-
+<!-- LOBBY -->
 <div id="lobby" class="screen">
 
-<div class="card">
+  <div class="card">
 
-<h1>🐍 LOBBY</h1>
+    <h1>🐍 LOBBY</h1>
 
-<p>Jaga seda koodi oma sõpradega:</p>
+    <p>Jaga sõpradega seda koodi:</p>
 
-<div id="roomCode"
-class="roomCode">
-------
-</div>
+    <div id="roomCode" class="roomCode">
+      ------
+    </div>
 
-<button
-class="purple"
-onclick="copyRoom()">
+    <button class="purple" onclick="copyRoom()">
+      📋 KOPI CODE
+    </button>
 
-📋 KOPI ROOM CODE
+    <h3>👥 MÄNGIJAD</h3>
 
-</button>
+    <div id="players"></div>
 
-<h3>👥 MÄNGIJAD</h3>
+    <p id="waiting">
+      ⏳ Ootame hosti...
+    </p>
 
-<div id="players"></div>
+    <button id="startButton" class="green" onclick="startGame()">
+      🚀 ALUSTA MÄNGU
+    </button>
 
-<p id="waiting">
-⏳ Ootame mängijaid...
-</p>
+    <button class="red" onclick="location.reload()">
+      ← LAHKU
+    </button>
 
-<button
-id="start"
-class="green"
-onclick="startGame()">
-
-🚀 ALUSTA MÄNGU
-
-</button>
-
-<button
-class="red"
-onclick="location.reload()">
-
-← LAHKU ROOMIST
-
-</button>
+  </div>
 
 </div>
 
-</div>
-
+<!-- HUD -->
 <div id="hud">
 
-<div class="stat">
+  <div class="stat">
+    <small>SCORE</small>
+    <b id="score">0</b>
+  </div>
 
-<small>SCORE</small>
+  <div class="stat">
+    <small>LENGTH</small>
+    <b id="length">50</b>
+  </div>
 
-<b id="score">
-0
-</b>
-
-</div>
-
-<div class="stat">
-
-<small>LENGTH</small>
-
-<b id="length">
-65
-</b>
-
-</div>
-
-<div class="stat">
-
-<small>RANK</small>
-
-<b id="rank">
--
-</b>
-
-</div>
+  <div class="stat">
+    <small>RANK</small>
+    <b id="rank">-</b>
+  </div>
 
 </div>
 
 <div id="leaderboard">
 
-<h3>🏆 TOP 8</h3>
+  <h3>🏆 TOP 8</h3>
 
-<div id="board"></div>
+  <div id="board"></div>
 
 </div>
 
 <button id="boost">
-
-⚡
-
-<span>
-BOOST
-</span>
-
+  ⚡
+  <span>BOOST</span>
 </button>
 
 <div id="joystick">
-
-<div id="stick"></div>
-
+  <div id="stick"></div>
 </div>
 
 <div id="dead">
 
-<div class="deadCard">
-
-<h1>💥</h1>
-
-<h2>SAID PIHTA!</h2>
-
-<p>
-Respawn kohe...
-</p>
-
-</div>
+  <div class="deadCard">
+    <h1>💥</h1>
+    <h2>SAID PIHTA!</h2>
+    <p>🐍 Respawn...</p>
+  </div>
 
 </div>
 
 <script>
 
-const SERVER =
-"wss://snake-riu3.onrender.com";
+/* =========================
+   SEADISTUSED
+========================= */
 
-const SKINS=[
-"#55ff72",
-"#42a5ff",
-"#ff45d4",
-"#ffe033",
-"#ff713d",
-"#a855ff",
-"#00eaff",
-"#ff4268",
-"#ffffff",
-"#9dff32",
-"#ff9f1c",
-"#00ffc8"
+const SERVER =
+  "wss://snake-riu3.onrender.com";
+
+const WORLD = 12000;
+
+const SKINS = [
+  "#55ff72",
+  "#42a5ff",
+  "#ff45d4",
+  "#ffe033",
+  "#ff713d",
+  "#a855ff",
+  "#00eaff",
+  "#ff4268",
+  "#ffffff",
+  "#9dff32",
+  "#ff9f1c",
+  "#00ffc8"
 ];
 
-let selectedSkin=
-Number(
-localStorage.getItem("snakeSkin")||0
-);
+let selectedSkin =
+  Number(localStorage.getItem("snakeSkin") || 0);
 
-let ws;
-let myId=null;
-let roomCode=null;
-let host=false;
-let started=false;
+let ws = null;
+let myId = null;
+let roomCode = null;
+let isHost = false;
+let gameStarted = false;
 
-let state={
-world:12000,
-players:{},
-food:[],
-powers:[]
+let remotePlayers = {};
+
+let camera = {
+  x:WORLD/2,
+  y:WORLD/2
 };
 
-let camera={
-x:6000,
-y:6000
+let canvas =
+  document.getElementById("game");
+
+let ctx =
+  canvas.getContext("2d");
+
+let audio = null;
+
+
+/* =========================
+   MINU MÄNGIJA
+========================= */
+
+let me = {
+
+  x:WORLD/2,
+  y:WORLD/2,
+
+  angle:0,
+  targetAngle:0,
+
+  speed:4.8,
+
+  score:0,
+  length:50,
+
+  alive:true,
+
+  boosting:false,
+
+  shield:0,
+  magnet:0,
+  speedPower:0,
+  double:0,
+
+  snake:[]
+
 };
 
-let mouse={
-x:innerWidth/2,
-y:innerHeight/2
-};
 
-let audio=null;
+/* =========================
+   TOIT
+========================= */
 
-function sound(type){
+let food = [];
 
-try{
+let powers = [];
 
-if(!audio){
-audio=
-new (window.AudioContext||
-window.webkitAudioContext)();
-}
+let particles = [];
 
-const osc=
-audio.createOscillator();
 
-const gain=
-audio.createGain();
-
-osc.connect(gain);
-gain.connect(audio.destination);
-
-let freq=400;
-
-if(type==="eat")freq=650;
-if(type==="power")freq=900;
-if(type==="boost")freq=180;
-if(type==="death")freq=90;
-if(type==="start")freq=520;
-
-osc.frequency.value=freq;
-
-gain.gain.setValueAtTime(
-.0001,
-audio.currentTime
-);
-
-gain.gain.exponentialRampToValueAtTime(
-.06,
-audio.currentTime+.02
-);
-
-gain.gain.exponentialRampToValueAtTime(
-.0001,
-audio.currentTime+.12
-);
-
-osc.start();
-
-osc.stop(
-audio.currentTime+.13
-);
-
-}catch{}
-
-}
-
-function toast(text){
-
-const t=
-document.getElementById("toast");
-
-t.textContent=text;
-
-t.classList.add("show");
-
-setTimeout(()=>{
-t.classList.remove("show");
-},1600);
-
-}
+/* =========================
+   SKINID
+========================= */
 
 function renderSkins(){
 
-const box=
-document.getElementById(
-"skinPreview"
-);
+  const box =
+    document.getElementById("skins");
 
-box.innerHTML="";
+  box.innerHTML = "";
 
-SKINS.forEach((color,i)=>{
+  SKINS.forEach((color,index)=>{
 
-const el=
-document.createElement("div");
+    const s =
+      document.createElement("div");
 
-el.className="skin";
+    s.className="skin";
 
-el.style.background=color;
+    s.style.background=color;
 
-if(i===selectedSkin){
-el.classList.add("selected");
-}
+    if(index===selectedSkin){
+      s.classList.add("selected");
+    }
 
-el.onclick=()=>{
+    s.onclick=()=>{
 
-selectedSkin=i;
+      selectedSkin=index;
 
-localStorage.setItem(
-"snakeSkin",
-i
-);
+      localStorage.setItem(
+        "snakeSkin",
+        index
+      );
 
-renderSkins();
+      renderSkins();
 
-sound("power");
+      beep("power");
 
-};
+    };
 
-box.appendChild(el);
+    box.appendChild(s);
 
-});
+  });
 
 }
 
 renderSkins();
 
-function send(data){
 
-if(
-ws &&
-ws.readyState===WebSocket.OPEN
-){
+/* =========================
+   AUDIO
+========================= */
 
-ws.send(
-JSON.stringify(data)
-);
+function beep(type){
+
+  try{
+
+    if(!audio){
+
+      audio =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
+    }
+
+    const osc =
+      audio.createOscillator();
+
+    const gain =
+      audio.createGain();
+
+    osc.connect(gain);
+    gain.connect(audio.destination);
+
+    let freq=400;
+
+    if(type==="eat") freq=650;
+    if(type==="power") freq=900;
+    if(type==="boost") freq=180;
+    if(type==="death") freq=90;
+    if(type==="start") freq=520;
+
+    osc.frequency.value=freq;
+
+    gain.gain.setValueAtTime(
+      .0001,
+      audio.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .045,
+      audio.currentTime+.02
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .0001,
+      audio.currentTime+.12
+    );
+
+    osc.start();
+
+    osc.stop(
+      audio.currentTime+.13
+    );
+
+  }catch(e){}
 
 }
 
+
+/* =========================
+   TOAST
+========================= */
+
+function toast(text){
+
+  const t =
+    document.getElementById("toast");
+
+  t.textContent=text;
+
+  t.classList.add("show");
+
+  setTimeout(()=>{
+    t.classList.remove("show");
+  },1400);
+
 }
+
+
+/* =========================
+   WEBSOCKET
+========================= */
 
 function connect(){
 
-ws=
-new WebSocket(SERVER);
+  ws =
+    new WebSocket(SERVER);
 
-ws.onopen=()=>{
+  ws.onopen=()=>{
 
-document.getElementById(
-"status"
-).textContent=
-"🟢 SERVER ÜHENDATUD";
+    document.getElementById(
+      "connection"
+    ).textContent=
+      "🟢 SERVER ÜHENDATUD";
 
-};
+  };
 
-ws.onmessage=e=>{
+  ws.onmessage=(event)=>{
 
-let data;
+    let data;
 
-try{
-data=JSON.parse(e.data);
-}catch{
-return;
-}
+    try{
+      data=JSON.parse(event.data);
+    }catch{
+      return;
+    }
 
-if(data.type==="connected"){
-myId=data.id;
-}
+    if(data.type==="connected"){
 
-if(data.type==="roomCreated"){
+      myId=data.id;
 
-roomCode=data.room;
-host=true;
+    }
 
-showLobby();
+    if(data.type==="roomCreated"){
 
-toast("Room loodud! 🐍");
+      roomCode=data.room;
 
-}
+      isHost=true;
 
-if(data.type==="roomJoined"){
+      showLobby();
 
-roomCode=data.room;
-host=false;
+      toast("🐍 Room loodud!");
 
-showLobby();
+    }
 
-toast("Liitusid roomiga!");
+    if(data.type==="roomJoined"){
 
-}
+      roomCode=data.room;
 
-if(data.type==="lobby"){
+      isHost=false;
 
-roomCode=data.room;
+      showLobby();
 
-host=
-data.host===myId;
+      toast("👥 Liitusid!");
 
-updateLobby(data);
+    }
 
-}
+    if(data.type==="lobby"){
 
-if(data.type==="gameStarted"){
+      roomCode=data.room;
 
-started=true;
+      isHost=data.host===myId;
 
-document.getElementById(
-"lobby"
-).style.display="none";
+      updateLobby(data);
 
-sound("start");
+    }
 
-toast("🚀 MÄNG ALGAS!");
+    if(data.type==="gameStarted"){
 
-}
+      startLocalGame();
 
-if(data.type==="state"){
+    }
 
-state=data.state;
+    if(data.type==="state"){
 
-if(state.started){
-started=true;
-}
+      processServerState(data.state);
 
-updateUI();
+    }
 
-}
+    if(data.type==="error"){
 
-if(data.type==="error"){
+      toast(data.message);
 
-toast("❌ "+data.message);
+    }
 
-}
+  };
 
-};
+  ws.onclose=()=>{
 
-ws.onclose=()=>{
+    document.getElementById(
+      "connection"
+    ).textContent=
+      "🔴 Serveriga pole ühendust";
 
-document.getElementById(
-"status"
-).textContent=
-"🔴 SERVERIGA POLE ÜHENDUST";
-
-};
+  };
 
 }
 
 connect();
 
-function createRoom(){
 
-const name=
-document.getElementById(
-"name"
-).value.trim();
+/* =========================
+   ROOM
+========================= */
 
-if(!name){
+function send(data){
 
-toast("Kirjuta nimi!");
+  if(
+    ws &&
+    ws.readyState===WebSocket.OPEN
+  ){
 
-return;
+    ws.send(
+      JSON.stringify(data)
+    );
+
+  }
+
 }
 
-send({
+function createRoom(){
 
-type:"createRoom",
+  const name =
+    document.getElementById(
+      "name"
+    ).value.trim();
 
-name,
+  if(!name){
 
-skin:selectedSkin,
+    toast("Kirjuta nimi!");
 
-mode:
-document.getElementById(
-"mode"
-).value
+    return;
+  }
 
-});
+  send({
+
+    type:"createRoom",
+
+    name:name,
+
+    skin:selectedSkin,
+
+    mode:
+      document.getElementById(
+        "mode"
+      ).value
+
+  });
 
 }
 
 function joinRoom(){
 
-const name=
-document.getElementById(
-"name"
-).value.trim();
+  const name =
+    document.getElementById(
+      "name"
+    ).value.trim();
 
-const code=
-document.getElementById(
-"room"
-).value
-.trim()
-.toUpperCase();
+  const code =
+    document.getElementById(
+      "room"
+    ).value
+    .trim()
+    .toUpperCase();
 
-if(!name){
+  if(!name){
 
-toast("Kirjuta nimi!");
+    toast("Kirjuta nimi!");
 
-return;
-}
+    return;
+  }
 
-if(code.length!==6){
+  if(code.length!==6){
 
-toast("Room code peab olema 6 märki!");
+    toast("Room code peab olema 6 märki!");
 
-return;
-}
+    return;
+  }
 
-send({
+  send({
 
-type:"joinRoom",
+    type:"joinRoom",
 
-name,
+    name:name,
 
-room:code,
+    room:code,
 
-skin:selectedSkin
+    skin:selectedSkin
 
-});
+  });
 
 }
 
 function showLobby(){
 
-document.getElementById(
-"menu"
-).style.display="none";
+  document.getElementById(
+    "menu"
+  ).style.display="none";
 
-document.getElementById(
-"lobby"
-).style.display="flex";
+  document.getElementById(
+    "lobby"
+  ).style.display="flex";
 
-document.getElementById(
-"roomCode"
-).textContent=roomCode;
+  document.getElementById(
+    "roomCode"
+  ).textContent=roomCode;
 
 }
 
 function updateLobby(data){
 
-const box=
-document.getElementById(
-"players"
-);
+  const box =
+    document.getElementById(
+      "players"
+    );
 
-box.innerHTML="";
+  box.innerHTML="";
 
-data.players.forEach(p=>{
+  data.players.forEach(p=>{
 
-const row=
-document.createElement("div");
+    const row =
+      document.createElement("div");
 
-row.className="player";
+    row.className="player";
 
-const dot=
-document.createElement("span");
+    row.innerHTML=`
 
-dot.className="dot";
+      <span
+        class="playerDot"
+        style="background:${p.skin}">
+      </span>
 
-dot.style.background=p.skin;
+      <span>${safe(p.name)}</span>
 
-const name=
-document.createElement("span");
+      ${
+        p.id===data.host
+        ? '<span class="crown">👑</span>'
+        : ''
+      }
 
-name.textContent=p.name;
+    `;
 
-row.appendChild(dot);
-row.appendChild(name);
+    box.appendChild(row);
 
-if(p.id===data.host){
+  });
 
-const crown=
-document.createElement("span");
+  document.getElementById(
+    "startButton"
+  ).style.display =
+    isHost
+    ? "block"
+    : "none";
 
-crown.className="host";
-
-crown.textContent="👑";
-
-row.appendChild(crown);
-
-}
-
-box.appendChild(row);
-
-});
-
-const start=
-document.getElementById("start");
-
-start.style.display=
-host?"block":"none";
-
-document.getElementById(
-"waiting"
-).textContent=
-host
-?"👑 Sina oled host — vajuta START!"
-:"⏳ Ootame hosti...";
+  document.getElementById(
+    "waiting"
+  ).textContent =
+    isHost
+    ? "👑 Sina oled host — vajuta START!"
+    : "⏳ Ootame hosti...";
 
 }
 
 function startGame(){
 
-if(!host){
+  if(!isHost){
 
-toast(
-"❌ Ainult host saab alustada!"
-);
+    toast(
+      "❌ Ainult host saab alustada!"
+    );
 
-return;
-}
+    return;
+  }
 
-send({
-type:"startGame"
-});
+  send({
+    type:"startGame"
+  });
 
 }
 
 function copyRoom(){
 
-navigator.clipboard
-.writeText(roomCode)
-.then(()=>{
-
-toast(
-"📋 Room code kopeeritud!"
-);
-
-});
-
-}
-
-function aim(angle){
-
-send({
-type:"aim",
-angle
-});
+  navigator.clipboard
+    .writeText(roomCode)
+    .then(()=>{
+      toast("📋 Code kopeeritud!");
+    })
+    .catch(()=>{
+      toast(roomCode);
+    });
 
 }
 
-setInterval(()=>{
 
-if(!started)return;
+/* =========================
+   SERVER STATE
+========================= */
 
-const angle=
-Math.atan2(
-mouse.y-innerHeight/2,
-mouse.x-innerWidth/2
-);
+function processServerState(serverState){
 
-aim(angle);
+  if(!serverState)return;
 
-},50);
+  remotePlayers={};
+
+  for(
+    const [id,p]
+    of Object.entries(
+      serverState.players || {}
+    )
+  ){
+
+    if(id===myId){
+
+      /*
+        ÄRA võta serverilt
+        minu X/Y liikumist.
+
+        See oli vana probleemi
+        peamine põhjus.
+      */
+
+      if(p.score > me.score){
+        beep("eat");
+      }
+
+      me.score=p.score;
+      me.length=p.length;
+
+      me.shield=p.shield||0;
+      me.magnet=p.magnet||0;
+      me.speedPower=p.speedPower||0;
+      me.double=p.double||0;
+
+      continue;
+    }
+
+    remotePlayers[id]=p;
+
+  }
+
+}
+
+
+/* =========================
+   MÄNGU START
+========================= */
+
+function startLocalGame(){
+
+  if(gameStarted)return;
+
+  gameStarted=true;
+
+  document.getElementById(
+    "lobby"
+  ).style.display="none";
+
+  resetPlayer();
+
+  beep("start");
+
+  toast("🚀 MÄNG ALGAS!");
+
+}
+
+function resetPlayer(){
+
+  me.x =
+    WORLD/2 +
+    Math.random()*800-400;
+
+  me.y =
+    WORLD/2 +
+    Math.random()*800-400;
+
+  me.angle=
+    Math.random()*Math.PI*2;
+
+  me.targetAngle=me.angle;
+
+  me.score=0;
+
+  me.length=50;
+
+  me.alive=true;
+
+  me.boosting=false;
+
+  me.snake=[];
+
+  for(let i=0;i<me.length;i++){
+
+    me.snake.push({
+
+      x:
+        me.x-
+        Math.cos(me.angle)*i*7,
+
+      y:
+        me.y-
+        Math.sin(me.angle)*i*7
+
+    });
+
+  }
+
+}
+
+
+/* =========================
+   LOCAL FOOD
+========================= */
+
+function createFood(){
+
+  food=[];
+
+  for(let i=0;i<1000;i++){
+
+    food.push({
+
+      x:Math.random()*WORLD,
+
+      y:Math.random()*WORLD,
+
+      size:
+        Math.random()<.04
+        ? 10
+        : 5,
+
+      value:
+        Math.random()<.04
+        ? 10
+        : 1,
+
+      type:
+        Math.random()<.04
+        ? "gold"
+        : "normal",
+
+      pulse:
+        Math.random()*10
+
+    });
+
+  }
+
+}
+
+createFood();
+
+
+/* =========================
+   POWERUPS
+========================= */
+
+function createPowers(){
+
+  powers=[];
+
+  const types=[
+    "speed",
+    "magnet",
+    "shield",
+    "double"
+  ];
+
+  for(let i=0;i<18;i++){
+
+    powers.push({
+
+      x:300+
+        Math.random()*
+        (WORLD-600),
+
+      y:300+
+        Math.random()*
+        (WORLD-600),
+
+      type:
+        types[
+          Math.floor(
+            Math.random()*types.length
+          )
+        ]
+
+    });
+
+  }
+
+}
+
+createPowers();
+
+
+/* =========================
+   INPUT
+========================= */
+
+let mouseX=innerWidth/2;
+let mouseY=innerHeight/2;
 
 addEventListener(
-"mousemove",
-e=>{
+  "mousemove",
+  e=>{
 
-mouse.x=e.clientX;
-mouse.y=e.clientY;
+    mouseX=e.clientX;
+    mouseY=e.clientY;
 
-});
+  }
+);
+
+function updateAim(){
+
+  if(!gameStarted)return;
+
+  const dx =
+    mouseX-
+    innerWidth/2;
+
+  const dy =
+    mouseY-
+    innerHeight/2;
+
+  if(Math.hypot(dx,dy)>20){
+
+    me.targetAngle =
+      Math.atan2(dy,dx);
+
+  }
+
+}
 
 let boosting=false;
 
-function setBoost(v){
+function setBoost(value){
 
-if(boosting===v)return;
+  if(!gameStarted)return;
 
-boosting=v;
+  boosting=value;
 
-send({
-type:"boost",
-active:v
-});
+  me.boosting=value;
 
-if(v){
-sound("boost");
-}
+  send({
+
+    type:"boost",
+
+    active:value
+
+  });
+
+  if(value){
+    beep("boost");
+  }
 
 }
 
 addEventListener(
-"keydown",
-e=>{
+  "keydown",
+  e=>{
 
-if(
-e.code==="ShiftLeft"||
-e.code==="ShiftRight"||
-e.code==="Space"
-){
+    if(
+      e.code==="ShiftLeft"||
+      e.code==="ShiftRight"||
+      e.code==="Space"
+    ){
 
-e.preventDefault();
+      e.preventDefault();
 
-setBoost(true);
+      setBoost(true);
 
-}
+    }
 
-});
+  }
+);
 
 addEventListener(
-"keyup",
-e=>{
+  "keyup",
+  e=>{
 
-if(
-e.code==="ShiftLeft"||
-e.code==="ShiftRight"||
-e.code==="Space"
-){
+    if(
+      e.code==="ShiftLeft"||
+      e.code==="ShiftRight"||
+      e.code==="Space"
+    ){
 
-e.preventDefault();
+      e.preventDefault();
 
-setBoost(false);
+      setBoost(false);
 
-}
+    }
 
-});
-
-const boost=
-document.getElementById(
-"boost"
+  }
 );
 
-boost.addEventListener(
-"touchstart",
-e=>{
 
-e.preventDefault();
+/* =========================
+   BOOST BUTTON
+========================= */
 
-setBoost(true);
+const boostButton =
+  document.getElementById(
+    "boost"
+  );
 
-},
-{passive:false}
+boostButton.addEventListener(
+  "touchstart",
+  e=>{
+
+    e.preventDefault();
+
+    setBoost(true);
+
+  },
+  {passive:false}
 );
 
-boost.addEventListener(
-"touchend",
-e=>{
+boostButton.addEventListener(
+  "touchend",
+  e=>{
 
-e.preventDefault();
+    e.preventDefault();
 
-setBoost(false);
+    setBoost(false);
 
-},
-{passive:false}
+  },
+  {passive:false}
 );
 
-const joystick=
-document.getElementById(
-"joystick"
-);
 
-const stick=
-document.getElementById(
-"stick"
-);
+/* =========================
+   JOYSTICK
+========================= */
+
+const joystick =
+  document.getElementById(
+    "joystick"
+  );
+
+const stick =
+  document.getElementById(
+    "stick"
+  );
 
 let joystickActive=false;
 
-function joystickMove(x,y){
+function moveJoystick(x,y){
 
-const r=
-joystick.getBoundingClientRect();
+  const rect =
+    joystick.getBoundingClientRect();
 
-const cx=
-r.left+r.width/2;
+  const cx =
+    rect.left+
+    rect.width/2;
 
-const cy=
-r.top+r.height/2;
+  const cy =
+    rect.top+
+    rect.height/2;
 
-let dx=x-cx;
-let dy=y-cy;
+  let dx=x-cx;
+  let dy=y-cy;
 
-const max=52;
+  const max=50;
 
-const len=
-Math.hypot(dx,dy);
+  const length=
+    Math.hypot(dx,dy);
 
-if(len>max){
+  if(length>max){
 
-dx=dx/len*max;
-dy=dy/len*max;
+    dx=dx/length*max;
+    dy=dy/length*max;
+
+  }
+
+  stick.style.left=
+    42+dx+"px";
+
+  stick.style.top=
+    42+dy+"px";
+
+  if(Math.hypot(dx,dy)>8){
+
+    me.targetAngle=
+      Math.atan2(dy,dx);
+
+  }
 
 }
 
-stick.style.left=
-42+dx+"px";
+joystick.addEventListener(
+  "touchstart",
+  e=>{
 
-stick.style.top=
-42+dy+"px";
+    e.preventDefault();
 
-aim(
-Math.atan2(dy,dx)
+    joystickActive=true;
+
+    const t=e.touches[0];
+
+    moveJoystick(
+      t.clientX,
+      t.clientY
+    );
+
+  },
+  {passive:false}
 );
+
+joystick.addEventListener(
+  "touchmove",
+  e=>{
+
+    if(!joystickActive)return;
+
+    e.preventDefault();
+
+    const t=e.touches[0];
+
+    moveJoystick(
+      t.clientX,
+      t.clientY
+    );
+
+  },
+  {passive:false}
+);
+
+joystick.addEventListener(
+  "touchend",
+  ()=>{
+
+    joystickActive=false;
+
+    stick.style.left="42px";
+    stick.style.top="42px";
+
+  }
+);
+
+
+/* =========================
+   ANGLE
+========================= */
+
+function angleDifference(a,b){
+
+  let d=b-a;
+
+  while(d>Math.PI){
+    d-=Math.PI*2;
+  }
+
+  while(d<-Math.PI){
+    d+=Math.PI*2;
+  }
+
+  return d;
 
 }
 
-joystick.addEventListener(
-"touchstart",
-e=>{
 
-joystickActive=true;
+/* =========================
+   LOCAL MOVEMENT
+========================= */
 
-const t=e.touches[0];
+let lastTime=
+  performance.now();
 
-joystickMove(
-t.clientX,
-t.clientY
-);
+function updateGame(){
 
-},
-{passive:false}
-);
+  const now=
+    performance.now();
 
-joystick.addEventListener(
-"touchmove",
-e=>{
+  let dt=
+    Math.min(
+      2,
+      (now-lastTime)/16.67
+    );
 
-if(!joystickActive)return;
+  lastTime=now;
 
-e.preventDefault();
+  if(!gameStarted){
+    return;
+  }
 
-const t=e.touches[0];
+  if(!me.alive){
 
-joystickMove(
-t.clientX,
-t.clientY
-);
+    return;
 
-},
-{passive:false}
-);
+  }
 
-joystick.addEventListener(
-"touchend",
-()=>{
+  updateAim();
 
-joystickActive=false;
+  const turn=
+    angleDifference(
+      me.angle,
+      me.targetAngle
+    );
 
-stick.style.left="42px";
-stick.style.top="42px";
+  me.angle +=
+    Math.max(
+      -.13*dt,
+      Math.min(
+        .13*dt,
+        turn
+      )
+    );
 
-},
-{passive:false}
-);
+  let speed=4.8;
+
+  if(me.speedPower>0){
+    speed=7.5;
+    me.speedPower-=dt;
+  }
+
+  if(me.boosting){
+
+    speed=8.5;
+
+    me.length-=
+      .08*dt;
+
+    if(me.length<30){
+
+      me.boosting=false;
+
+      boosting=false;
+
+    }
+
+  }
+
+  me.x +=
+    Math.cos(me.angle)*
+    speed*
+    dt;
+
+  me.y +=
+    Math.sin(me.angle)*
+    speed*
+    dt;
+
+  /* maailma */
+
+  if(me.x<30){
+
+    me.x=30;
+
+    me.angle=
+      Math.PI-me.angle;
+
+  }
+
+  if(me.x>WORLD-30){
+
+    me.x=WORLD-30;
+
+    me.angle=
+      Math.PI-me.angle;
+
+  }
+
+  if(me.y<30){
+
+    me.y=30;
+
+    me.angle=
+      -me.angle;
+
+  }
+
+  if(me.y>WORLD-30){
+
+    me.y=WORLD-30;
+
+    me.angle=
+      -me.angle;
+
+  }
+
+  /* pea */
+
+  me.snake.unshift({
+
+    x:me.x,
+
+    y:me.y
+
+  });
+
+  const wanted=
+    Math.max(
+      30,
+      Math.floor(me.length)
+    );
+
+  while(
+    me.snake.length>wanted
+  ){
+
+    me.snake.pop();
+
+  }
+
+  collectFood();
+
+  collectPowerups();
+
+  updateCamera();
+
+  sendPosition();
+
+}
+
+
+/* =========================
+   SERVERILE POSITSIOON
+========================= */
+
+let lastSend=0;
+
+function sendPosition(){
+
+  const now=Date.now();
+
+  if(now-lastSend<70)return;
+
+  lastSend=now;
+
+  send({
+
+    type:"aim",
+
+    angle:me.angle
+
+  });
+
+}
+
+
+/* =========================
+   TOIDU KORJAMINE
+========================= */
+
+function collectFood(){
+
+  for(
+    let i=food.length-1;
+    i>=0;
+    i--
+  ){
+
+    const f=food[i];
+
+    const dx=
+      me.x-f.x;
+
+    const dy=
+      me.y-f.y;
+
+    if(
+      dx*dx+
+      dy*dy<
+      32*32
+    ){
+
+      let value=f.value;
+
+      if(me.double>0){
+        value*=2;
+      }
+
+      me.score+=value;
+
+      me.length+=
+        value*2;
+
+      spawnParticles(
+        f.x,
+        f.y,
+        f.type==="gold"
+        ?"gold"
+        :"green"
+      );
+
+      beep("eat");
+
+      food.splice(i,1);
+
+      food.push({
+
+        x:Math.random()*WORLD,
+
+        y:Math.random()*WORLD,
+
+        size:
+          Math.random()<.04
+          ?10
+          :5,
+
+        value:
+          Math.random()<.04
+          ?10
+          :1,
+
+        type:
+          Math.random()<.04
+          ?"gold"
+          :"normal",
+
+        pulse:
+          Math.random()*10
+
+      });
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   POWERUP KORJAMINE
+========================= */
+
+function collectPowerups(){
+
+  for(
+    let i=powers.length-1;
+    i>=0;
+    i--
+  ){
+
+    const p=powers[i];
+
+    if(
+      Math.hypot(
+        me.x-p.x,
+        me.y-p.y
+      )<38
+    ){
+
+      if(p.type==="speed")
+        me.speedPower=600;
+
+      if(p.type==="magnet")
+        me.magnet=800;
+
+      if(p.type==="shield")
+        me.shield=900;
+
+      if(p.type==="double")
+        me.double=900;
+
+      spawnParticles(
+        p.x,
+        p.y,
+        "power"
+      );
+
+      beep("power");
+
+      toast(
+        p.type==="speed"
+        ?"⚡ SPEED!"
+        :p.type==="magnet"
+        ?"🧲 MAGNET!"
+        :p.type==="shield"
+        ?"🛡️ SHIELD!"
+        :"×2 SCORE!"
+      );
+
+      powers.splice(i,1);
+
+      setTimeout(()=>{
+
+        powers.push({
+
+          x:300+
+            Math.random()*
+            (WORLD-600),
+
+          y:300+
+            Math.random()*
+            (WORLD-600),
+
+          type:[
+            "speed",
+            "magnet",
+            "shield",
+            "double"
+          ][
+            Math.floor(
+              Math.random()*4
+            )
+          ]
+
+        });
+
+      },5000);
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   KAAMERA
+========================= */
 
 function updateCamera(){
 
-const me=
-state.players[myId];
+  camera.x +=
+    (me.x-camera.x)*
+    .13;
 
-if(!me)return;
-
-camera.x+=
-(me.x-camera.x)*.12;
-
-camera.y+=
-(me.y-camera.y)*.12;
+  camera.y +=
+    (me.y-camera.y)*
+    .13;
 
 }
 
-function updateUI(){
 
-const me=
-state.players[myId];
+/* =========================
+   PARTIKLID
+========================= */
 
-if(!me)return;
+function spawnParticles(x,y,type){
 
-document.getElementById(
-"score"
-).textContent=
-Math.floor(me.score);
+  for(let i=0;i<12;i++){
 
-document.getElementById(
-"length"
-).textContent=
-Math.floor(me.length);
+    particles.push({
 
-document.getElementById(
-"dead"
-).style.display=
-me.alive
-?"none"
-:"flex";
+      x,
+      y,
 
-const players=
-Object.values(
-state.players
-)
-.sort(
-(a,b)=>b.score-a.score
-);
+      vx:
+        Math.cos(
+          Math.random()*Math.PI*2
+        )*
+        (1+Math.random()*3),
 
-const rank=
-players.findIndex(
-p=>p.id===myId
-)+1;
+      vy:
+        Math.sin(
+          Math.random()*Math.PI*2
+        )*
+        (1+Math.random()*3),
 
-document.getElementById(
-"rank"
-).textContent=
-rank;
+      life:1,
 
-const board=
-document.getElementById(
-"board"
-);
+      type
 
-board.innerHTML="";
+    });
 
-players
-.slice(0,8)
-.forEach((p,i)=>{
-
-const row=
-document.createElement("div");
-
-row.className="rank";
-
-row.innerHTML=
-`
-<span>
-${i+1}. ${safe(p.name)}
-</span>
-<b>
-${Math.floor(p.score)}
-</b>
-`;
-
-board.appendChild(row);
-
-});
+  }
 
 }
 
-function safe(s){
+function updateParticles(){
 
-return String(s)
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;");
+  for(
+    let i=particles.length-1;
+    i>=0;
+    i--
+  ){
+
+    const p=particles[i];
+
+    p.x+=p.vx;
+    p.y+=p.vy;
+
+    p.life-=.035;
+
+    if(p.life<=0){
+      particles.splice(i,1);
+    }
+
+  }
 
 }
 
-const canvas=
-document.getElementById("game");
 
-const ctx=
-canvas.getContext("2d");
+/* =========================
+   CANVAS
+========================= */
 
 function resize(){
 
-canvas.width=
-innerWidth*devicePixelRatio;
+  canvas.width=
+    innerWidth*
+    devicePixelRatio;
 
-canvas.height=
-innerHeight*devicePixelRatio;
+  canvas.height=
+    innerHeight*
+    devicePixelRatio;
 
-ctx.setTransform(
-devicePixelRatio,
-0,
-0,
-devicePixelRatio,
-0,
-0
-);
+  canvas.style.width=
+    innerWidth+"px";
+
+  canvas.style.height=
+    innerHeight+"px";
+
+  ctx.setTransform(
+    devicePixelRatio,
+    0,
+    0,
+    devicePixelRatio,
+    0,
+    0
+  );
 
 }
 
 addEventListener(
-"resize",
-resize
+  "resize",
+  resize
 );
 
 resize();
 
+
+/* =========================
+   JOONISTA
+========================= */
+
 function draw(){
 
-requestAnimationFrame(draw);
+  requestAnimationFrame(draw);
 
-ctx.clearRect(
-0,
-0,
-innerWidth,
-innerHeight
-);
+  ctx.clearRect(
+    0,
+    0,
+    innerWidth,
+    innerHeight
+  );
 
-if(!started)return;
+  if(!gameStarted)return;
 
-updateCamera();
+  const zoom=1.55;
 
-const zoom=1.38;
+  ctx.save();
 
-ctx.save();
+  ctx.translate(
+    innerWidth/2,
+    innerHeight/2
+  );
 
-ctx.translate(
-innerWidth/2,
-innerHeight/2
-);
+  ctx.scale(
+    zoom,
+    zoom
+  );
 
-ctx.scale(
-zoom,
-zoom
-);
+  ctx.translate(
+    -camera.x,
+    -camera.y
+  );
 
-ctx.translate(
--camera.x,
--camera.y
-);
+  const viewW=
+    innerWidth/zoom;
 
-/* BACKGROUND */
+  const viewH=
+    innerHeight/zoom;
 
-ctx.fillStyle="#06180a";
+  /* TAUST */
 
-ctx.fillRect(
-0,
-0,
-state.world,
-state.world
-);
+  ctx.fillStyle="#06190a";
 
-/* GRID */
+  ctx.fillRect(
+    0,
+    0,
+    WORLD,
+    WORLD
+  );
 
-const grid=150;
+  /* GRID */
 
-ctx.strokeStyle=
-"rgba(100,255,130,.035)";
+  const grid=150;
 
-ctx.lineWidth=2;
+  const left=
+    camera.x-viewW/2-100;
 
-const left=
-camera.x-
-innerWidth/(2*zoom);
+  const right=
+    camera.x+viewW/2+100;
 
-const right=
-camera.x+
-innerWidth/(2*zoom);
+  const top=
+    camera.y-viewH/2-100;
 
-const top=
-camera.y-
-innerHeight/(2*zoom);
+  const bottom=
+    camera.y+viewH/2+100;
 
-const bottom=
-camera.y+
-innerHeight/(2*zoom);
+  ctx.strokeStyle=
+    "rgba(100,255,130,.045)";
 
-for(
-let x=Math.floor(left/grid)*grid;
-x<right;
-x+=grid
+  ctx.lineWidth=1;
+
+  for(
+    let x=Math.floor(left/grid)*grid;
+    x<right;
+    x+=grid
+  ){
+
+    ctx.beginPath();
+
+    ctx.moveTo(x,top);
+    ctx.lineTo(x,bottom);
+
+    ctx.stroke();
+
+  }
+
+  for(
+    let y=Math.floor(top/grid)*grid;
+    y<bottom;
+    y+=grid
+  ){
+
+    ctx.beginPath();
+
+    ctx.moveTo(left,y);
+    ctx.lineTo(right,y);
+
+    ctx.stroke();
+
+  }
+
+  /* KAARDI ÄÄR */
+
+  ctx.strokeStyle="#54ff79";
+
+  ctx.lineWidth=25;
+
+  ctx.strokeRect(
+    0,
+    0,
+    WORLD,
+    WORLD
+  );
+
+  /* FOOD */
+
+  for(const f of food){
+
+    if(
+      f.x<left-50||
+      f.x>right+50||
+      f.y<top-50||
+      f.y>bottom+50
+    )continue;
+
+    const pulse=
+      Math.sin(
+        Date.now()/180+
+        f.pulse
+      )*1.5;
+
+    const color=
+      f.type==="gold"
+      ?" #ffe43f"
+      :"#ff5574";
+
+    ctx.fillStyle=color;
+
+    ctx.shadowColor=color;
+
+    ctx.shadowBlur=14;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      f.x,
+      f.y,
+      f.size+pulse,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+  }
+
+  ctx.shadowBlur=0;
+
+  /* POWERUPS */
+
+  for(const p of powers){
+
+    if(
+      p.x<left-60||
+      p.x>right+60||
+      p.y<top-60||
+      p.y>bottom+60
+    )continue;
+
+    let color="#fff";
+    let icon="?";
+
+    if(p.type==="speed"){
+      color="#42b9ff";
+      icon="⚡";
+    }
+
+    if(p.type==="magnet"){
+      color="#ff42dc";
+      icon="🧲";
+    }
+
+    if(p.type==="shield"){
+      color="#668aff";
+      icon="🛡";
+    }
+
+    if(p.type==="double"){
+      color="#ffd83f";
+      icon="×2";
+    }
+
+    const pulse=
+      Math.sin(
+        Date.now()/160
+      )*4;
+
+    ctx.fillStyle=color;
+
+    ctx.shadowColor=color;
+
+    ctx.shadowBlur=25;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x,
+      p.y,
+      22+pulse,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.shadowBlur=0;
+
+    ctx.font="bold 18px Arial";
+
+    ctx.textAlign="center";
+
+    ctx.textBaseline="middle";
+
+    ctx.fillStyle="white";
+
+    ctx.fillText(
+      icon,
+      p.x,
+      p.y
+    );
+
+  }
+
+  /* TEISED MÄNGIJAD */
+
+  for(
+    const p of Object.values(
+      remotePlayers
+    )
+  ){
+
+    drawSnake(
+      p.snake||[],
+      p.skin||"#42a5ff",
+      p.name,
+      p.angle,
+      false,
+      p.shield>0
+    );
+
+  }
+
+  /* MINU SNAKE */
+
+  drawSnake(
+    me.snake,
+    SKINS[selectedSkin],
+    document.getElementById(
+      "name"
+    ).value || "Sina",
+    me.angle,
+    true,
+    me.shield>0
+  );
+
+  /* PARTICLES */
+
+  for(const p of particles){
+
+    ctx.globalAlpha=p.life;
+
+    ctx.fillStyle=
+      p.type==="gold"
+      ?"#ffe43f"
+      :p.type==="power"
+      ?"#6affff"
+      :"#55ff79";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x,
+      p.y,
+      3,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+  }
+
+  ctx.globalAlpha=1;
+
+  ctx.restore();
+
+}
+
+
+/* =========================
+   SNAKE JOONISTAMINE
+========================= */
+
+function drawSnake(
+  snake,
+  color,
+  name,
+  angle,
+  mine,
+  shield
 ){
 
-ctx.beginPath();
+  if(!snake.length)return;
 
-ctx.moveTo(x,top);
-ctx.lineTo(x,bottom);
+  for(
+    let i=snake.length-1;
+    i>=0;
+    i--
+  ){
 
-ctx.stroke();
+    const part=snake[i];
 
-}
+    const t=
+      i/snake.length;
 
-for(
-let y=Math.floor(top/grid)*grid;
-y<bottom;
-y+=grid
-){
+    const radius=
+      Math.max(
+        6,
+        15-t*8
+      );
 
-ctx.beginPath();
+    ctx.fillStyle=color;
 
-ctx.moveTo(left,y);
-ctx.lineTo(right,y);
+    ctx.shadowColor=color;
 
-ctx.stroke();
+    ctx.shadowBlur=
+      mine ? 15 : 7;
 
-}
+    ctx.beginPath();
 
-/* BORDER */
+    ctx.arc(
+      part.x,
+      part.y,
+      radius,
+      0,
+      Math.PI*2
+    );
 
-ctx.strokeStyle="#52ff79";
+    ctx.fill();
 
-ctx.lineWidth=30;
+  }
 
-ctx.strokeRect(
-0,
-0,
-state.world,
-state.world
-);
+  ctx.shadowBlur=0;
 
-/* FOOD */
+  const head=snake[0];
 
-for(const f of state.food){
+  if(!head)return;
 
-if(
-f.x<left-60||
-f.x>right+60||
-f.y<top-60||
-f.y>bottom+60
-)continue;
+  ctx.fillStyle=color;
 
-let color="#ff5b78";
+  ctx.beginPath();
 
-if(f.type==="gold")
-color="#ffe84d";
+  ctx.arc(
+    head.x,
+    head.y,
+    18,
+    0,
+    Math.PI*2
+  );
 
-if(f.type==="purple")
-color="#c45cff";
+  ctx.fill();
 
-if(f.type==="boost")
-color="#4dbaff";
+  /* silmad */
 
-if(f.type==="death")
-color="#ff7548";
+  const ex=
+    Math.cos(angle);
 
-const pulse=
-Math.sin(
-Date.now()/180+
-f.pulse
-)*1.5;
+  const ey=
+    Math.sin(angle);
 
-ctx.fillStyle=color;
+  const sx=
+    -Math.sin(angle);
 
-ctx.shadowColor=color;
+  const sy=
+    Math.cos(angle);
 
-ctx.shadowBlur=16;
+  ctx.fillStyle="#061008";
 
-ctx.beginPath();
+  ctx.beginPath();
 
-ctx.arc(
-f.x,
-f.y,
-f.size+pulse,
-0,
-Math.PI*2
-);
+  ctx.arc(
+    head.x+
+      ex*9+
+      sx*5,
+    head.y+
+      ey*9+
+      sy*5,
+    4,
+    0,
+    Math.PI*2
+  );
 
-ctx.fill();
+  ctx.fill();
 
-}
+  ctx.beginPath();
 
-ctx.shadowBlur=0;
+  ctx.arc(
+    head.x+
+      ex*9-
+      sx*5,
+    head.y+
+      ey*9-
+      sy*5,
+    4,
+    0,
+    Math.PI*2
+  );
 
-/* POWERUPS */
+  ctx.fill();
 
-for(const p of state.powers){
+  /* shield */
 
-if(
-p.x<left-70||
-p.x>right+70||
-p.y<top-70||
-p.y>bottom+70
-)continue;
+  if(shield){
 
-let color="#fff";
-let icon="";
+    ctx.strokeStyle="#67aaff";
 
-if(p.type==="speed"){
-color="#43b8ff";
-icon="⚡";
-}
+    ctx.lineWidth=4;
 
-if(p.type==="magnet"){
-color="#ff42db";
-icon="🧲";
-}
+    ctx.beginPath();
 
-if(p.type==="shield"){
-color="#6d8cff";
-icon="🛡️";
-}
+    ctx.arc(
+      head.x,
+      head.y,
+      29+
+        Math.sin(
+          Date.now()/100
+        )*2,
+      0,
+      Math.PI*2
+    );
 
-if(p.type==="double"){
-color="#ffd83d";
-icon="×2";
-}
+    ctx.stroke();
 
-const pulse=
-Math.sin(Date.now()/180)*4;
+  }
 
-ctx.fillStyle=color;
+  /* nimi */
 
-ctx.shadowColor=color;
+  ctx.font=
+    "bold 13px Arial";
 
-ctx.shadowBlur=28;
+  ctx.textAlign="center";
 
-ctx.beginPath();
+  ctx.fillStyle="white";
 
-ctx.arc(
-p.x,
-p.y,
-24+pulse,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-ctx.shadowBlur=0;
-
-ctx.font="bold 20px Arial";
-
-ctx.textAlign="center";
-
-ctx.textBaseline="middle";
-
-ctx.fillStyle="white";
-
-ctx.fillText(
-icon,
-p.x,
-p.y
-);
+  ctx.fillText(
+    safe(name),
+    head.x,
+    head.y-32
+  );
 
 }
 
-/* SNAKES */
 
-for(
-const p of Object.values(
-state.players
-)){
+/* =========================
+   HUD
+========================= */
 
-if(!p.snake.length)continue;
+function updateHUD(){
 
-for(
-let i=p.snake.length-1;
-i>=0;
-i--
-){
+  document.getElementById(
+    "score"
+  ).textContent=
+    Math.floor(me.score);
 
-const part=p.snake[i];
+  document.getElementById(
+    "length"
+  ).textContent=
+    Math.floor(me.length);
 
-const t=
-i/p.snake.length;
+  const all=[
+    {
+      id:myId,
+      score:me.score
+    },
+    ...Object.values(
+      remotePlayers
+    )
+  ];
 
-const radius=
-Math.max(
-6,
-15-t*8
-);
+  all.sort(
+    (a,b)=>
+      (b.score||0)-
+      (a.score||0)
+  );
 
-ctx.fillStyle=p.skin;
+  const myRank=
+    all.findIndex(
+      p=>p.id===myId
+    )+1;
 
-ctx.shadowColor=p.skin;
+  document.getElementById(
+    "rank"
+  ).textContent=
+    myRank||1;
 
-ctx.shadowBlur=
-p.id===myId
-?20
-:8;
+  const board=
+    document.getElementById(
+      "board"
+    );
 
-ctx.beginPath();
+  board.innerHTML="";
 
-ctx.arc(
-part.x,
-part.y,
-radius,
-0,
-Math.PI*2
-);
+  all.slice(0,8).forEach(
+    (p,i)=>{
 
-ctx.fill();
+      const div=
+        document.createElement(
+          "div"
+        );
 
-}
+      let playerName="Player";
 
-ctx.shadowBlur=0;
+      if(p.id===myId){
 
-if(!p.alive)continue;
+        playerName=
+          document.getElementById(
+            "name"
+          ).value||"Sina";
 
-/* HEAD */
+      }else{
 
-ctx.fillStyle=p.skin;
+        playerName=
+          p.name||"Player";
 
-ctx.beginPath();
+      }
 
-ctx.arc(
-p.x,
-p.y,
-18,
-0,
-Math.PI*2
-);
+      div.className="rank";
 
-ctx.fill();
+      div.innerHTML=`
+        <span>
+          ${i+1}. ${safe(playerName)}
+        </span>
 
-/* EYES */
+        <b>
+          ${Math.floor(
+            p.score||0
+          )}
+        </b>
+      `;
 
-const ex=
-Math.cos(p.angle);
+      board.appendChild(div);
 
-const ey=
-Math.sin(p.angle);
-
-const sx=
--Math.sin(p.angle);
-
-const sy=
-Math.cos(p.angle);
-
-ctx.fillStyle="#061008";
-
-ctx.beginPath();
-
-ctx.arc(
-p.x+ex*9+sx*5,
-p.y+ey*9+sy*5,
-4,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-ctx.beginPath();
-
-ctx.arc(
-p.x+ex*9-sx*5,
-p.y+ey*9-sy*5,
-4,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-/* SHIELD */
-
-if(p.shield>0){
-
-ctx.strokeStyle="#65aaff";
-
-ctx.lineWidth=4;
-
-ctx.beginPath();
-
-ctx.arc(
-p.x,
-p.y,
-29+
-Math.sin(Date.now()/120)*2,
-0,
-Math.PI*2
-);
-
-ctx.stroke();
+    }
+  );
 
 }
 
-/* NAME */
 
-ctx.font=
-"bold 14px Arial";
+/* =========================
+   TURVALINE TEKST
+========================= */
 
-ctx.textAlign="center";
+function safe(text){
 
-ctx.fillStyle="white";
-
-ctx.fillText(
-p.name,
-p.x,
-p.y-32
-);
+  return String(text)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
 
 }
 
-ctx.restore();
+
+/* =========================
+   LOOP
+========================= */
+
+function gameLoop(){
+
+  updateGame();
+
+  updateParticles();
+
+  updateHUD();
+
+  requestAnimationFrame(
+    gameLoop
+  );
 
 }
+
+gameLoop();
 
 draw();
 
