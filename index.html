@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
 <title>Snake Arena</title>
 
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -13,7 +15,8 @@
     user-select:none;
 }
 
-html,body{
+html,
+body{
     width:100%;
     height:100%;
     overflow:hidden;
@@ -33,28 +36,33 @@ canvas{
     position:fixed;
     inset:0;
     z-index:100;
-    overflow-y:auto;
+    overflow:auto;
     padding:20px;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:radial-gradient(circle,#174d20,#050805 75%);
+    background:
+        radial-gradient(
+            circle at center,
+            #174d20,
+            #050805 75%
+        );
 }
 
 .panel{
-    width:min(94vw,520px);
-    max-height:94vh;
-    overflow-y:auto;
-    padding:25px;
-    border-radius:25px;
-    background:#071008;
+    width:min(500px,94vw);
+    max-height:95vh;
+    overflow:auto;
+    background:#09120a;
     border:1px solid #315d37;
+    border-radius:24px;
+    padding:25px;
     color:white;
     text-align:center;
 }
 
 .logo{
-    font-size:60px;
+    font-size:65px;
 }
 
 h1{
@@ -71,13 +79,17 @@ input{
     width:100%;
     height:48px;
     margin:5px 0;
+    padding:0 15px;
     border-radius:10px;
     border:1px solid #315d37;
-    background:#0c170e;
+    background:#101b11;
     color:white;
-    padding:0 14px;
     text-align:center;
-    outline:none;
+    font-size:16px;
+}
+
+button{
+    font-family:inherit;
 }
 
 .btn{
@@ -86,13 +98,14 @@ input{
     margin-top:8px;
     border:0;
     border-radius:10px;
-    cursor:pointer;
+    font-size:15px;
     font-weight:bold;
+    cursor:pointer;
 }
 
 .green{
     background:#63ff78;
-    color:#041006;
+    color:#061008;
 }
 
 .dark{
@@ -102,53 +115,53 @@ input{
 }
 
 #coinsMenu{
-    color:#ffd84d;
-    background:#101c11;
-    border-radius:10px;
-    padding:10px;
     margin:10px 0;
+    padding:10px;
+    border-radius:10px;
+    background:#111b12;
+    color:#ffd84d;
     font-weight:bold;
 }
 
 #skins{
     display:flex;
-    justify-content:center;
     flex-wrap:wrap;
+    justify-content:center;
     gap:8px;
     margin:10px;
 }
 
-.skin{
-    width:44px;
-    height:44px;
+.skinButton{
+    width:42px;
+    height:42px;
     border-radius:50%;
     border:3px solid transparent;
 }
 
-.skin.selected{
+.skinButton.selected{
     border-color:white;
 }
 
-#roomBox{
+#room{
     display:none;
-    margin-top:14px;
+    margin-top:15px;
     padding:12px;
     border-radius:14px;
-    background:#0b170d;
-    border:1px solid #315d37;
+    background:#101b11;
 }
 
 #roomCode{
-    font-size:34px;
-    color:#63ff78;
+    font-size:32px;
     font-weight:bold;
+    color:#63ff78;
     letter-spacing:5px;
+    margin:5px;
 }
 
 #error{
-    min-height:22px;
+    min-height:24px;
+    color:#ff6675;
     margin-top:8px;
-    color:#ff6572;
 }
 
 #shop{
@@ -157,196 +170,188 @@ input{
 
 .shopGrid{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:1fr 1fr;
     gap:8px;
-    margin:12px 0;
+    margin:15px 0;
 }
 
 .shopItem{
-    padding:12px;
-    border-radius:12px;
-    background:#0d180f;
+    background:#101b11;
     border:1px solid #29472e;
+    border-radius:12px;
+    padding:12px;
 }
 
 .preview{
-    width:50px;
-    height:50px;
+    width:48px;
+    height:48px;
+    margin:auto;
     border-radius:50%;
-    margin:auto auto 7px;
 }
 
 .shopItem button{
     width:100%;
-    padding:8px;
     margin-top:7px;
+    min-height:35px;
     border:0;
     border-radius:7px;
     font-weight:bold;
 }
 
 #hud{
+    display:none;
     position:fixed;
     z-index:20;
-    left:10px;
     top:10px;
-    display:none;
+    left:10px;
     gap:6px;
-    flex-wrap:wrap;
 }
 
 .stat{
     background:rgba(0,0,0,.8);
     border:1px solid #315d37;
-    border-radius:9px;
-    padding:7px 10px;
     color:white;
+    padding:7px 10px;
+    border-radius:8px;
 }
 
 .stat small{
     display:block;
-    color:#718172;
     font-size:9px;
+    color:#849485;
 }
 
 #leaderboard{
+    display:none;
     position:fixed;
     z-index:20;
     top:10px;
     right:10px;
-    width:180px;
-    display:none;
+    width:185px;
+    padding:9px;
     background:rgba(0,0,0,.82);
     border:1px solid #315d37;
-    border-radius:13px;
-    padding:9px;
+    border-radius:12px;
     color:white;
 }
 
 .lbTitle{
     color:#63ff78;
     font-weight:bold;
-    margin-bottom:4px;
+    margin-bottom:5px;
 }
 
 .lbRow{
     display:flex;
     justify-content:space-between;
-    padding:4px;
     font-size:12px;
+    padding:4px;
 }
-
-/* MINIMAP */
 
 #minimap{
+    display:none;
     position:fixed;
     z-index:25;
-    right:12px;
-    bottom:12px;
-    width:190px;
-    height:190px;
-    background:#0d1b10;
+    right:10px;
+    bottom:10px;
+    width:170px;
+    height:170px;
+    background:#102414;
     border:3px solid #63ff78;
-    border-radius:16px;
-    box-shadow:0 0 18px rgba(99,255,120,.25);
-    display:none;
+    border-radius:15px;
 }
 
-#miniCanvas{
+#mini{
     width:100%;
     height:100%;
-    border-radius:13px;
+    border-radius:12px;
 }
 
-#miniTitle{
+#miniLabel{
     position:absolute;
-    top:6px;
-    left:7px;
-    z-index:2;
-    font-size:10px;
+    top:5px;
+    left:6px;
+    background:rgba(0,0,0,.65);
     color:white;
-    background:rgba(0,0,0,.6);
-    padding:3px 6px;
+    font-size:9px;
+    padding:3px 5px;
     border-radius:5px;
 }
 
 #joystick{
+    display:none;
     position:fixed;
     z-index:30;
-    left:20px;
-    bottom:20px;
-    width:140px;
-    height:140px;
+    left:18px;
+    bottom:18px;
+    width:135px;
+    height:135px;
     border-radius:50%;
-    border:2px solid rgba(99,255,120,.4);
     background:rgba(99,255,120,.08);
-    display:none;
+    border:2px solid rgba(99,255,120,.4);
 }
 
 #stick{
     position:absolute;
     left:50%;
     top:50%;
+    width:55px;
+    height:55px;
     transform:translate(-50%,-50%);
-    width:58px;
-    height:58px;
     border-radius:50%;
     background:#63ff78;
     border:3px solid white;
 }
 
 #boost{
+    display:none;
     position:fixed;
     z-index:30;
-    right:220px;
+    right:170px;
     bottom:25px;
-    width:85px;
-    height:85px;
+    width:75px;
+    height:75px;
     border-radius:50%;
-    border:3px solid #a7eaff;
+    border:3px solid #a9eaff;
     background:#087eaf;
     color:white;
     font-size:28px;
-    display:none;
 }
 
-#killText{
+#killMessage{
     position:fixed;
     z-index:50;
     left:50%;
     top:25%;
     transform:translate(-50%,-50%);
     color:#63ff78;
-    font-size:38px;
+    font-size:35px;
     font-weight:bold;
     opacity:0;
     pointer-events:none;
 }
 
-#killText.show{
-    opacity:1;
-}
-
 #gameOver{
-    position:fixed;
-    inset:0;
-    z-index:200;
     display:none;
+    position:fixed;
+    z-index:200;
+    inset:0;
+    background:rgba(0,0,0,.8);
     justify-content:center;
     align-items:center;
-    background:rgba(0,0,0,.82);
 }
 
-.over{
-    width:min(90vw,400px);
+.gameOverBox{
+    width:min(400px,90vw);
+    background:#09120a;
+    border:1px solid #315d37;
+    border-radius:20px;
     padding:30px;
-    border-radius:22px;
-    background:#081008;
     color:white;
     text-align:center;
 }
 
-.over h2{
+.gameOverBox h2{
     color:#ff6070;
     font-size:38px;
 }
@@ -362,23 +367,17 @@ input{
         display:block;
     }
 
-    #leaderboard{
-        width:150px;
-    }
-
     #minimap{
-        width:145px;
-        height:145px;
-        right:8px;
-        bottom:8px;
+        width:140px;
+        height:140px;
     }
 
-    #boost{
-        right:165px;
-        width:72px;
-        height:72px;
+    #leaderboard{
+        width:145px;
     }
+
 }
+
 </style>
 </head>
 
@@ -390,60 +389,75 @@ input{
 
 <div class="panel">
 
-<div id="main">
+<div id="mainMenu">
 
 <div class="logo">🐍</div>
 
 <h1>SNAKE ARENA</h1>
 
 <div class="sub">
-18 000 × 18 000 AREEN
+Suur kaart • toit • botid • multiplayer
 </div>
 
-<input id="name" maxlength="16" placeholder="Sinu nimi">
+<input
+    id="name"
+    maxlength="16"
+    placeholder="Sinu nimi"
+>
 
 <div id="coinsMenu">
-🪙 <span id="coinValue">0</span> coins
-</div>
-
-<button class="btn dark" id="shopBtn">
-🛒 POOD
-</button>
-
-<div style="margin-top:10px">
-Vali skin
+🪙 <span id="menuCoins">0</span> coins
 </div>
 
 <div id="skins"></div>
 
-<button class="btn green" id="singleBtn">
+<button
+    class="btn green"
+    id="singleButton"
+>
 🤖 SINGLEPLAYER
 </button>
 
-<button class="btn dark" id="createBtn">
+<button
+    class="btn dark"
+    id="shopButton"
+>
+🛒 POOD
+</button>
+
+<button
+    class="btn dark"
+    id="createButton"
+>
 🏠 CREATE ROOM
 </button>
 
-<input id="roomInput" maxlength="5" placeholder="ROOM CODE">
+<input
+    id="roomInput"
+    maxlength="5"
+    placeholder="ROOM CODE"
+>
 
-<button class="btn dark" id="joinBtn">
+<button
+    class="btn dark"
+    id="joinButton"
+>
 🚪 JOIN ROOM
 </button>
 
-<div id="roomBox">
+<div id="room">
 
-<div style="color:#718172">
-ROOM
-</div>
+<div>ROOM CODE</div>
 
-<div id="roomCode">
------
-</div>
+<div id="roomCode">-----</div>
 
-<div id="roomPlayers"></div>
+<div id="playersInRoom"></div>
 
-<button class="btn green" id="startRoomBtn">
-▶ ALUSTA MÄNGU
+<button
+    class="btn green"
+    id="startButton"
+>
+▶ ALUSTA
 </button>
 
 </div>
@@ -451,7 +465,7 @@ ROOM
 <div id="error"></div>
 
 <div id="connection">
-Serveriga ühendamine...
+Ühendan serveriga...
 </div>
 
 </div>
@@ -460,17 +474,21 @@ Serveriga ühendamine...
 
 <h2>🛒 POOD</h2>
 
-<p style="color:#718172;margin:8px">
-Iga kill annab +10 coins
+<p style="color:#819482;margin:8px">
+Kill = +10 coins
 </p>
 
-<div id="shopGrid" class="shopGrid"></div>
+<div
+    class="shopGrid"
+    id="shopGrid"
+></div>
 
-<button class="btn dark" id="closeShop">
+<button
+    class="btn dark"
+    id="closeShop"
+>
 ← TAGASI
 </button>
-
-</div>
 
 </div>
 
@@ -513,42 +531,42 @@ Iga kill annab +10 coins
 
 <div id="minimap">
 
-<div id="miniTitle">
-🗺️ KOGU KAART
+<div id="miniLabel">
+🗺️ MINIMAP
 </div>
 
-<canvas id="miniCanvas"></canvas>
+<canvas id="mini"></canvas>
 
-</div>
-
-<div id="killText">
-💥 KILL! +10 🪙
 </div>
 
 <div id="joystick">
+
 <div id="stick"></div>
+
 </div>
 
 <button id="boost">
 ⚡
 </button>
 
+<div id="killMessage">
+💥 KILL +10
+</div>
+
 <div id="gameOver">
 
-<div class="over">
+<div class="gameOverBox">
 
 <h2>GAME OVER</h2>
 
 <p id="deathReason"></p>
 
-<p>
-Score:
-<b id="finalScore">0</b>
+<p style="margin-top:10px">
+Score: <b id="finalScore">0</b>
 </p>
 
 <p>
-Kills:
-<b id="finalKills">0</b>
+Kills: <b id="finalKills">0</b>
 </p>
 
 <button
@@ -572,11 +590,11 @@ const canvas =
 const ctx =
     canvas.getContext("2d");
 
-const miniCanvas =
-    document.getElementById("miniCanvas");
+const mini =
+    document.getElementById("mini");
 
-const miniCtx =
-    miniCanvas.getContext("2d");
+const mctx =
+    mini.getContext("2d");
 
 let W = innerWidth;
 let H = innerHeight;
@@ -589,176 +607,20 @@ function resize(){
     canvas.width = W;
     canvas.height = H;
 
-    miniCanvas.width = 400;
-    miniCanvas.height = 400;
+    mini.width = 400;
+    mini.height = 400;
 }
-
-addEventListener("resize", resize);
 
 resize();
 
-/* SERVER */
+addEventListener(
+    "resize",
+    resize
+);
 
-let socket = null;
-let multiplayer = false;
-let myServerId = null;
-let roomCode = null;
-
-const remotePlayers = new Map();
-
-function connectServer(){
-
-    const protocol =
-        location.protocol === "https:"
-            ? "wss:"
-            : "ws:";
-
-    socket = new WebSocket(
-        protocol + "//" + location.host
-    );
-
-    socket.onopen = () => {
-
-        document.getElementById(
-            "connection"
-        ).textContent =
-            "🟢 Server ühendatud";
-
-    };
-
-    socket.onclose = () => {
-
-        document.getElementById(
-            "connection"
-        ).textContent =
-            "🔴 Server ühendus katkes";
-
-    };
-
-    socket.onerror = () => {
-
-        document.getElementById(
-            "connection"
-        ).textContent =
-            "🔴 Serveri viga";
-
-    };
-
-    socket.onmessage = e => {
-
-        let data;
-
-        try {
-            data = JSON.parse(e.data);
-        } catch {
-            return;
-        }
-
-        if(data.type === "connected"){
-            myServerId = data.id;
-        }
-
-        if(data.type === "roomCreated"){
-
-            multiplayer = true;
-            myServerId = data.id;
-            roomCode = data.code;
-
-            document.getElementById(
-                "roomCode"
-            ).textContent = roomCode;
-
-            document.getElementById(
-                "roomBox"
-            ).style.display = "block";
-
-        }
-
-        if(data.type === "roomJoined"){
-
-            multiplayer = true;
-            myServerId = data.id;
-            roomCode = data.code;
-
-            document.getElementById(
-                "roomCode"
-            ).textContent = roomCode;
-
-            document.getElementById(
-                "roomBox"
-            ).style.display = "block";
-
-        }
-
-        if(data.type === "state"){
-
-            remotePlayers.clear();
-
-            for(const p of data.players || []){
-
-                if(p.id !== myServerId){
-
-                    remotePlayers.set(
-                        p.id,
-                        p
-                    );
-
-                }
-
-            }
-
-            updateRoomPlayers(
-                data.players || []
-            );
-
-        }
-
-        if(data.type === "gameStarted"){
-
-            startGame(false);
-
-        }
-
-        if(data.type === "kill"){
-
-            if(
-                data.killerId ===
-                myServerId
-            ){
-
-                showKill();
-
-            }
-
-        }
-
-        if(data.type === "error"){
-
-            showError(
-                data.message
-            );
-
-        }
-
-    };
-}
-
-function sendServer(data){
-
-    if(
-        socket &&
-        socket.readyState === WebSocket.OPEN
-    ){
-
-        socket.send(
-            JSON.stringify(data)
-        );
-
-    }
-
-}
-
-/* PLAYER */
+/* =========================
+   SAVE DATA
+========================= */
 
 let coins =
     Number(
@@ -771,78 +633,66 @@ let owned =
     JSON.parse(
         localStorage.getItem(
             "snakeOwned"
-        ) ||
-        '["green"]'
+        ) || '["green"]'
     );
 
-let selectedSkin =
+let skin =
     localStorage.getItem(
         "snakeSkin"
     ) || "green";
 
 const SKINS = [
 
-    {
-        id:"green",
-        color:"#63ff78",
-        price:0
-    },
-
-    {
-        id:"blue",
-        color:"#4da6ff",
-        price:30
-    },
-
-    {
-        id:"red",
-        color:"#ff5268",
-        price:50
-    },
-
-    {
-        id:"yellow",
-        color:"#ffd84d",
-        price:80
-    },
-
-    {
-        id:"purple",
-        color:"#b86cff",
-        price:100
-    },
-
-    {
-        id:"orange",
-        color:"#ff8a3d",
-        price:120
-    },
-
-    {
-        id:"cyan",
-        color:"#00e5d4",
-        price:150
-    },
-
-    {
-        id:"white",
-        color:"#ffffff",
-        price:200
-    }
+    ["green","#63ff78",0],
+    ["blue","#4da6ff",30],
+    ["red","#ff5268",50],
+    ["yellow","#ffd84d",80],
+    ["purple","#b86cff",100],
+    ["orange","#ff8a3d",120],
+    ["cyan","#00e5d4",150],
+    ["white","#ffffff",200]
 
 ];
 
-let selected =
-    SKINS.find(
-        s => s.id === selectedSkin
-    ) || SKINS[0];
+function skinData(id){
 
-const me = {
+    return (
+        SKINS.find(
+            s => s[0] === id
+        ) || SKINS[0]
+    );
+
+}
+
+function save(){
+
+    localStorage.setItem(
+        "snakeCoins",
+        coins
+    );
+
+    localStorage.setItem(
+        "snakeOwned",
+        JSON.stringify(owned)
+    );
+
+    localStorage.setItem(
+        "snakeSkin",
+        skin
+    );
+
+}
+
+/* =========================
+   PLAYER
+========================= */
+
+const player = {
 
     name:"Player",
 
-    x:9000,
-    y:9000,
+    x:WORLD/2,
+    y:WORLD/2,
 
     angle:0,
     targetAngle:0,
@@ -851,52 +701,96 @@ const me = {
     score:0,
     kills:0,
 
-    color:selected.color,
-    skin:selected.id
+    color:skinData(skin)[1]
 
 };
 
 let body = [];
 
-/* FOOD */
+let running = false;
+let dead = false;
+let singlePlayer = false;
+let boosting = false;
 
-let foods = [];
+function resetPlayer(){
 
-function randomFood(){
+    player.x =
+        WORLD/2;
+
+    player.y =
+        WORLD/2;
+
+    player.angle=0;
+    player.targetAngle=0;
+
+    player.length=25;
+    player.score=0;
+    player.kills=0;
+
+    body=[];
+
+    for(
+        let i=0;
+        i<25;
+        i++
+    ){
+
+        body.push({
+
+            x:
+                player.x -
+                i*8,
+
+            y:
+                player.y
+
+        });
+
+    }
+
+}
+
+/* =========================
+   FOOD
+========================= */
+
+const foods=[];
+
+function createFood(){
 
     return {
 
         x:
-            200 +
+            100 +
             Math.random() *
-            (WORLD - 400),
+            (WORLD-200),
 
         y:
-            200 +
+            100 +
             Math.random() *
-            (WORLD - 400),
+            (WORLD-200),
 
         radius:
             4 +
-            Math.random() * 4,
+            Math.random()*4,
 
         value:
             1 +
             Math.floor(
-                Math.random() * 4
+                Math.random()*4
             ),
 
         color:
             [
                 "#63ff78",
                 "#ffd84d",
-                "#ff6070",
+                "#ff5268",
                 "#4da6ff",
                 "#b86cff",
                 "#ff8a3d"
             ][
                 Math.floor(
-                    Math.random() * 6
+                    Math.random()*6
                 )
             ]
 
@@ -904,34 +798,40 @@ function randomFood(){
 
 }
 
-for(let i=0;i<1400;i++){
+for(
+    let i=0;
+    i<1000;
+    i++
+){
 
     foods.push(
-        randomFood()
+        createFood()
     );
 
 }
 
-/* BOTS */
+/* =========================
+   BOTS
+========================= */
 
-let bots = [];
+let bots=[];
 
-const botNames = [
+const botNames=[
     "Viper",
     "Cobra",
     "Shadow",
-    "Hunter",
     "Blaze",
-    "Toxic",
-    "Python",
+    "Hunter",
     "Ghost",
-    "Rex",
+    "Python",
+    "Storm",
     "Ninja",
     "Venom",
-    "Storm"
+    "Rex",
+    "Toxic"
 ];
 
-const botColors = [
+const botColors=[
     "#4da6ff",
     "#ff5268",
     "#ffd84d",
@@ -940,75 +840,73 @@ const botColors = [
     "#00e5d4"
 ];
 
-function makeBot(){
+function createBot(){
 
-    const b = {
-
-        id:
-            "bot_" +
-            Math.random()
-                .toString(36)
-                .substring(2),
+    const b={
 
         name:
             botNames[
                 Math.floor(
-                    Math.random() *
+                    Math.random()*
                     botNames.length
                 )
             ],
 
         x:
-            500 +
-            Math.random() *
-            (WORLD - 1000),
+            500+
+            Math.random()*
+            (WORLD-1000),
 
         y:
-            500 +
-            Math.random() *
-            (WORLD - 1000),
+            500+
+            Math.random()*
+            (WORLD-1000),
 
         angle:
-            Math.random() *
-            Math.PI * 2,
+            Math.random()*
+            Math.PI*2,
 
         targetAngle:
-            Math.random() *
-            Math.PI * 2,
+            Math.random()*
+            Math.PI*2,
 
         length:
-            25 +
-            Math.random() * 100,
+            25+
+            Math.random()*90,
 
         score:0,
 
         color:
             botColors[
                 Math.floor(
-                    Math.random() *
+                    Math.random()*
                     botColors.length
                 )
             ],
 
         body:[],
 
-        timer:0
+        think:0
 
     };
 
-    for(let i=0;i<b.length;i++){
+    for(
+        let i=0;
+        i<b.length;
+        i++
+    ){
 
         b.body.push({
 
             x:
                 b.x -
-                Math.cos(b.angle) *
-                i * 8,
+                Math.cos(b.angle)*
+                i*8,
 
             y:
                 b.y -
-                Math.sin(b.angle) *
-                i * 8
+                Math.sin(b.angle)*
+                i*8
 
         });
 
@@ -1017,210 +915,114 @@ function makeBot(){
     return b;
 }
 
-function createBots(){
+function startBots(){
 
-    bots = [];
+    bots=[];
 
-    for(let i=0;i<18;i++){
+    for(
+        let i=0;
+        i<16;
+        i++
+    ){
 
         bots.push(
-            makeBot()
+            createBot()
         );
 
     }
 
 }
 
-/* START */
+/* =========================
+   START GAME
+========================= */
 
-let running = false;
-let dead = false;
-let single = false;
+function startGame(){
 
-function startGame(botMode){
+    resetPlayer();
 
-    single = botMode;
-
-    running = true;
-    dead = false;
-
-    me.name =
+    player.name =
         document
-            .getElementById("name")
-            .value
-            .trim()
-            .replace(/[<>]/g,"")
-            .substring(0,16)
-        || "Player";
+        .getElementById("name")
+        .value
+        .trim()
+        .replace(/[<>]/g,"")
+        .substring(0,16)
+        ||
+        "Player";
+
+    running=true;
+    dead=false;
 
     document.getElementById(
         "menu"
-    ).style.display = "none";
+    ).style.display="none";
 
     document.getElementById(
         "hud"
-    ).style.display = "flex";
+    ).style.display="flex";
 
     document.getElementById(
         "leaderboard"
-    ).style.display = "block";
+    ).style.display="block";
 
     document.getElementById(
         "minimap"
-    ).style.display = "block";
+    ).style.display="block";
 
-    me.x =
-        WORLD / 2;
-
-    me.y =
-        WORLD / 2;
-
-    me.angle = 0;
-    me.targetAngle = 0;
-
-    me.length = 25;
-    me.score = 0;
-    me.kills = 0;
-
-    body = [];
-
-    for(let i=0;i<25;i++){
-
-        body.push({
-
-            x:
-                me.x -
-                i * 8,
-
-            y:
-                me.y
-
-        });
-
-    }
-
-    if(single){
-
-        createBots();
-
-    } else {
-
-        bots = [];
-
-    }
-
-    updateHUD();
+    updateHud();
 
 }
 
-document.getElementById(
-    "singleBtn"
-).onclick = () => {
+/* =========================
+   SINGLEPLAYER
+========================= */
 
-    startGame(true);
+document.getElementById(
+    "singleButton"
+).onclick=()=>{
+
+    singlePlayer=true;
+
+    startBots();
+
+    startGame();
 
 };
 
-document.getElementById(
-    "createBtn"
-).onclick = () => {
+/* =========================
+   MOUSE
+========================= */
 
-    sendServer({
-
-        type:"createRoom",
-
-        name:
-            document.getElementById(
-                "name"
-            ).value,
-
-        color:selected.color,
-
-        skin:selected.id
-
-    });
-
-};
-
-document.getElementById(
-    "joinBtn"
-).onclick = () => {
-
-    const code =
-        document.getElementById(
-            "roomInput"
-        ).value
-        .trim()
-        .toUpperCase();
-
-    if(code.length !== 5){
-
-        showError(
-            "Room code peab olema 5 tähte."
-        );
-
-        return;
-    }
-
-    sendServer({
-
-        type:"joinRoom",
-
-        code,
-
-        name:
-            document.getElementById(
-                "name"
-            ).value,
-
-        color:selected.color,
-
-        skin:selected.id
-
-    });
-
-};
-
-document.getElementById(
-    "startRoomBtn"
-).onclick = () => {
-
-    sendServer({
-        type:"startRoom"
-    });
-
-};
-
-/* MOUSE */
-
-let mouseX = W / 2;
-let mouseY = H / 2;
+let mouseX=W/2;
+let mouseY=H/2;
 
 addEventListener(
     "mousemove",
-    e => {
+    e=>{
 
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        mouseX=e.clientX;
+        mouseY=e.clientY;
 
     }
 );
 
 function mouseControl(){
 
-    const dx =
-        mouseX -
-        W / 2;
+    if(innerWidth<=800)
+        return;
 
-    const dy =
-        mouseY -
-        H / 2;
+    const dx=
+        mouseX-W/2;
+
+    const dy=
+        mouseY-H/2;
 
     if(
-        Math.hypot(dx,dy) > 5
+        Math.hypot(dx,dy)>5
     ){
 
-        me.targetAngle =
+        player.targetAngle=
             Math.atan2(
                 dy,
                 dx
@@ -1230,7 +1032,9 @@ function mouseControl(){
 
 }
 
-/* JOYSTICK */
+/* =========================
+   JOYSTICK
+========================= */
 
 const joystick =
     document.getElementById(
@@ -1242,36 +1046,31 @@ const stick =
         "stick"
     );
 
-let joystickActive = false;
+let joy=false;
 
-function joystickMove(x,y){
+function joyMove(x,y){
 
     const r =
         joystick.getBoundingClientRect();
 
     const cx =
-        r.left +
-        r.width / 2;
+        r.left+r.width/2;
 
     const cy =
-        r.top +
-        r.height / 2;
+        r.top+r.height/2;
 
-    let dx = x - cx;
-    let dy = y - cy;
+    let dx=x-cx;
+    let dy=y-cy;
 
-    const max = 52;
+    const max=52;
 
-    const d =
+    const d=
         Math.hypot(dx,dy);
 
-    if(d > max){
+    if(d>max){
 
-        dx =
-            dx / d * max;
-
-        dy =
-            dy / d * max;
+        dx=dx/d*max;
+        dy=dy/d*max;
 
     }
 
@@ -1281,9 +1080,9 @@ function joystickMove(x,y){
     stick.style.top =
         `calc(50% + ${dy}px)`;
 
-    if(d > 7){
+    if(d>7){
 
-        me.targetAngle =
+        player.targetAngle=
             Math.atan2(
                 dy,
                 dx
@@ -1295,15 +1094,15 @@ function joystickMove(x,y){
 
 joystick.addEventListener(
     "pointerdown",
-    e => {
+    e=>{
 
-        joystickActive = true;
+        joy=true;
 
         joystick.setPointerCapture(
             e.pointerId
         );
 
-        joystickMove(
+        joyMove(
             e.clientX,
             e.clientY
         );
@@ -1313,11 +1112,11 @@ joystick.addEventListener(
 
 joystick.addEventListener(
     "pointermove",
-    e => {
+    e=>{
 
-        if(joystickActive){
+        if(joy){
 
-            joystickMove(
+            joyMove(
                 e.clientX,
                 e.clientY
             );
@@ -1327,112 +1126,116 @@ joystick.addEventListener(
     }
 );
 
-function resetJoystick(){
+function stopJoy(){
 
-    joystickActive = false;
+    joy=false;
 
-    stick.style.left = "50%";
-    stick.style.top = "50%";
+    stick.style.left="50%";
+    stick.style.top="50%";
 
 }
 
 joystick.addEventListener(
     "pointerup",
-    resetJoystick
+    stopJoy
 );
 
 joystick.addEventListener(
     "pointercancel",
-    resetJoystick
+    stopJoy
 );
 
-/* BOOST */
+/* =========================
+   BOOST
+========================= */
 
-let boosting = false;
-let dropTimer = 0;
+document.getElementById(
+    "boost"
+).addEventListener(
+    "pointerdown",
+    ()=>{
+        boosting=true;
+    }
+);
 
-const boost =
-    document.getElementById(
-        "boost"
-    );
-
-boost.onpointerdown =
-    () => boosting = true;
-
-boost.onpointerup =
-    () => boosting = false;
-
-boost.onpointercancel =
-    () => boosting = false;
+document.getElementById(
+    "boost"
+).addEventListener(
+    "pointerup",
+    ()=>{
+        boosting=false;
+    }
+);
 
 addEventListener(
     "keydown",
-    e => {
+    e=>{
 
-        if(e.key === "Shift")
-            boosting = true;
+        if(e.key==="Shift")
+            boosting=true;
 
     }
 );
 
 addEventListener(
     "keyup",
-    e => {
+    e=>{
 
-        if(e.key === "Shift")
-            boosting = false;
+        if(e.key==="Shift")
+            boosting=false;
 
     }
 );
 
-/* UPDATE */
+/* =========================
+   UPDATE PLAYER
+========================= */
 
-function update(){
+function updatePlayer(){
 
-    if(!running || dead)
-        return;
+    mouseControl();
 
-    if(innerWidth > 800)
-        mouseControl();
+    let diff =
+        player.targetAngle -
+        player.angle;
 
-    let turn =
-        me.targetAngle -
-        me.angle;
+    while(
+        diff>Math.PI
+    )
+        diff-=Math.PI*2;
 
-    while(turn > Math.PI)
-        turn -= Math.PI * 2;
+    while(
+        diff<-Math.PI
+    )
+        diff+=Math.PI*2;
 
-    while(turn < -Math.PI)
-        turn += Math.PI * 2;
-
-    me.angle += turn * .16;
+    player.angle +=
+        diff*.18;
 
     const speed =
         boosting
-            ? 11.5
-            : 8.5;
+        ? 12
+        : 8;
 
-    me.x +=
-        Math.cos(me.angle) *
-        speed;
+    player.x +=
+        Math.cos(
+            player.angle
+        )*speed;
 
-    me.y +=
-        Math.sin(me.angle) *
-        speed;
-
-    /*
-       KAARDI PIIR
-    */
+    player.y +=
+        Math.sin(
+            player.angle
+        )*speed;
 
     if(
-        me.x < 35 ||
-        me.x > WORLD - 35 ||
-        me.y < 35 ||
-        me.y > WORLD - 35
+        player.x<25 ||
+        player.x>WORLD-25 ||
+        player.y<25 ||
+        player.y>WORLD-25
     ){
 
         die(
-            "Sõitsid vastu kaardi piiri!"
+            "Läksid vastu kaardi äärt!"
         );
 
         return;
@@ -1440,25 +1243,27 @@ function update(){
     }
 
     body.unshift({
-        x:me.x,
-        y:me.y
+
+        x:player.x,
+        y:player.y
+
     });
 
     while(
-        body.length <
-        Math.floor(me.length)
+        body.length<
+        Math.floor(player.length)
     ){
 
         body.push({
-            x:me.x,
-            y:me.y
+            x:player.x,
+            y:player.y
         });
 
     }
 
     while(
-        body.length >
-        Math.floor(me.length)
+        body.length>
+        Math.floor(player.length)
     ){
 
         body.pop();
@@ -1467,49 +1272,13 @@ function update(){
 
     eatFood();
 
-    if(boosting)
-        dropBoostPiece();
-
-    if(single){
-
-        updateBots();
-        botCollision();
-
-    }
-
-    if(multiplayer){
-
-        sendServer({
-
-            type:"input",
-
-            x:me.x,
-            y:me.y,
-
-            angle:me.angle,
-
-            length:me.length,
-
-            score:me.score,
-
-            kills:me.kills,
-
-            body:body.slice(
-                0,
-                300
-            )
-
-        });
-
-        multiplayerCollision();
-
-    }
-
-    updateHUD();
+    checkBots();
 
 }
 
-/* FOOD */
+/* =========================
+   FOOD COLLISION
+========================= */
 
 function eatFood(){
 
@@ -1519,25 +1288,26 @@ function eatFood(){
         i--
     ){
 
-        const f = foods[i];
+        const f=foods[i];
 
         if(
             Math.hypot(
-                me.x-f.x,
-                me.y-f.y
+                player.x-f.x,
+                player.y-f.y
             ) <
-            24 + f.radius
+            25+f.radius
         ){
 
-            me.score += f.value;
+            player.score+=
+                f.value;
 
-            me.length +=
-                f.value * .55;
+            player.length+=
+                f.value*.6;
 
             foods.splice(i,1);
 
             foods.push(
-                randomFood()
+                createFood()
             );
 
         }
@@ -1546,126 +1316,106 @@ function eatFood(){
 
 }
 
-/* BOOST DROP */
-
-function dropBoostPiece(){
-
-    dropTimer--;
-
-    if(
-        dropTimer > 0 ||
-        me.length < 30
-    )
-        return;
-
-    dropTimer = 8;
-
-    const p =
-        body[
-            Math.min(
-                10,
-                body.length-1
-            )
-        ];
-
-    foods.push({
-
-        x:p.x,
-        y:p.y,
-
-        radius:6,
-
-        value:3,
-
-        color:me.color
-
-    });
-
-    me.length -= .1;
-
-}
-
-/* BOTS */
+/* =========================
+   BOT UPDATE
+========================= */
 
 function updateBots(){
 
-    for(const b of bots){
+    for(
+        const b of bots
+    ){
 
-        b.timer--;
+        b.think--;
 
-        if(b.timer <= 0){
+        if(b.think<=0){
 
-            b.timer =
-                40 +
+            b.think=
+                50+
                 Math.random()*100;
 
-            const f =
-                foods[
-                    Math.floor(
-                        Math.random() *
-                        foods.length
-                    )
-                ];
+            let target=null;
+            let best=Infinity;
 
-            if(f){
+            for(
+                let i=0;
+                i<foods.length;
+                i+=5
+            ){
 
-                b.targetAngle =
+                const f=foods[i];
+
+                const d=
+                    Math.hypot(
+                        f.x-b.x,
+                        f.y-b.y
+                    );
+
+                if(d<best){
+
+                    best=d;
+                    target=f;
+
+                }
+
+            }
+
+            if(target){
+
+                b.targetAngle=
                     Math.atan2(
-                        f.y-b.y,
-                        f.x-b.x
+                        target.y-b.y,
+                        target.x-b.x
                     );
 
             }
 
         }
 
-        let turn =
-            b.targetAngle -
-            b.angle;
+        let diff=
+            b.targetAngle-b.angle;
 
-        while(turn > Math.PI)
-            turn -= Math.PI*2;
+        while(diff>Math.PI)
+            diff-=Math.PI*2;
 
-        while(turn < -Math.PI)
-            turn += Math.PI*2;
+        while(diff<-Math.PI)
+            diff+=Math.PI*2;
 
-        b.angle += turn * .06;
+        b.angle+=diff*.06;
 
-        b.x +=
-            Math.cos(b.angle) *
-            5.7;
+        b.x+=
+            Math.cos(b.angle)*5.5;
 
-        b.y +=
-            Math.sin(b.angle) *
-            5.7;
+        b.y+=
+            Math.sin(b.angle)*5.5;
 
         if(
-            b.x < 100 ||
-            b.x > WORLD-100
+            b.x<100 ||
+            b.x>WORLD-100
         ){
 
-            b.angle =
-                Math.PI-b.angle;
+            b.angle=Math.PI-b.angle;
 
         }
 
         if(
-            b.y < 100 ||
-            b.y > WORLD-100
+            b.y<100 ||
+            b.y>WORLD-100
         ){
 
-            b.angle =
-                -b.angle;
+            b.angle=-b.angle;
 
         }
 
         b.body.unshift({
+
             x:b.x,
             y:b.y
+
         });
 
         while(
-            b.body.length <
+            b.body.length<
             Math.floor(b.length)
         ){
 
@@ -1677,7 +1427,7 @@ function updateBots(){
         }
 
         while(
-            b.body.length >
+            b.body.length>
             Math.floor(b.length)
         ){
 
@@ -1697,19 +1447,19 @@ function updateBots(){
                 Math.hypot(
                     b.x-f.x,
                     b.y-f.y
-                ) < 23
+                )<22
             ){
 
-                b.length +=
+                b.length+=
                     f.value*.5;
 
-                b.score +=
+                b.score+=
                     f.value;
 
                 foods.splice(i,1);
 
                 foods.push(
-                    randomFood()
+                    createFood()
                 );
 
                 break;
@@ -1722,14 +1472,19 @@ function updateBots(){
 
 }
 
-/* BOT COLLISION */
+/* =========================
+   SNAKE KILLS
+========================= */
 
-function botCollision(){
+function checkBots(){
 
-    for(const b of [...bots]){
+    for(
+        const b of bots
+    ){
 
         /*
-           BOT KEHA -> MINU PEA
+          MINU PEA
+          VASTASE KEHAS
         */
 
         for(
@@ -1742,9 +1497,9 @@ function botCollision(){
 
             if(
                 Math.hypot(
-                    me.x-p.x,
-                    me.y-p.y
-                ) < 21
+                    player.x-p.x,
+                    player.y-p.y
+                )<22
             ){
 
                 die(
@@ -1759,7 +1514,8 @@ function botCollision(){
         }
 
         /*
-           MINU KEHA -> BOTI PEA
+          BOTI PEA
+          MINU KEHAS
         */
 
         for(
@@ -1774,7 +1530,7 @@ function botCollision(){
                 Math.hypot(
                     b.x-p.x,
                     b.y-p.y
-                ) < 23
+                )<23
             ){
 
                 killBot(b);
@@ -1786,18 +1542,19 @@ function botCollision(){
         }
 
         /*
-           PEA VASTU PEA
+          PEA vs PEA
         */
 
         if(
             Math.hypot(
-                me.x-b.x,
-                me.y-b.y
-            ) < 35
+                player.x-b.x,
+                player.y-b.y
+            )<35
         ){
 
             if(
-                me.length >= b.length
+                player.length>=
+                b.length
             ){
 
                 killBot(b);
@@ -1819,56 +1576,16 @@ function botCollision(){
 
 }
 
-/* MULTIPLAYER COLLISION */
-
-function multiplayerCollision(){
-
-    for(
-        const p of remotePlayers.values()
-    ){
-
-        if(!p.body)
-            continue;
-
-        for(
-            let i=8;
-            i<p.body.length;
-            i++
-        ){
-
-            const part =
-                p.body[i];
-
-            if(
-                Math.hypot(
-                    me.x-part.x,
-                    me.y-part.y
-                ) < 22
-            ){
-
-                die(
-                    p.name+
-                    " keha tabas sinu pead!"
-                );
-
-                return;
-
-            }
-
-        }
-
-    }
-
-}
-
-/* KILL BOT */
+/* =========================
+   KILL BOT
+========================= */
 
 function killBot(bot){
 
-    const index =
+    const index=
         bots.indexOf(bot);
 
-    if(index < 0)
+    if(index===-1)
         return;
 
     for(
@@ -1877,8 +1594,7 @@ function killBot(bot){
         i+=3
     ){
 
-        const p =
-            bot.body[i];
+        const p=bot.body[i];
 
         foods.push({
 
@@ -1886,7 +1602,6 @@ function killBot(bot){
             y:p.y,
 
             radius:6,
-
             value:3,
 
             color:bot.color
@@ -1900,44 +1615,45 @@ function killBot(bot){
         1
     );
 
-    me.kills++;
-    me.score += 10;
-    me.length += 12;
+    player.kills++;
+    player.score+=10;
+    player.length+=12;
 
-    coins += 10;
+    coins+=10;
 
-    saveCoins();
+    save();
     updateCoins();
 
     showKill();
 
     setTimeout(
-        () => {
+        ()=>{
 
             if(
                 running &&
-                single &&
+                singlePlayer &&
                 !dead
             ){
 
                 bots.push(
-                    makeBot()
+                    createBot()
                 );
 
             }
 
         },
-        700
+        1000
     );
 
 }
 
-/* DRAW */
+/* =========================
+   DRAW WORLD
+========================= */
 
 function draw(){
 
-    ctx.fillStyle =
-        "#071008";
+    ctx.fillStyle="#071008";
 
     ctx.fillRect(
         0,
@@ -1949,63 +1665,18 @@ function draw(){
     if(!running)
         return;
 
-    /*
-       KRIITILINE:
-
-       Kaart on 18 000 x 18 000,
-       aga camera on sinu peal.
-    */
-
     ctx.save();
 
     ctx.translate(
-        W/2-me.x,
-        H/2-me.y
+        W/2-player.x,
+        H/2-player.y
     );
-
-    drawWorld();
-
-    for(const b of bots){
-
-        drawSnake(
-            b,
-            b.body
-        );
-
-    }
-
-    for(
-        const p of remotePlayers.values()
-    ){
-
-        drawSnake(
-            p,
-            p.body
-        );
-
-    }
-
-    drawSnake(
-        me,
-        body
-    );
-
-    ctx.restore();
-
-    drawMinimap();
-
-}
-
-/* WORLD */
-
-function drawWorld(){
 
     /*
-       suur kaart
+      KAART
     */
 
-    ctx.fillStyle =
-        "#102414";
+    ctx.fillStyle="#102414";
 
     ctx.fillRect(
         0,
@@ -2015,157 +1686,125 @@ function drawWorld(){
     );
 
     /*
-       ruudud
+      ruudud
     */
 
-    ctx.fillStyle =
-        "#132a17";
-
-    for(
-        let x=0;
-        x<WORLD;
-        x+=500
-    ){
-
-        for(
-            let y=0;
-            y<WORLD;
-            y+=500
-        ){
-
-            ctx.fillRect(
-                x+4,
-                y+4,
-                492,
-                492
-            );
-
-        }
-
-    }
-
-    /*
-       teed
-    */
-
-    ctx.fillStyle =
-        "#243b28";
-
-    for(
-        let x=500;
-        x<WORLD;
-        x+=2500
-    ){
-
-        ctx.fillRect(
-            x,
-            0,
-            180,
-            WORLD
-        );
-
-    }
-
-    for(
-        let y=700;
-        y<WORLD;
-        y+=2500
-    ){
-
-        ctx.fillRect(
-            0,
-            y,
-            WORLD,
-            180
-        );
-
-    }
-
-    /*
-       grid
-    */
-
-    ctx.fillStyle =
+    ctx.strokeStyle=
         "rgba(99,255,120,.07)";
 
+    ctx.lineWidth=1;
+
+    const grid=100;
+
+    const startX=
+        Math.floor(
+            (player.x-W/2)/grid
+        )*grid;
+
+    const endX=
+        Math.ceil(
+            (player.x+W/2)/grid
+        )*grid;
+
     for(
-        let x=0;
-        x<WORLD;
-        x+=100
+        let x=startX;
+        x<=endX;
+        x+=grid
     ){
 
-        ctx.fillRect(
+        ctx.beginPath();
+
+        ctx.moveTo(
             x,
-            0,
-            1,
-            WORLD
+            player.y-H/2-100
         );
+
+        ctx.lineTo(
+            x,
+            player.y+H/2+100
+        );
+
+        ctx.stroke();
 
     }
 
+    const startY=
+        Math.floor(
+            (player.y-H/2)/grid
+        )*grid;
+
+    const endY=
+        Math.ceil(
+            (player.y+H/2)/grid
+        )*grid;
+
     for(
-        let y=0;
-        y<WORLD;
-        y+=100
+        let y=startY;
+        y<=endY;
+        y+=grid
     ){
 
-        ctx.fillRect(
-            0,
-            y,
-            WORLD,
-            1
+        ctx.beginPath();
+
+        ctx.moveTo(
+            player.x-W/2-100,
+            y
         );
+
+        ctx.lineTo(
+            player.x+W/2+100,
+            y
+        );
+
+        ctx.stroke();
 
     }
 
     drawFood();
 
-    /*
-       border
-    */
+    for(
+        const b of bots
+    ){
 
-    ctx.strokeStyle =
-        "#63ff78";
+        drawSnake(
+            b,
+            b.body
+        );
 
-    ctx.lineWidth = 20;
+    }
 
-    ctx.shadowColor =
-        "#63ff78";
-
-    ctx.shadowBlur = 25;
-
-    ctx.strokeRect(
-        0,
-        0,
-        WORLD,
-        WORLD
+    drawSnake(
+        player,
+        body
     );
 
-    ctx.shadowBlur = 0;
+    ctx.restore();
+
+    drawMinimap();
 
 }
 
-/* FOOD DRAW */
+/* =========================
+   FOOD DRAW
+========================= */
 
 function drawFood(){
 
-    for(const f of foods){
+    for(
+        const f of foods
+    ){
 
         if(
-            Math.abs(f.x-me.x) >
-                W/2+150 ||
-            Math.abs(f.y-me.y) >
-                H/2+150
+            Math.abs(
+                f.x-player.x
+            )>W/2+100 ||
+            Math.abs(
+                f.y-player.y
+            )>H/2+100
         )
             continue;
 
-        ctx.fillStyle =
-            f.color;
-
-        ctx.shadowColor =
-            f.color;
-
-        ctx.shadowBlur = 10;
+        ctx.fillStyle=f.color;
 
         ctx.beginPath();
 
@@ -2181,11 +1820,11 @@ function drawFood(){
 
     }
 
-    ctx.shadowBlur=0;
-
 }
 
-/* SNAKE */
+/* =========================
+   SNAKE DRAW
+========================= */
 
 function drawSnake(
     snake,
@@ -2194,12 +1833,12 @@ function drawSnake(
 
     if(
         !parts ||
-        parts.length===0
+        !parts.length
     )
         return;
 
     /*
-       keha
+      BODY
     */
 
     for(
@@ -2210,47 +1849,23 @@ function drawSnake(
 
         const p=parts[i];
 
-        const fade =
-            i / parts.length;
+        const size=
+            9+
+            Math.min(
+                7,
+                (parts.length-i)/
+                12
+            );
 
-        const radius =
-            9 +
-            (1-fade)*8;
-
-        ctx.globalAlpha =
-            .98 -
-            fade*.15;
-
-        ctx.fillStyle =
+        ctx.fillStyle=
             snake.color;
-
-        ctx.shadowColor =
-            snake.color;
-
-        ctx.shadowBlur =
-            i<10 ? 10 : 3;
 
         ctx.beginPath();
 
         ctx.arc(
             p.x,
             p.y,
-            radius,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-
-        ctx.fillStyle =
-            "rgba(255,255,255,.16)";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x-radius*.3,
-            p.y-radius*.3,
-            radius*.2,
+            size,
             0,
             Math.PI*2
         );
@@ -2259,12 +1874,8 @@ function drawSnake(
 
     }
 
-    ctx.globalAlpha=1;
-
-    ctx.shadowBlur=0;
-
     /*
-       pea
+      HEAD
     */
 
     ctx.save();
@@ -2278,7 +1889,7 @@ function drawSnake(
         snake.angle
     );
 
-    ctx.fillStyle =
+    ctx.fillStyle=
         snake.color;
 
     ctx.beginPath();
@@ -2294,19 +1905,17 @@ function drawSnake(
     ctx.fill();
 
     /*
-       silmad
+      eyes
     */
 
     ctx.fillStyle="white";
 
     ctx.beginPath();
 
-    ctx.ellipse(
-        10,
+    ctx.arc(
+        11,
         -8,
         7,
-        6,
-        0,
         0,
         Math.PI*2
     );
@@ -2315,12 +1924,10 @@ function drawSnake(
 
     ctx.beginPath();
 
-    ctx.ellipse(
-        10,
+    ctx.arc(
+        11,
         8,
         7,
-        6,
-        0,
         0,
         Math.PI*2
     );
@@ -2332,7 +1939,7 @@ function drawSnake(
     ctx.beginPath();
 
     ctx.arc(
-        12,
+        13,
         -8,
         3,
         0,
@@ -2344,7 +1951,7 @@ function drawSnake(
     ctx.beginPath();
 
     ctx.arc(
-        12,
+        13,
         8,
         3,
         0,
@@ -2353,348 +1960,230 @@ function drawSnake(
 
     ctx.fill();
 
-    /*
-       keel
-    */
-
-    ctx.strokeStyle="#ff6070";
-
-    ctx.lineWidth=2;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        20,
-        0
-    );
-
-    ctx.lineTo(
-        36,
-        0
-    );
-
-    ctx.stroke();
-
     ctx.restore();
 
     /*
-       nimi
+      NAME
     */
 
-    ctx.save();
+    ctx.font=
+        "bold 14px Arial";
 
     ctx.textAlign="center";
 
-    ctx.font="bold 14px Arial";
-
-    ctx.fillStyle="white";
-
-    ctx.strokeStyle="rgba(0,0,0,.8)";
-
     ctx.lineWidth=4;
+
+    ctx.strokeStyle=
+        "rgba(0,0,0,.8)";
 
     ctx.strokeText(
         snake.name || "Player",
         snake.x,
-        snake.y-38
+        snake.y-35
     );
+
+    ctx.fillStyle="white";
 
     ctx.fillText(
         snake.name || "Player",
         snake.x,
-        snake.y-38
+        snake.y-35
     );
-
-    ctx.restore();
 
 }
 
-/* MINIMAP */
+/* =========================
+   MINIMAP
+========================= */
+
+function miniPoint(
+    x,
+    y,
+    color,
+    size
+){
+
+    const px=
+        x/WORLD*400;
+
+    const py=
+        y/WORLD*400;
+
+    mctx.fillStyle=color;
+
+    mctx.beginPath();
+
+    mctx.arc(
+        px,
+        py,
+        size,
+        0,
+        Math.PI*2
+    );
+
+    mctx.fill();
+
+}
 
 function drawMinimap(){
 
-    const S=400;
-
-    miniCtx.clearRect(
+    mctx.clearRect(
         0,
         0,
-        S,
-        S
+        400,
+        400
     );
 
-    /*
-       kogu suur kaart
-    */
-
-    miniCtx.fillStyle =
+    mctx.fillStyle=
         "#102414";
 
-    miniCtx.fillRect(
+    mctx.fillRect(
         0,
         0,
-        S,
-        S
+        400,
+        400
     );
 
     /*
-       ruudustik
+      kogu maailma grid
     */
 
-    miniCtx.fillStyle =
-        "#16331b";
-
-    for(
-        let x=0;
-        x<S;
-        x+=20
-    ){
-
-        for(
-            let y=0;
-            y<S;
-            y+=20
-        ){
-
-            miniCtx.fillRect(
-                x+1,
-                y+1,
-                18,
-                18
-            );
-
-        }
-
-    }
-
-    /*
-       teed
-    */
-
-    miniCtx.fillStyle =
-        "#29432c";
-
-    for(
-        let x=500;
-        x<WORLD;
-        x+=2500
-    ){
-
-        miniCtx.fillRect(
-            x/WORLD*S,
-            0,
-            180/WORLD*S,
-            S
-        );
-
-    }
-
-    for(
-        let y=700;
-        y<WORLD;
-        y+=2500
-    ){
-
-        miniCtx.fillRect(
-            0,
-            y/WORLD*S,
-            S,
-            180/WORLD*S
-        );
-
-    }
-
-    /*
-       toit
-    */
-
-    miniCtx.fillStyle =
-        "#ffd84d";
+    mctx.strokeStyle=
+        "rgba(99,255,120,.12)";
 
     for(
         let i=0;
-        i<foods.length;
-        i+=10
+        i<=400;
+        i+=20
     ){
 
-        const f=foods[i];
+        mctx.beginPath();
 
-        miniCtx.beginPath();
-
-        miniCtx.arc(
-            f.x/WORLD*S,
-            f.y/WORLD*S,
-            1.8,
-            0,
-            Math.PI*2
+        mctx.moveTo(
+            i,
+            0
         );
 
-        miniCtx.fill();
+        mctx.lineTo(
+            i,
+            400
+        );
+
+        mctx.stroke();
+
+        mctx.beginPath();
+
+        mctx.moveTo(
+            0,
+            i
+        );
+
+        mctx.lineTo(
+            400,
+            i
+        );
+
+        mctx.stroke();
 
     }
 
     /*
-       BOTID
+      BOTID
     */
 
     for(
         const b of bots
     ){
 
-        drawMiniPoint(
+        miniPoint(
             b.x,
             b.y,
             "#ff5268",
-            6
+            5
         );
 
     }
 
     /*
-       MULTIPLAYER
+      MINU
     */
 
-    for(
-        const p of remotePlayers.values()
-    ){
-
-        drawMiniPoint(
-            p.x,
-            p.y,
-            "#4da6ff",
-            7
-        );
-
-    }
-
-    /*
-       SINA
-    */
-
-    drawMiniPoint(
-        me.x,
-        me.y,
+    miniPoint(
+        player.x,
+        player.y,
         "#63ff78",
-        10
+        8
     );
+
+    mctx.strokeStyle="white";
+    mctx.lineWidth=2;
+
+    const x=
+        player.x/WORLD*400;
+
+    const y=
+        player.y/WORLD*400;
+
+    mctx.beginPath();
+
+    mctx.moveTo(
+        x,
+        y
+    );
+
+    mctx.lineTo(
+        x+
+        Math.cos(player.angle)*18,
+        y+
+        Math.sin(player.angle)*18
+    );
+
+    mctx.stroke();
 
     /*
-       sinu suund
+      BORDER
     */
 
-    const mx =
-        me.x/WORLD*S;
+    mctx.strokeStyle="#63ff78";
+    mctx.lineWidth=4;
 
-    const my =
-        me.y/WORLD*S;
-
-    miniCtx.strokeStyle =
-        "#fff";
-
-    miniCtx.lineWidth=2;
-
-    miniCtx.beginPath();
-
-    miniCtx.moveTo(
-        mx,
-        my
-    );
-
-    miniCtx.lineTo(
-        mx+
-        Math.cos(me.angle)*18,
-        my+
-        Math.sin(me.angle)*18
-    );
-
-    miniCtx.stroke();
-
-    /*
-       border
-    */
-
-    miniCtx.strokeStyle =
-        "#63ff78";
-
-    miniCtx.lineWidth=4;
-
-    miniCtx.strokeRect(
+    mctx.strokeRect(
         2,
         2,
-        S-4,
-        S-4
+        396,
+        396
     );
 
 }
 
-/* MINIMAP POINT */
+/* =========================
+   HUD
+========================= */
 
-function drawMiniPoint(
-    x,
-    y,
-    color,
-    radius
-){
-
-    const px =
-        x/WORLD*400;
-
-    const py =
-        y/WORLD*400;
-
-    miniCtx.fillStyle =
-        "rgba(0,0,0,.65)";
-
-    miniCtx.beginPath();
-
-    miniCtx.arc(
-        px,
-        py,
-        radius+3,
-        0,
-        Math.PI*2
-    );
-
-    miniCtx.fill();
-
-    miniCtx.fillStyle =
-        color;
-
-    miniCtx.beginPath();
-
-    miniCtx.arc(
-        px,
-        py,
-        radius,
-        0,
-        Math.PI*2
-    );
-
-    miniCtx.fill();
-
-}
-
-/* HUD */
-
-function updateHUD(){
+function updateHud(){
 
     document.getElementById(
         "score"
-    ).textContent =
-        Math.floor(me.score);
+    ).textContent=
+        Math.floor(
+            player.score
+        );
 
     document.getElementById(
         "kills"
-    ).textContent =
-        me.kills;
+    ).textContent=
+        player.kills;
 
     document.getElementById(
         "length"
-    ).textContent =
-        Math.floor(me.length);
+    ).textContent=
+        Math.floor(
+            player.length
+        );
 
     document.getElementById(
         "coins"
-    ).textContent =
+    ).textContent=
         coins;
 
     updateLeaderboard();
@@ -2703,19 +2192,19 @@ function updateHUD(){
 
 function updateLeaderboard(){
 
-    const all = [
+    const list=[{
 
-        {
-            name:me.name,
-            score:me.score,
-            color:me.color
-        }
+        name:player.name,
+        score:player.score,
+        color:player.color
 
-    ];
+    }];
 
-    for(const b of bots){
+    for(
+        const b of bots
+    ){
 
-        all.push({
+        list.push({
 
             name:b.name,
             score:b.score,
@@ -2725,59 +2214,47 @@ function updateLeaderboard(){
 
     }
 
-    for(
-        const p of remotePlayers.values()
-    ){
-
-        all.push({
-
-            name:p.name,
-            score:p.score || 0,
-            color:p.color || "#4da6ff"
-
-        });
-
-    }
-
-    all.sort(
-        (a,b) =>
+    list.sort(
+        (a,b)=>
             b.score-a.score
     );
 
-    const box =
+    const box=
         document.getElementById(
             "lbRows"
         );
 
     box.innerHTML="";
 
-    all.slice(0,3).forEach(
-        (p,i) => {
+    list
+        .slice(0,3)
+        .forEach(
+            (p,i)=>{
 
-            const row =
-                document.createElement(
-                    "div"
-                );
+                const row=
+                    document.createElement(
+                        "div"
+                    );
 
-            row.className="lbRow";
+                row.className=
+                    "lbRow";
 
-            row.innerHTML = `
-                <span style="color:${p.color}">
-                    ${i+1}. ${escapeHTML(p.name)}
-                </span>
-                <b>${Math.floor(p.score)}</b>
-            `;
+                row.innerHTML=
+                    `<span style="color:${p.color}">
+                    ${i+1}. ${safe(p.name)}
+                    </span>
+                    <b>${Math.floor(p.score)}</b>`;
 
-            box.appendChild(row);
+                box.appendChild(row);
 
-        }
-    );
+            }
+        );
 
 }
 
-function escapeHTML(str){
+function safe(text){
 
-    return String(str)
+    return String(text)
         .replace(/&/g,"&amp;")
         .replace(/</g,"&lt;")
         .replace(/>/g,"&gt;")
@@ -2785,7 +2262,9 @@ function escapeHTML(str){
 
 }
 
-/* DEATH */
+/* =========================
+   DEATH
+========================= */
 
 function die(reason){
 
@@ -2797,139 +2276,102 @@ function die(reason){
 
     document.getElementById(
         "deathReason"
-    ).textContent =
+    ).textContent=
         reason;
 
     document.getElementById(
         "finalScore"
-    ).textContent =
-        Math.floor(me.score);
+    ).textContent=
+        Math.floor(
+            player.score
+        );
 
     document.getElementById(
         "finalKills"
-    ).textContent =
-        me.kills;
+    ).textContent=
+        player.kills;
 
     document.getElementById(
         "gameOver"
-    ).style.display =
+    ).style.display=
         "flex";
 
 }
 
-/* KILL TEXT */
+/* =========================
+   KILL MESSAGE
+========================= */
 
 function showKill(){
 
-    const el =
+    const el=
         document.getElementById(
-            "killText"
+            "killMessage"
         );
 
-    el.classList.add("show");
+    el.style.opacity="1";
 
     setTimeout(
-        () => {
-
-            el.classList.remove(
-                "show"
-            );
-
+        ()=>{
+            el.style.opacity="0";
         },
         700
     );
 
 }
 
-/* COINS */
-
-function saveCoins(){
-
-    localStorage.setItem(
-        "snakeCoins",
-        String(coins)
-    );
-
-}
-
-function updateCoins(){
-
-    document.getElementById(
-        "coinValue"
-    ).textContent =
-        coins;
-
-    document.getElementById(
-        "coins"
-    ).textContent =
-        coins;
-
-}
-
-/* SKINS */
-
-function saveSkins(){
-
-    localStorage.setItem(
-        "snakeOwned",
-        JSON.stringify(owned)
-    );
-
-    localStorage.setItem(
-        "snakeSkin",
-        selectedSkin
-    );
-
-}
+/* =========================
+   SHOP
+========================= */
 
 function renderSkins(){
 
-    const box =
+    const box=
         document.getElementById(
             "skins"
         );
 
     box.innerHTML="";
 
-    for(const skin of SKINS){
+    for(
+        const s of SKINS
+    ){
 
         if(
             !owned.includes(
-                skin.id
+                s[0]
             )
         )
             continue;
 
-        const button =
+        const button=
             document.createElement(
                 "button"
             );
 
-        button.className =
-            "skin " +
-            (
-                selectedSkin === skin.id
-                    ? "selected"
-                    : ""
+        button.className=
+            "skinButton";
+
+        if(
+            skin===s[0]
+        ){
+
+            button.classList.add(
+                "selected"
             );
 
-        button.style.background =
-            skin.color;
+        }
 
-        button.onclick = () => {
+        button.style.background=
+            s[1];
 
-            selectedSkin =
-                skin.id;
+        button.onclick=()=>{
 
-            selected = skin;
+            skin=s[0];
 
-            me.color =
-                skin.color;
+            player.color=s[1];
 
-            me.skin =
-                skin.id;
-
-            saveSkins();
+            save();
 
             renderSkins();
             renderShop();
@@ -2944,54 +2386,56 @@ function renderSkins(){
 
 }
 
-/* SHOP */
-
 function renderShop(){
 
-    const grid =
+    const grid=
         document.getElementById(
             "shopGrid"
         );
 
     grid.innerHTML="";
 
-    for(const skin of SKINS){
+    for(
+        const s of SKINS
+    ){
 
-        const have =
-            owned.includes(
-                skin.id
-            );
+        const id=s[0];
+        const color=s[1];
+        const price=s[2];
 
-        const item =
+        const have=
+            owned.includes(id);
+
+        const item=
             document.createElement(
                 "div"
             );
 
-        item.className =
+        item.className=
             "shopItem";
 
-        item.innerHTML = `
+        item.innerHTML=`
 
             <div
                 class="preview"
                 style="
-                    background:${skin.color};
-                    box-shadow:
-                    0 0 18px ${skin.color};
+                    background:${color};
+                    box-shadow:0 0 15px ${color};
                 "
             ></div>
 
-            <b>${skin.id.toUpperCase()}</b>
+            <b>${id.toUpperCase()}</b>
 
             <div
                 style="
-                color:#ffd84d;
-                margin-top:5px"
+                    color:#ffd84d;
+                    margin-top:5px
+                "
             >
                 ${
-                    skin.price === 0
+                    price===0
                     ? "TASUTA"
-                    : "🪙 " + skin.price
+                    : "🪙 "+price
                 }
             </div>
 
@@ -3006,23 +2450,16 @@ function renderShop(){
 
         item
             .querySelector("button")
-            .onclick = () => {
+            .onclick=()=>{
 
                 if(have){
 
-                    selectedSkin =
-                        skin.id;
+                    skin=id;
 
-                    selected =
-                        skin;
+                    player.color=
+                        color;
 
-                    me.color =
-                        skin.color;
-
-                    me.skin =
-                        skin.id;
-
-                    saveSkins();
+                    save();
 
                     renderSkins();
                     renderShop();
@@ -3031,10 +2468,7 @@ function renderShop(){
 
                 }
 
-                if(
-                    coins <
-                    skin.price
-                ){
+                if(coins<price){
 
                     alert(
                         "Sul pole piisavalt coine!"
@@ -3044,27 +2478,16 @@ function renderShop(){
 
                 }
 
-                coins -=
-                    skin.price;
+                coins-=price;
 
-                owned.push(
-                    skin.id
-                );
+                owned.push(id);
 
-                selectedSkin =
-                    skin.id;
+                skin=id;
 
-                selected =
-                    skin;
+                player.color=
+                    color;
 
-                me.color =
-                    skin.color;
-
-                me.skin =
-                    skin.id;
-
-                saveCoins();
-                saveSkins();
+                save();
 
                 updateCoins();
 
@@ -3079,17 +2502,35 @@ function renderShop(){
 
 }
 
-document.getElementById(
-    "shopBtn"
-).onclick = () => {
+function updateCoins(){
 
     document.getElementById(
-        "main"
-    ).style.display = "none";
+        "menuCoins"
+    ).textContent=
+        coins;
+
+    document.getElementById(
+        "coins"
+    ).textContent=
+        coins;
+
+}
+
+/* =========================
+   SHOP BUTTONS
+========================= */
+
+document.getElementById(
+    "shopButton"
+).onclick=()=>{
+
+    document.getElementById(
+        "mainMenu"
+    ).style.display="none";
 
     document.getElementById(
         "shop"
-    ).style.display = "block";
+    ).style.display="block";
 
     renderShop();
 
@@ -3097,48 +2538,268 @@ document.getElementById(
 
 document.getElementById(
     "closeShop"
-).onclick = () => {
+).onclick=()=>{
 
     document.getElementById(
         "shop"
-    ).style.display = "none";
+    ).style.display="none";
 
     document.getElementById(
-        "main"
-    ).style.display = "block";
+        "mainMenu"
+    ).style.display="block";
 
 };
 
-/* ROOM PLAYERS */
+/* =========================
+   MULTIPLAYER
+========================= */
+
+let socket=null;
+let myId=null;
+let multiplayer=false;
+
+const remotePlayers=
+    new Map();
+
+function connect(){
+
+    const protocol=
+        location.protocol==="https:"
+        ? "wss:"
+        : "ws:";
+
+    socket=
+        new WebSocket(
+            protocol+
+            "//"+
+            location.host
+        );
+
+    socket.onopen=()=>{
+
+        document.getElementById(
+            "connection"
+        ).textContent=
+            "🟢 Server ühendatud";
+
+    };
+
+    socket.onclose=()=>{
+
+        document.getElementById(
+            "connection"
+        ).textContent=
+            "🔴 Server pole ühendatud";
+
+    };
+
+    socket.onerror=()=>{
+
+        document.getElementById(
+            "connection"
+        ).textContent=
+            "🔴 Serveri viga";
+
+    };
+
+    socket.onmessage=e=>{
+
+        let data;
+
+        try{
+            data=JSON.parse(e.data);
+        }catch{
+            return;
+        }
+
+        if(data.type==="connected"){
+
+            myId=data.id;
+
+        }
+
+        if(
+            data.type==="created" ||
+            data.type==="joined"
+        ){
+
+            multiplayer=true;
+
+            myId=data.id;
+
+            document.getElementById(
+                "room"
+            ).style.display=
+                "block";
+
+            document.getElementById(
+                "roomCode"
+            ).textContent=
+                data.code;
+
+        }
+
+        if(data.type==="startGame"){
+
+            singlePlayer=false;
+
+            startGame();
+
+        }
+
+        if(data.type==="state"){
+
+            remotePlayers.clear();
+
+            for(
+                const p of data.players
+            ){
+
+                if(
+                    p.id!==myId
+                ){
+
+                    remotePlayers.set(
+                        p.id,
+                        p
+                    );
+
+                }
+
+            }
+
+            updateRoomPlayers(
+                data.players
+            );
+
+        }
+
+        if(data.type==="kill"){
+
+            if(
+                data.killer===myId
+            ){
+
+                player.kills++;
+                player.score+=10;
+
+                coins+=10;
+
+                save();
+                updateCoins();
+
+                showKill();
+
+            }
+
+        }
+
+        if(data.type==="error"){
+
+            document.getElementById(
+                "error"
+            ).textContent=
+                data.message;
+
+        }
+
+    };
+
+}
+
+function send(data){
+
+    if(
+        socket &&
+        socket.readyState===
+        WebSocket.OPEN
+    ){
+
+        socket.send(
+            JSON.stringify(data)
+        );
+
+    }
+
+}
+
+document.getElementById(
+    "createButton"
+).onclick=()=>{
+
+    send({
+
+        type:"create",
+
+        name:
+            document.getElementById(
+                "name"
+            ).value,
+
+        color:
+            player.color
+
+    });
+
+};
+
+document.getElementById(
+    "joinButton"
+).onclick=()=>{
+
+    send({
+
+        type:"join",
+
+        code:
+            document.getElementById(
+                "roomInput"
+            ).value,
+
+        name:
+            document.getElementById(
+                "name"
+            ).value,
+
+        color:
+            player.color
+
+    });
+
+};
+
+document.getElementById(
+    "startButton"
+).onclick=()=>{
+
+    send({
+        type:"start"
+    });
+
+};
 
 function updateRoomPlayers(players){
 
-    const box =
+    const box=
         document.getElementById(
-            "roomPlayers"
+            "playersInRoom"
         );
 
     box.innerHTML="";
 
-    for(const p of players){
+    for(
+        const p of players
+    ){
 
-        const div =
+        const div=
             document.createElement(
                 "div"
             );
 
-        div.style.padding="5px";
-        div.style.background="#122015";
-        div.style.margin="3px";
-        div.style.borderRadius="7px";
+        div.style.padding="4px";
 
-        div.textContent =
-            p.name +
-            (
-                p.id === myServerId
-                    ? " ⭐"
-                    : ""
-            );
+        div.textContent=
+            p.name;
 
         box.appendChild(div);
 
@@ -3146,54 +2807,162 @@ function updateRoomPlayers(players){
 
 }
 
-/* ERROR */
+/* =========================
+   MULTIPLAYER SEND
+========================= */
 
-function showError(text){
+function sendPlayer(){
 
-    document.getElementById(
-        "error"
-    ).textContent =
-        text || "Viga";
+    if(
+        !multiplayer ||
+        !running
+    )
+        return;
+
+    send({
+
+        type:"update",
+
+        x:player.x,
+        y:player.y,
+
+        angle:player.angle,
+
+        length:player.length,
+
+        score:player.score,
+
+        kills:player.kills,
+
+        body:body.slice(
+            0,
+            250
+        )
+
+    });
 
 }
 
-/* SAVE NAME */
+/* =========================
+   REMOTE DRAW
+========================= */
 
-const nameInput =
+function drawRemotePlayers(){
+
+    for(
+        const p of remotePlayers.values()
+    ){
+
+        drawSnake(
+            p,
+            p.body
+        );
+
+    }
+
+}
+
+/* =========================
+   NAME
+========================= */
+
+const nameInput=
     document.getElementById(
         "name"
     );
 
-nameInput.value =
+nameInput.value=
     localStorage.getItem(
         "snakeName"
     ) || "";
 
 nameInput.addEventListener(
     "input",
-    () => {
-
+    ()=>{
         localStorage.setItem(
             "snakeName",
             nameInput.value
         );
-
     }
 );
 
-/* INIT */
+/* =========================
+   PATCH DRAW FOR MULTI
+========================= */
 
-renderSkins();
-renderShop();
-updateCoins();
-connectServer();
+const originalDraw=draw;
 
-/* LOOP */
+function drawGame(){
 
-function loop(){
+    originalDraw();
 
-    update();
-    draw();
+    if(
+        !running ||
+        !multiplayer
+    )
+        return;
+
+    /*
+       Remote snakes are drawn
+       on the same camera.
+    */
+
+    ctx.save();
+
+    ctx.translate(
+        W/2-player.x,
+        H/2-player.y
+    );
+
+    for(
+        const p of remotePlayers.values()
+    ){
+
+        drawSnake(
+            p,
+            p.body || []
+        );
+
+    }
+
+    ctx.restore();
+
+}
+
+/* =========================
+   LOOP
+========================= */
+
+let lastSend=0;
+
+function loop(time){
+
+    if(running){
+
+        if(singlePlayer){
+
+            updateBots();
+
+        }
+
+        updatePlayer();
+
+        const now=
+            performance.now();
+
+        if(
+            now-lastSend>80
+        ){
+
+            sendPlayer();
+
+            lastSend=now;
+
+        }
+
+    }
+
+    drawGame();
 
     requestAnimationFrame(
         loop
@@ -3201,7 +2970,18 @@ function loop(){
 
 }
 
-loop();
+/* =========================
+   INIT
+========================= */
+
+renderSkins();
+renderShop();
+updateCoins();
+connect();
+
+requestAnimationFrame(
+    loop
+);
 
 </script>
 
