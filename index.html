@@ -1,19 +1,3387 @@
-let mouseX = innerWidth / 2;
-let mouseY = innerHeight / 2;
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Snake Arena</title>
 
-addEventListener("mousemove", e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#061006;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    touch-action:none;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+}
+
+/* MENU */
+
+#menu{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    overflow-y:auto;
+    padding:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        radial-gradient(circle at 50% 0%,#24582c,#061006 65%);
+}
+
+.panel{
+    width:min(95vw,500px);
+    max-height:95vh;
+    overflow-y:auto;
+    padding:25px;
+    border-radius:25px;
+    background:rgba(5,12,6,.97);
+    border:1px solid #3b7042;
+    color:white;
+    text-align:center;
+    box-shadow:0 20px 70px #000;
+}
+
+.logo{
+    font-size:64px;
+}
+
+h1{
+    color:#63ff78;
+    font-size:40px;
+    margin-bottom:4px;
+}
+
+.subtitle{
+    color:#819482;
+    margin-bottom:18px;
+}
+
+input{
+    width:100%;
+    height:48px;
+    margin:5px 0;
+    padding:0 15px;
+    border-radius:11px;
+    border:1px solid #355b39;
+    background:#0a150b;
+    color:white;
+    outline:none;
+    text-align:center;
+    font-size:16px;
+}
+
+input:focus{
+    border-color:#63ff78;
+}
+
+.mainBtn{
+    width:100%;
+    min-height:48px;
+    margin-top:8px;
+    border:0;
+    border-radius:11px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.green{
+    background:#63ff78;
+    color:#041007;
+}
+
+.dark{
+    background:#122316;
+    color:white;
+    border:1px solid #355b39;
+}
+
+#coinMenu{
+    margin:12px 0;
+    padding:11px;
+    border-radius:12px;
+    background:#121f13;
+    color:#ffd84d;
+    font-size:20px;
+    font-weight:bold;
+}
+
+#skins{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+    margin:10px 0;
+}
+
+.skinSelect{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    border:3px solid transparent;
+    cursor:pointer;
+}
+
+.skinSelect.selected{
+    border-color:white;
+    transform:scale(1.08);
+}
+
+#shop{
+    display:none;
+}
+
+.shopGrid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:9px;
+    margin-top:10px;
+}
+
+.shopItem{
+    padding:12px;
+    border-radius:14px;
+    background:#0c180e;
+    border:1px solid #28432b;
+}
+
+.skinPreview{
+    width:55px;
+    height:55px;
+    margin:0 auto 7px;
+    border-radius:50%;
+    box-shadow:0 0 15px currentColor;
+}
+
+.shopBuy{
+    width:100%;
+    margin-top:8px;
+    padding:9px;
+    border:0;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.buy{
+    background:#ffd84d;
+    color:#211800;
+}
+
+.owned{
+    background:#315b36;
+    color:white;
+}
+
+#roomBox{
+    display:none;
+    margin-top:14px;
+    padding:12px;
+    border-radius:14px;
+    background:#0b170d;
+    border:1px solid #29492e;
+}
+
+#roomCode{
+    color:#63ff78;
+    font-size:32px;
+    font-weight:bold;
+    letter-spacing:5px;
+    margin:5px;
+}
+
+#players{
+    max-height:120px;
+    overflow:auto;
+    margin-top:8px;
+}
+
+.playerRow{
+    padding:6px;
+    margin:3px 0;
+    border-radius:7px;
+    background:#101e12;
+}
+
+#error{
+    min-height:22px;
+    margin-top:8px;
+    color:#ff6875;
+}
+
+#connection{
+    margin-top:6px;
+    color:#718172;
+    font-size:12px;
+}
+
+/* HUD */
+
+#hud{
+    position:fixed;
+    z-index:20;
+    left:10px;
+    top:10px;
+    display:none;
+    gap:5px;
+    flex-wrap:wrap;
+    max-width:280px;
+}
+
+.stat{
+    padding:7px 10px;
+    border-radius:10px;
+    background:rgba(0,0,0,.76);
+    border:1px solid #315b36;
+    color:white;
+    min-width:65px;
+}
+
+.stat small{
+    display:block;
+    color:#718172;
+    font-size:9px;
+}
+
+.stat b{
+    font-size:15px;
+}
+
+/* LEADERBOARD */
+
+#leaderboard{
+    position:fixed;
+    z-index:20;
+    right:10px;
+    top:10px;
+    width:190px;
+    padding:10px;
+    border-radius:14px;
+    background:rgba(0,0,0,.78);
+    border:1px solid #315b36;
+    color:white;
+    display:none;
+}
+
+.lbTitle{
+    color:#63ff78;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.lbRow{
+    display:flex;
+    justify-content:space-between;
+    gap:5px;
+    padding:4px;
+    font-size:12px;
+}
+
+/* CONTROLS */
+
+#joystick{
+    position:fixed;
+    z-index:30;
+    left:20px;
+    bottom:20px;
+    width:140px;
+    height:140px;
+    display:none;
+    border-radius:50%;
+    background:rgba(99,255,120,.08);
+    border:2px solid rgba(99,255,120,.4);
+}
+
+#stick{
+    position:absolute;
+    width:58px;
+    height:58px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:#63ff78;
+    border:3px solid white;
+    box-shadow:0 0 15px #63ff78;
+}
+
+#boost{
+    position:fixed;
+    z-index:30;
+    right:20px;
+    bottom:25px;
+    display:none;
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    border:3px solid #a7eaff;
+    background:#087eaf;
+    color:white;
+    font-size:28px;
+    font-weight:bold;
+}
+
+#boost:active{
+    transform:scale(.94);
+}
+
+#mouseHint{
+    position:fixed;
+    z-index:25;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%);
+    padding:7px 12px;
+    border-radius:10px;
+    background:rgba(0,0,0,.5);
+    color:rgba(255,255,255,.55);
+    pointer-events:none;
+}
+
+/* KILL */
+
+#killText{
+    position:fixed;
+    z-index:60;
+    left:50%;
+    top:25%;
+    transform:translate(-50%,-50%) scale(.8);
+    color:#63ff78;
+    font-size:38px;
+    font-weight:bold;
+    opacity:0;
+    pointer-events:none;
+    transition:.18s;
+    text-shadow:0 0 20px #63ff78;
+}
+
+#killText.show{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1);
+}
+
+/* GAME OVER */
+
+#gameOver{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.82);
+}
+
+.over{
+    width:min(90vw,410px);
+    padding:30px;
+    border-radius:25px;
+    background:#081008;
+    border:1px solid #3a603e;
+    color:white;
+    text-align:center;
+}
+
+.over h2{
+    color:#ff6070;
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+@media(max-width:800px){
+
+    #menu{
+        align-items:flex-start;
+    }
+
+    #joystick,
+    #boost{
+        display:block;
+    }
+
+    #mouseHint{
+        display:none;
+    }
+
+    #leaderboard{
+        width:150px;
+    }
+
+    #hud{
+        max-width:190px;
+    }
+}
+
+@media(min-width:801px){
+
+    #mouseHint{
+        display:block;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<!-- MENU -->
+
+<div id="menu">
+
+<div class="panel">
+
+<div id="mainMenu">
+
+<div class="logo">🐍</div>
+
+<h1>SNAKE ARENA</h1>
+
+<div class="subtitle">
+Snake.io stiilis võitlus
+</div>
+
+<input
+    id="name"
+    maxlength="16"
+    placeholder="Sinu nimi"
+>
+
+<div id="coinMenu">
+🪙 <span id="menuCoins">0</span> COINS
+</div>
+
+<button
+    id="shopButton"
+    class="mainBtn dark">
+🛒 POOD
+</button>
+
+<h3 style="margin-top:14px">
+Vali oma skin
+</h3>
+
+<div id="skins"></div>
+
+<button
+    id="singleBtn"
+    class="mainBtn green">
+🤖 SINGLEPLAYER — BOTID
+</button>
+
+<button
+    id="createBtn"
+    class="mainBtn dark">
+🏠 CREATE ROOM
+</button>
+
+<input
+    id="roomInput"
+    maxlength="6"
+    placeholder="ROOM CODE"
+>
+
+<button
+    id="joinBtn"
+    class="mainBtn dark">
+🚪 JOIN ROOM
+</button>
+
+<div id="roomBox">
+
+<div style="color:#718172;font-size:11px">
+ROOM CODE
+</div>
+
+<div id="roomCode">
+------
+</div>
+
+<div id="players"></div>
+
+<button
+    id="startBtn"
+    class="mainBtn green">
+▶ ALUSTA MÄNG
+</button>
+
+</div>
+
+<div id="error"></div>
+
+<div id="connection">
+Ühendamine...
+</div>
+
+</div>
+
+<!-- SHOP -->
+
+<div id="shop">
+
+<h2>🛒 POOD</h2>
+
+<p style="
+color:#718172;
+margin:7px 0 12px;
+">
+Iga kill annab +10 🪙
+</p>
+
+<div
+    id="shopGrid"
+    class="shopGrid">
+</div>
+
+<button
+    id="closeShop"
+    class="mainBtn dark">
+⬅ TAGASI
+</button>
+
+</div>
+
+</div>
+</div>
+
+<!-- HUD -->
+
+<div id="hud">
+
+<div class="stat">
+<small>SCORE</small>
+<b id="score">0</b>
+</div>
+
+<div class="stat">
+<small>KILLS</small>
+<b id="kills">0</b>
+</div>
+
+<div class="stat">
+<small>LENGTH</small>
+<b id="length">25</b>
+</div>
+
+<div class="stat">
+<small>COINS</small>
+<b id="coins">0</b>
+</div>
+
+</div>
+
+<!-- LEADERBOARD -->
+
+<div id="leaderboard">
+
+<div class="lbTitle">
+🏆 TOP 3
+</div>
+
+<div id="lbRows"></div>
+
+</div>
+
+<div id="mouseHint">
+🖱️ Hiir juhib madu • SHIFT = BOOST
+</div>
+
+<div id="killText">
+💥 KILL! +10 🪙
+</div>
+
+<!-- MOBILE -->
+
+<div id="joystick">
+<div id="stick"></div>
+</div>
+
+<button id="boost">
+⚡
+</button>
+
+<!-- GAME OVER -->
+
+<div id="gameOver">
+
+<div class="over">
+
+<h2>GAME OVER</h2>
+
+<p id="deathReason">
+Sinu pea sai pihta!
+</p>
+
+<p style="margin-top:10px">
+Score:
+<b id="finalScore">0</b>
+</p>
+
+<p style="margin-top:5px">
+Kills:
+<b id="finalKills">0</b>
+</p>
+
+<button
+    id="backMenu"
+    class="mainBtn green">
+🔄 TAGASI MENÜÜSSE
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   BASIC
+========================================================= */
+
+const canvas =
+    document.getElementById("game");
+
+const ctx =
+    canvas.getContext("2d");
+
+let W = innerWidth;
+let H = innerHeight;
+
+function resize(){
+
+    W = innerWidth;
+    H = innerHeight;
+
+    canvas.width = W;
+    canvas.height = H;
+}
+
+addEventListener("resize",resize);
+
+resize();
+
+const WORLD = 16000;
+
+/* =========================================================
+   SKINS
+========================================================= */
+
+const SKINS = [
+
+    {
+        id:"green",
+        name:"Classic",
+        color:"#63ff78",
+        price:0
+    },
+
+    {
+        id:"blue",
+        name:"Ocean",
+        color:"#4da6ff",
+        price:30
+    },
+
+    {
+        id:"red",
+        name:"Red",
+        color:"#ff5268",
+        price:50
+    },
+
+    {
+        id:"yellow",
+        name:"Gold",
+        color:"#ffd84d",
+        price:80
+    },
+
+    {
+        id:"purple",
+        name:"Purple",
+        color:"#b86cff",
+        price:100
+    },
+
+    {
+        id:"orange",
+        name:"Fire",
+        color:"#ff8a3d",
+        price:120
+    },
+
+    {
+        id:"cyan",
+        name:"Cyber",
+        color:"#00e5d4",
+        price:150
+    },
+
+    {
+        id:"white",
+        name:"Ghost",
+        color:"#ffffff",
+        price:200
+    }
+];
+
+let coins =
+    Number(
+        localStorage.getItem(
+            "snakeCoins"
+        ) || 0
+    );
+
+let owned =
+    JSON.parse(
+        localStorage.getItem(
+            "snakeOwned"
+        ) ||
+        '["green"]'
+    );
+
+let selectedSkin =
+    localStorage.getItem(
+        "snakeSkin"
+    ) || "green";
+
+if(!owned.includes("green")){
+    owned.unshift("green");
+}
+
+let selected =
+    SKINS.find(
+        s => s.id === selectedSkin
+    ) || SKINS[0];
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const me = {
+
+    id:null,
+
+    x:8000,
+    y:8000,
+
+    angle:0,
+    targetAngle:0,
+
+    length:25,
+
+    score:0,
+    kills:0,
+
+    color:selected.color,
+    skin:selected.id
+};
+
+let body=[];
+
+/* =========================================================
+   WORLD
+========================================================= */
+
+let foods=[];
+
+const FOOD_COLORS = [
+
+    "#63ff78",
+    "#ffd84d",
+    "#ff6070",
+    "#4da6ff",
+    "#b86cff",
+    "#ff8a3d",
+    "#00e5d4"
+];
+
+function randomFood(){
+
+    return {
+
+        x:
+            500+
+            Math.random()*
+            (WORLD-1000),
+
+        y:
+            500+
+            Math.random()*
+            (WORLD-1000),
+
+        radius:
+            3+
+            Math.random()*5,
+
+        value:
+            1+
+            Math.floor(
+                Math.random()*4
+            ),
+
+        color:
+            FOOD_COLORS[
+                Math.floor(
+                    Math.random()*
+                    FOOD_COLORS.length
+                )
+            ]
+    };
+}
+
+for(let i=0;i<1200;i++){
+
+    foods.push(
+        randomFood()
+    );
+}
+
+/* =========================================================
+   BOTS
+========================================================= */
+
+let bots=[];
+
+const BOT_COLORS = [
+
+    "#4da6ff",
+    "#ff5268",
+    "#ffd84d",
+    "#b86cff",
+    "#ff8a3d",
+    "#00e5d4",
+    "#ffffff"
+];
+
+const BOT_NAMES = [
+
+    "Viper",
+    "Cobra",
+    "Shadow",
+    "Hunter",
+    "Blaze",
+    "Toxic",
+    "Python",
+    "Ghost",
+    "Rex",
+    "Speedy",
+    "Storm",
+    "Ninja"
+];
+
+function makeBot(){
+
+    const bot = {
+
+        id:
+            "bot_" +
+            Math.random()
+            .toString(36)
+            .slice(2),
+
+        x:
+            1000+
+            Math.random()*
+            (WORLD-2000),
+
+        y:
+            1000+
+            Math.random()*
+            (WORLD-2000),
+
+        angle:
+            Math.random()*
+            Math.PI*2,
+
+        targetAngle:
+            Math.random()*
+            Math.PI*2,
+
+        length:
+            25+
+            Math.random()*100,
+
+        color:
+            BOT_COLORS[
+                Math.floor(
+                    Math.random()*
+                    BOT_COLORS.length
+                )
+            ],
+
+        name:
+            BOT_NAMES[
+                Math.floor(
+                    Math.random()*
+                    BOT_NAMES.length
+                )
+            ],
+
+        body:[],
+
+        timer:0,
+
+        boostTimer:0
+    };
+
+    for(
+        let i=0;
+        i<bot.length;
+        i++
+    ){
+
+        bot.body.push({
+
+            x:
+                bot.x-
+                Math.cos(bot.angle)*
+                i*8,
+
+            y:
+                bot.y-
+                Math.sin(bot.angle)*
+                i*8
+        });
+    }
+
+    return bot;
+}
+
+function createBots(){
+
+    bots=[];
+
+    for(let i=0;i<10;i++){
+
+        bots.push(
+            makeBot()
+        );
+    }
+}
+
+/* =========================================================
+   MULTIPLAYER
+========================================================= */
+
+let socket=null;
+let connected=false;
+
+let others={};
+
+function connectServer(){
+
+    if(location.protocol==="file:"){
+
+        document.getElementById(
+            "connection"
+        ).textContent=
+            "🟡 Server puudub — singleplayer töötab";
+
+        return;
+    }
+
+    const protocol =
+        location.protocol === "https:"
+        ? "wss:"
+        : "ws:";
+
+    try{
+
+        socket =
+            new WebSocket(
+                protocol+
+                "//"+
+                location.host
+            );
+
+        socket.onopen=()=>{
+
+            connected=true;
+
+            document.getElementById(
+                "connection"
+            ).textContent=
+                "🟢 Server connected";
+
+            send({
+
+                type:"hello",
+
+                name:getName(),
+
+                color:me.color,
+
+                skin:me.skin
+            });
+        };
+
+        socket.onclose=()=>{
+
+            connected=false;
+
+            document.getElementById(
+                "connection"
+            ).textContent=
+                "🔴 Server disconnected";
+        };
+
+        socket.onerror=()=>{
+
+            connected=false;
+
+        };
+
+        socket.onmessage=e=>{
+
+            try{
+
+                handleServer(
+                    JSON.parse(e.data)
+                );
+
+            }catch(err){
+
+                console.log(
+                    "Server message error:",
+                    err
+                );
+            }
+        };
+
+    }catch(err){
+
+        console.log(err);
+    }
+}
+
+function send(data){
+
+    if(
+        socket &&
+        socket.readyState===
+        WebSocket.OPEN
+    ){
+
+        socket.send(
+            JSON.stringify(data)
+        );
+
+        return true;
+    }
+
+    return false;
+}
+
+function handleServer(data){
+
+    if(
+        data.type==="roomCreated" ||
+        data.type==="roomJoined"
+    ){
+
+        me.id=data.id;
+
+        document.getElementById(
+            "roomBox"
+        ).style.display=
+            "block";
+
+        document.getElementById(
+            "roomCode"
+        ).textContent=
+            data.code;
+
+        return;
+    }
+
+    if(data.type==="lobby"){
+
+        const box=
+            document.getElementById(
+                "players"
+            );
+
+        box.innerHTML="";
+
+        (data.players||[])
+        .forEach(p=>{
+
+            const row=
+                document.createElement(
+                    "div"
+                );
+
+            row.className=
+                "playerRow";
+
+            row.textContent=
+                "🐍 "+p.name;
+
+            row.style.color=
+                p.color ||
+                "white";
+
+            box.appendChild(row);
+        });
+
+        return;
+    }
+
+    if(data.type==="gameStart"){
+
+        me.id=data.id;
+
+        startGame(false);
+
+        return;
+    }
+
+    if(data.type==="players"){
+
+        others=
+            data.players ||
+            {};
+
+        return;
+    }
+
+    if(data.type==="kill"){
+
+        me.kills=
+            data.kills ||
+            me.kills+1;
+
+        me.score=
+            data.score ||
+            me.score+10;
+
+        const reward =
+            data.coins ||
+            10;
+
+        coins += reward;
+
+        saveCoins();
+        updateCoins();
+
+        showKill();
+
+        return;
+    }
+
+    if(data.type==="gameOver"){
+
+        die(
+            data.reason ||
+            "Sinu madu sai pihta!"
+        );
+
+        return;
+    }
+
+    if(data.type==="error"){
+
+        document.getElementById(
+            "error"
+        ).textContent=
+            data.message ||
+            "Viga";
+    }
+}
+
+/* =========================================================
+   NAME
+========================================================= */
+
+function getName(){
+
+    const value=
+        document.getElementById(
+            "name"
+        ).value.trim();
+
+    return(
+        value ||
+        "Player"
+    ).slice(0,16);
+}
+
+/* =========================================================
+   COINS
+========================================================= */
+
+function saveCoins(){
+
+    localStorage.setItem(
+        "snakeCoins",
+        String(coins)
+    );
+}
+
+function saveSkins(){
+
+    localStorage.setItem(
+        "snakeOwned",
+        JSON.stringify(owned)
+    );
+
+    localStorage.setItem(
+        "snakeSkin",
+        selectedSkin
+    );
+}
+
+function updateCoins(){
+
+    document.getElementById(
+        "menuCoins"
+    ).textContent=
+        coins;
+
+    document.getElementById(
+        "coins"
+    ).textContent=
+        coins;
+
+    saveCoins();
+}
+
+/* =========================================================
+   SKIN SELECTOR
+========================================================= */
+
+function renderSkinSelector(){
+
+    const box=
+        document.getElementById(
+            "skins"
+        );
+
+    box.innerHTML="";
+
+    SKINS.forEach(skin=>{
+
+        if(!owned.includes(skin.id))
+            return;
+
+        const button=
+            document.createElement(
+                "button"
+            );
+
+        button.className=
+            "skinSelect "+
+            (
+                selectedSkin===skin.id
+                ?"selected"
+                :""
+            );
+
+        button.style.background=
+            skin.color;
+
+        button.title=
+            skin.name;
+
+        button.onclick=()=>{
+
+            selectSkin(
+                skin.id
+            );
+        };
+
+        box.appendChild(button);
+    });
+}
+
+function selectSkin(id){
+
+    if(!owned.includes(id))
+        return;
+
+    const skin=
+        SKINS.find(
+            s=>s.id===id
+        );
+
+    if(!skin)
+        return;
+
+    selectedSkin=id;
+    selected=skin;
+
+    me.color=
+        skin.color;
+
+    me.skin=
+        skin.id;
+
+    saveSkins();
+
+    renderSkinSelector();
+    renderShop();
+}
+
+renderSkinSelector();
+updateCoins();
+
+/* =========================================================
+   SHOP
+========================================================= */
+
+function renderShop(){
+
+    const grid=
+        document.getElementById(
+            "shopGrid"
+        );
+
+    grid.innerHTML="";
+
+    SKINS.forEach(skin=>{
+
+        const item=
+            document.createElement(
+                "div"
+            );
+
+        item.className=
+            "shopItem";
+
+        const have=
+            owned.includes(
+                skin.id
+            );
+
+        item.innerHTML=`
+
+            <div
+                class="skinPreview"
+                style="
+                    background:${skin.color};
+                    color:${skin.color};
+                ">
+            </div>
+
+            <b>${skin.name}</b>
+
+            <div style="
+                color:#ffd84d;
+                margin-top:5px;
+            ">
+                ${
+                    skin.price===0
+                    ?"TASUTA"
+                    :"🪙 "+skin.price
+                }
+            </div>
+
+            <button
+                class="
+                    shopBuy
+                    ${have?"owned":"buy"}
+                ">
+                ${
+                    have
+                    ?"✓ KASUTA"
+                    :"OSTA"
+                }
+            </button>
+        `;
+
+        item.querySelector(
+            "button"
+        ).onclick=()=>{
+
+            if(have){
+
+                selectSkin(
+                    skin.id
+                );
+
+                return;
+            }
+
+            if(coins<skin.price){
+
+                alert(
+                    "Sul on vaja veel "+
+                    (
+                        skin.price-
+                        coins
+                    )+
+                    " coini."
+                );
+
+                return;
+            }
+
+            coins -= skin.price;
+
+            owned.push(
+                skin.id
+            );
+
+            selectSkin(
+                skin.id
+            );
+
+            saveCoins();
+            saveSkins();
+
+            updateCoins();
+            renderShop();
+        };
+
+        grid.appendChild(item);
+    });
+}
+
+document.getElementById(
+    "shopButton"
+).onclick=()=>{
+
+    document.getElementById(
+        "mainMenu"
+    ).style.display=
+        "none";
+
+    document.getElementById(
+        "shop"
+    ).style.display=
+        "block";
+
+    renderShop();
+};
+
+document.getElementById(
+    "closeShop"
+).onclick=()=>{
+
+    document.getElementById(
+        "shop"
+    ).style.display=
+        "none";
+
+    document.getElementById(
+        "mainMenu"
+    ).style.display=
+        "block";
+};
+
+/* =========================================================
+   ROOM
+========================================================= */
+
+document.getElementById(
+    "createBtn"
+).onclick=()=>{
+
+    clearError();
+
+    if(!connected){
+
+        setError(
+            "Serveriga pole ühendust. Singleplayer töötab ikka."
+        );
+
+        return;
+    }
+
+    send({
+
+        type:"createRoom",
+
+        name:getName(),
+
+        color:me.color,
+
+        skin:me.skin
+    });
+};
+
+document.getElementById(
+    "joinBtn"
+).onclick=()=>{
+
+    clearError();
+
+    const code=
+        document.getElementById(
+            "roomInput"
+        ).value
+        .trim()
+        .toUpperCase();
+
+    if(code.length<4){
+
+        setError(
+            "Sisesta õige room code."
+        );
+
+        return;
+    }
+
+    if(!connected){
+
+        setError(
+            "Serveriga pole ühendust."
+        );
+
+        return;
+    }
+
+    send({
+
+        type:"joinRoom",
+
+        code:code,
+
+        name:getName(),
+
+        color:me.color,
+
+        skin:me.skin
+    });
+};
+
+document.getElementById(
+    "startBtn"
+).onclick=()=>{
+
+    if(connected){
+
+        send({
+            type:"startGame"
+        });
+
+    }else{
+
+        startGame(false);
+    }
+};
+
+/* =========================================================
+   SINGLEPLAYER
+========================================================= */
+
+document.getElementById(
+    "singleBtn"
+).onclick=()=>{
+
+    startGame(true);
+};
+
+let single=false;
+let running=false;
+let dead=false;
+
+function startGame(botMode){
+
+    single=botMode;
+
+    running=true;
+    dead=false;
+
+    document.getElementById(
+        "menu"
+    ).style.display=
+        "none";
+
+    document.getElementById(
+        "hud"
+    ).style.display=
+        "flex";
+
+    document.getElementById(
+        "leaderboard"
+    ).style.display=
+        "block";
+
+    me.x=
+        3000+
+        Math.random()*
+        (WORLD-6000);
+
+    me.y=
+        3000+
+        Math.random()*
+        (WORLD-6000);
+
+    me.angle=
+        Math.random()*
+        Math.PI*2;
+
+    me.targetAngle=
+        me.angle;
+
+    me.length=25;
+    me.score=0;
+    me.kills=0;
+
+    body=[];
+
+    for(let i=0;i<25;i++){
+
+        body.push({
+
+            x:
+                me.x-
+                Math.cos(me.angle)*
+                i*8,
+
+            y:
+                me.y-
+                Math.sin(me.angle)*
+                i*8
+        });
+    }
+
+    if(single){
+
+        createBots();
+    }else{
+
+        bots=[];
+    }
+
+    updateHUD();
+}
+
+/* =========================================================
+   MOUSE CONTROL
+========================================================= */
+
+let mouseX=W/2;
+let mouseY=H/2;
+
+addEventListener(
+    "mousemove",
+    e=>{
+
+        mouseX=e.clientX;
+        mouseY=e.clientY;
+    }
+);
 
 function mouseControl(){
 
-    // Kui hiir on ekraani keskkohast eemal,
-    // liigub madu hiire suunas.
-    const dx = mouseX - W / 2;
-    const dy = mouseY - H / 2;
+    const dx=
+        mouseX-
+        W/2;
 
-    if(Math.hypot(dx, dy) > 8){
-        me.targetAngle = Math.atan2(dy, dx);
+    const dy=
+        mouseY-
+        H/2;
+
+    const d=
+        Math.hypot(
+            dx,
+            dy
+        );
+
+    if(d<7)
+        return;
+
+    me.targetAngle=
+        Math.atan2(
+            dy,
+            dx
+        );
+}
+
+/* =========================================================
+   MOBILE JOYSTICK
+========================================================= */
+
+const joystick=
+    document.getElementById(
+        "joystick"
+    );
+
+const stick=
+    document.getElementById(
+        "stick"
+    );
+
+let joyId=null;
+
+joystick.addEventListener(
+    "pointerdown",
+    e=>{
+
+        joyId=e.pointerId;
+
+        joystick.setPointerCapture(
+            e.pointerId
+        );
+
+        joystickMove(
+            e.clientX,
+            e.clientY
+        );
+    }
+);
+
+joystick.addEventListener(
+    "pointermove",
+    e=>{
+
+        if(e.pointerId===joyId){
+
+            joystickMove(
+                e.clientX,
+                e.clientY
+            );
+        }
+    }
+);
+
+joystick.addEventListener(
+    "pointerup",
+    joyReset
+);
+
+joystick.addEventListener(
+    "pointercancel",
+    joyReset
+);
+
+function joystickMove(x,y){
+
+    const rect=
+        joystick.getBoundingClientRect();
+
+    const cx=
+        rect.left+
+        rect.width/2;
+
+    const cy=
+        rect.top+
+        rect.height/2;
+
+    let dx=x-cx;
+    let dy=y-cy;
+
+    const max=52;
+
+    const distance=
+        Math.hypot(
+            dx,
+            dy
+        );
+
+    if(distance>max){
+
+        dx=
+            dx/distance*max;
+
+        dy=
+            dy/distance*max;
+    }
+
+    stick.style.left=
+        `calc(50% + ${dx}px)`;
+
+    stick.style.top=
+        `calc(50% + ${dy}px)`;
+
+    if(distance>7){
+
+        me.targetAngle=
+            Math.atan2(
+                dy,
+                dx
+            );
     }
 }
+
+function joyReset(){
+
+    joyId=null;
+
+    stick.style.left="50%";
+    stick.style.top="50%";
+}
+
+/* =========================================================
+   BOOST
+========================================================= */
+
+let boosting=false;
+
+const boostButton=
+    document.getElementById(
+        "boost"
+    );
+
+boostButton.addEventListener(
+    "pointerdown",
+    ()=>{
+        boosting=true;
+    }
+);
+
+boostButton.addEventListener(
+    "pointerup",
+    ()=>{
+        boosting=false;
+    }
+);
+
+boostButton.addEventListener(
+    "pointercancel",
+    ()=>{
+        boosting=false;
+    }
+);
+
+addEventListener(
+    "keydown",
+    e=>{
+
+        if(
+            e.key==="Shift" ||
+            e.code==="ShiftLeft" ||
+            e.code==="ShiftRight"
+        ){
+
+            boosting=true;
+        }
+    }
+);
+
+addEventListener(
+    "keyup",
+    e=>{
+
+        if(
+            e.key==="Shift" ||
+            e.code==="ShiftLeft" ||
+            e.code==="ShiftRight"
+        ){
+
+            boosting=false;
+        }
+    }
+);
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+function update(){
+
+    if(!running||dead)
+        return;
+
+    if(innerWidth>800){
+
+        mouseControl();
+    }
+
+    let turn=
+        me.targetAngle-
+        me.angle;
+
+    while(turn>Math.PI)
+        turn-=Math.PI*2;
+
+    while(turn<-Math.PI)
+        turn+=Math.PI*2;
+
+    const turnSpeed=
+        boosting
+        ?0.24
+        :0.18;
+
+    me.angle +=
+        turn*
+        turnSpeed;
+
+    const speed=
+        boosting
+        ?11
+        :7.2;
+
+    me.x +=
+        Math.cos(me.angle)*
+        speed;
+
+    me.y +=
+        Math.sin(me.angle)*
+        speed;
+
+    /* WORLD EDGE */
+
+    if(
+        me.x<30 ||
+        me.x>WORLD-30 ||
+        me.y<30 ||
+        me.y>WORLD-30
+    ){
+
+        die(
+            "Läksid kaardi piirist välja!"
+        );
+
+        return;
+    }
+
+    body.unshift({
+
+        x:me.x,
+        y:me.y
+    });
+
+    while(
+        body.length<
+        Math.floor(me.length)
+    ){
+
+        body.push({
+
+            x:me.x,
+            y:me.y
+        });
+    }
+
+    while(
+        body.length>
+        Math.floor(me.length)
+    ){
+
+        body.pop();
+    }
+
+    eatFood();
+
+    if(boosting){
+
+        leaveBoostPieces();
+    }
+
+    if(single){
+
+        updateBots();
+
+        checkBotCollisions();
+
+    }else{
+
+        send({
+
+            type:"state",
+
+            x:me.x,
+            y:me.y,
+
+            angle:me.angle,
+
+            length:me.length,
+
+            score:me.score,
+
+            kills:me.kills,
+
+            name:getName(),
+
+            color:me.color,
+
+            skin:me.skin
+        });
+    }
+
+    updateHUD();
+}
+
+/* =========================================================
+   BOOST PIECES
+========================================================= */
+
+let boostDropCooldown=0;
+
+function leaveBoostPieces(){
+
+    boostDropCooldown--;
+
+    if(boostDropCooldown>0)
+        return;
+
+    boostDropCooldown=7;
+
+    if(me.length<=15)
+        return;
+
+    const index=
+        Math.min(
+            body.length-1,
+            8
+        );
+
+    const p=
+        body[index];
+
+    foods.push({
+
+        x:p.x,
+        y:p.y,
+
+        radius:6,
+
+        color:me.color,
+
+        value:4,
+
+        boostPiece:true
+    });
+
+    /*
+       Boost sööb pikkust.
+    */
+
+    me.length -= .15;
+}
+
+/* =========================================================
+   FOOD
+========================================================= */
+
+function eatFood(){
+
+    for(
+        let i=foods.length-1;
+        i>=0;
+        i--
+    ){
+
+        const food=
+            foods[i];
+
+        if(
+            Math.hypot(
+                me.x-food.x,
+                me.y-food.y
+            )<
+            24+
+            food.radius
+        ){
+
+            me.score +=
+                food.value;
+
+            me.length +=
+                food.value*
+                .55;
+
+            foods.splice(i,1);
+
+            foods.push(
+                randomFood()
+            );
+        }
+    }
+}
+
+/* =========================================================
+   BOT AI
+========================================================= */
+
+function updateBots(){
+
+    for(const bot of bots){
+
+        bot.timer--;
+
+        if(bot.timer<=0){
+
+            bot.timer=
+                30+
+                Math.random()*100;
+
+            /*
+               Mõnikord jälitab mängijat.
+            */
+
+            if(
+                Math.random()<.22
+            ){
+
+                bot.targetAngle=
+                    Math.atan2(
+                        me.y-bot.y,
+                        me.x-bot.x
+                    );
+
+            }else{
+
+                const food=
+                    foods[
+                        Math.floor(
+                            Math.random()*
+                            foods.length
+                        )
+                    ];
+
+                if(food){
+
+                    bot.targetAngle=
+                        Math.atan2(
+                            food.y-bot.y,
+                            food.x-bot.x
+                        );
+                }
+            }
+        }
+
+        let turn=
+            bot.targetAngle-
+            bot.angle;
+
+        while(turn>Math.PI)
+            turn-=Math.PI*2;
+
+        while(turn<-Math.PI)
+            turn+=Math.PI*2;
+
+        bot.angle +=
+            turn*.055;
+
+        const botSpeed=
+            bot.boostTimer>0
+            ?8
+            :5.4;
+
+        bot.x +=
+            Math.cos(bot.angle)*
+            botSpeed;
+
+        bot.y +=
+            Math.sin(bot.angle)*
+            botSpeed;
+
+        /*
+           Seinast pöörab ümber.
+        */
+
+        if(
+            bot.x<100 ||
+            bot.x>WORLD-100 ||
+            bot.y<100 ||
+            bot.y>WORLD-100
+        ){
+
+            bot.targetAngle +=
+                Math.PI;
+        }
+
+        bot.body.unshift({
+
+            x:bot.x,
+            y:bot.y
+        });
+
+        while(
+            bot.body.length<
+            Math.floor(bot.length)
+        ){
+
+            bot.body.push({
+
+                x:bot.x,
+                y:bot.y
+            });
+        }
+
+        while(
+            bot.body.length>
+            Math.floor(bot.length)
+        ){
+
+            bot.body.pop();
+        }
+
+        if(bot.boostTimer>0)
+            bot.boostTimer--;
+
+        botEatFood(bot);
+    }
+}
+
+function botEatFood(bot){
+
+    for(
+        let i=foods.length-1;
+        i>=0;
+        i--
+    ){
+
+        const food=
+            foods[i];
+
+        if(
+            Math.hypot(
+                bot.x-food.x,
+                bot.y-food.y
+            )<
+            22+
+            food.radius
+        ){
+
+            bot.length +=
+                food.value*.5;
+
+            foods.splice(i,1);
+
+            foods.push(
+                randomFood()
+            );
+
+            break;
+        }
+    }
+}
+
+/* =========================================================
+   COLLISIONS
+========================================================= */
+
+function checkBotCollisions(){
+
+    for(const bot of [...bots]){
+
+        /*
+           MINU PEA -> BOTI KEHA
+
+           See tähendab, et kui sinu pea
+           läheb bot'i keha vastu,
+           SINA SURED.
+        */
+
+        for(
+            let i=6;
+            i<bot.body.length;
+            i++
+        ){
+
+            const p=
+                bot.body[i];
+
+            if(
+                Math.hypot(
+                    me.x-p.x,
+                    me.y-p.y
+                )<
+                24
+            ){
+
+                die(
+                    bot.name+
+                    " keha tabas sinu pead!"
+                );
+
+                return;
+            }
+        }
+
+        /*
+           BOTI PEA -> MINU KEHA
+
+           Kui bot tuleb oma peaga
+           sinu keha vastu,
+           BOT SUREB.
+        */
+
+        for(
+            let i=6;
+            i<body.length;
+            i++
+        ){
+
+            const p=
+                body[i];
+
+            if(
+                Math.hypot(
+                    bot.x-p.x,
+                    bot.y-p.y
+                )<
+                24
+            ){
+
+                killBot(bot);
+
+                break;
+            }
+        }
+
+        /*
+           PEA vs PEA
+
+           Suurem madu võidab.
+        */
+
+        if(
+            Math.hypot(
+                me.x-bot.x,
+                me.y-bot.y
+            )<35
+        ){
+
+            if(
+                me.length>=
+                bot.length
+            ){
+
+                killBot(bot);
+
+            }else{
+
+                die(
+                    bot.name+
+                    " võitis pea-vastu-pea!"
+                );
+
+                return;
+            }
+        }
+    }
+}
+
+/* =========================================================
+   KILL BOT
+========================================================= */
+
+function killBot(bot){
+
+    const index=
+        bots.indexOf(bot);
+
+    if(index===-1)
+        return;
+
+    /*
+       BOT jätab maha palju toitu.
+    */
+
+    for(
+        let i=0;
+        i<bot.body.length;
+        i+=3
+    ){
+
+        const p=
+            bot.body[i];
+
+        foods.push({
+
+            x:p.x,
+            y:p.y,
+
+            radius:
+                5+
+                Math.random()*3,
+
+            color:bot.color,
+
+            value:
+                2+
+                Math.floor(
+                    Math.random()*3
+                )
+        });
+    }
+
+    bots.splice(
+        index,
+        1
+    );
+
+    me.kills++;
+
+    me.score+=10;
+
+    me.length+=12;
+
+    /*
+       IGA KILL = 10 COINS
+    */
+
+    coins+=10;
+
+    updateCoins();
+
+    showKill();
+
+    /*
+       Uus bot tuleb tagasi.
+    */
+
+    setTimeout(()=>{
+
+        if(
+            running &&
+            !dead &&
+            single
+        ){
+
+            bots.push(
+                makeBot()
+            );
+        }
+
+    },1000);
+}
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+    document.getElementById(
+        "score"
+    ).textContent=
+        Math.floor(me.score);
+
+    document.getElementById(
+        "kills"
+    ).textContent=
+        me.kills;
+
+    document.getElementById(
+        "length"
+    ).textContent=
+        Math.floor(me.length);
+
+    document.getElementById(
+        "coins"
+    ).textContent=
+        coins;
+
+    updateLeaderboard();
+}
+
+function updateLeaderboard(){
+
+    const players=[];
+
+    players.push({
+
+        name:getName(),
+
+        score:me.score,
+
+        color:me.color
+    });
+
+    /*
+       Singleplayer botid
+    */
+
+    for(const bot of bots){
+
+        players.push({
+
+            name:bot.name,
+
+            score:
+                Math.floor(
+                    bot.length
+                ),
+
+            color:bot.color
+        });
+    }
+
+    /*
+       Multiplayer mängijad
+    */
+
+    for(const id in others){
+
+        const p=
+            others[id];
+
+        if(!p)
+            continue;
+
+        players.push({
+
+            name:
+                p.name||
+                "Player",
+
+            score:
+                p.score||
+                0,
+
+            color:
+                p.color||
+                "#fff"
+        });
+    }
+
+    players.sort(
+        (a,b)=>
+            b.score-a.score
+    );
+
+    const rows=
+        document.getElementById(
+            "lbRows"
+        );
+
+    rows.innerHTML="";
+
+    players
+        .slice(0,3)
+        .forEach((p,index)=>{
+
+            const row=
+                document.createElement(
+                    "div"
+                );
+
+            row.className=
+                "lbRow";
+
+            row.innerHTML=`
+
+                <span style="
+                    color:${p.color};
+                ">
+                    ${index+1}.
+                    ${escapeHTML(p.name)}
+                </span>
+
+                <b>
+                    ${Math.floor(p.score)}
+                </b>
+
+            `;
+
+            rows.appendChild(row);
+        });
+}
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        );
+}
+
+/* =========================================================
+   KILL TEXT
+========================================================= */
+
+function showKill(){
+
+    const el=
+        document.getElementById(
+            "killText"
+        );
+
+    el.classList.add(
+        "show"
+    );
+
+    setTimeout(()=>{
+
+        el.classList.remove(
+            "show"
+        );
+
+    },900);
+}
+
+/* =========================================================
+   DEATH
+========================================================= */
+
+function die(reason){
+
+    if(dead)
+        return;
+
+    dead=true;
+    running=false;
+
+    document.getElementById(
+        "deathReason"
+    ).textContent=
+        reason;
+
+    document.getElementById(
+        "finalScore"
+    ).textContent=
+        Math.floor(me.score);
+
+    document.getElementById(
+        "finalKills"
+    ).textContent=
+        me.kills;
+
+    document.getElementById(
+        "gameOver"
+    ).style.display=
+        "flex";
+}
+
+document.getElementById(
+    "backMenu"
+).onclick=()=>{
+
+    location.reload();
+};
+
+/* =========================================================
+   DRAW GRID
+========================================================= */
+
+function drawGrid(){
+
+    const size=250;
+
+    const startX=
+        Math.floor(
+            (me.x-W)/
+            size
+        )*
+        size;
+
+    const startY=
+        Math.floor(
+            (me.y-H)/
+            size
+        )*
+        size;
+
+    ctx.strokeStyle=
+        "rgba(99,255,120,.055)";
+
+    ctx.lineWidth=1;
+
+    for(
+        let x=startX;
+        x<me.x+W;
+        x+=size
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            me.y-H
+        );
+
+        ctx.lineTo(
+            x,
+            me.y+H
+        );
+
+        ctx.stroke();
+    }
+
+    for(
+        let y=startY;
+        y<me.y+H;
+        y+=size
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            me.x-W,
+            y
+        );
+
+        ctx.lineTo(
+            me.x+W,
+            y
+        );
+
+        ctx.stroke();
+    }
+}
+
+/* =========================================================
+   DRAW WORLD BORDER
+========================================================= */
+
+function drawBorder(){
+
+    ctx.strokeStyle=
+        "#63ff78";
+
+    ctx.lineWidth=12;
+
+    ctx.shadowColor=
+        "#63ff78";
+
+    ctx.shadowBlur=18;
+
+    ctx.strokeRect(
+        0,
+        0,
+        WORLD,
+        WORLD
+    );
+
+    ctx.shadowBlur=0;
+}
+
+/* =========================================================
+   DRAW FOOD
+========================================================= */
+
+function drawFood(){
+
+    for(const food of foods){
+
+        if(
+            Math.abs(
+                food.x-me.x
+            )>
+            W+150
+        )
+            continue;
+
+        if(
+            Math.abs(
+                food.y-me.y
+            )>
+            H+150
+        )
+            continue;
+
+        ctx.fillStyle=
+            food.color;
+
+        ctx.shadowColor=
+            food.color;
+
+        ctx.shadowBlur=
+            food.boostPiece
+            ?15
+            :7;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            food.x,
+            food.y,
+            food.radius,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+    }
+
+    ctx.shadowBlur=0;
+}
+
+/* =========================================================
+   DRAW SNAKE
+========================================================= */
+
+function drawSnake(
+    snake,
+    snakeBody
+){
+
+    if(
+        !snakeBody ||
+        snakeBody.length===0
+    )
+        return;
+
+    /*
+       KEHA
+    */
+
+    for(
+        let i=
+            snakeBody.length-1;
+
+        i>=0;
+
+        i--
+    ){
+
+        const p=
+            snakeBody[i];
+
+        const progress=
+            i/
+            snakeBody.length;
+
+        const radius=
+            8+
+            (1-progress)*8;
+
+        ctx.globalAlpha=
+            .92-
+            progress*.18;
+
+        ctx.fillStyle=
+            snake.color;
+
+        ctx.shadowColor=
+            snake.color;
+
+        ctx.shadowBlur=
+            i<15
+            ?8
+            :2;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            radius,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+        /*
+           KEHA DETAIL
+        */
+
+        if(i%4===0){
+
+            ctx.fillStyle=
+                "rgba(255,255,255,.16)";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x-radius*.25,
+                p.y-radius*.25,
+                radius*.22,
+                0,
+                Math.PI*2
+            );
+
+            ctx.fill();
+        }
+    }
+
+    ctx.globalAlpha=1;
+
+    ctx.shadowBlur=0;
+
+    /*
+       PEA
+    */
+
+    drawHead(
+        snake.x,
+        snake.y,
+        snake.color,
+        snake.skin,
+        snake.angle
+    );
+
+    /*
+       NIMI
+    */
+
+    drawName(
+        snake.name||
+        "Player",
+        snake.x,
+        snake.y-35
+    );
+}
+
+/* =========================================================
+   DRAW HEAD
+========================================================= */
+
+function drawHead(
+    x,
+    y,
+    color,
+    skin,
+    angle
+){
+
+    ctx.save();
+
+    ctx.translate(
+        x,
+        y
+    );
+
+    ctx.rotate(
+        angle
+    );
+
+    /*
+       HEAD
+    */
+
+    ctx.fillStyle=
+        color;
+
+    ctx.shadowColor=
+        color;
+
+    ctx.shadowBlur=
+        15;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        23,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.shadowBlur=0;
+
+    /*
+       HORNS FOR PURPLE
+    */
+
+    if(skin==="purple"){
+
+        ctx.fillStyle=
+            color;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            -12,-15
+        );
+
+        ctx.lineTo(
+            -8,-30
+        );
+
+        ctx.lineTo(
+            -1,-17
+        );
+
+        ctx.fill();
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            1,-17
+        );
+
+        ctx.lineTo(
+            9,-30
+        );
+
+        ctx.lineTo(
+            13,-15
+        );
+
+        ctx.fill();
+    }
+
+    /*
+       EYES
+    */
+
+    ctx.fillStyle=
+        "white";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        10,
+        -8,
+        7,
+        6,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        10,
+        8,
+        7,
+        6,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle=
+        "#111";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        12,
+        -8,
+        3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.beginPath();
+
+    ctx.arc(
+        12,
+        8,
+        3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    /*
+       MOUTH
+    */
+
+    ctx.strokeStyle=
+        "#111";
+
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        14,
+        0,
+        7,
+        -.6,
+        .6
+    );
+
+    ctx.stroke();
+
+    /*
+       TONGUE
+    */
+
+    ctx.strokeStyle=
+        "#ff6070";
+
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        20,
+        0
+    );
+
+    ctx.lineTo(
+        35,
+        0
+    );
+
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+/* =========================================================
+   DRAW NAME
+========================================================= */
+
+function drawName(
+    name,
+    x,
+    y
+){
+
+    ctx.save();
+
+    ctx.textAlign=
+        "center";
+
+    ctx.font=
+        "bold 12px Arial";
+
+    ctx.fillStyle=
+        "white";
+
+    ctx.shadowColor=
+        "#000";
+
+    ctx.shadowBlur=
+        5;
+
+    ctx.fillText(
+        name,
+        x,
+        y
+    );
+
+    ctx.restore();
+}
+
+/* =========================================================
+   DRAW MULTIPLAYER
+========================================================= */
+
+function drawOtherPlayers(){
+
+    for(const id in others){
+
+        if(id===me.id)
+            continue;
+
+        const p=
+            others[id];
+
+        if(
+            !p ||
+            p.alive===false
+        )
+            continue;
+
+        const remoteBody=[];
+
+        const len=
+            Math.max(
+                15,
+                Math.min(
+                    500,
+                    Math.floor(
+                        p.length||
+                        25
+                    )
+                )
+            );
+
+        for(
+            let i=0;
+            i<len;
+            i++
+        ){
+
+            remoteBody.push({
+
+                x:
+                    p.x-
+                    Math.cos(
+                        p.angle||0
+                    )*
+                    i*8,
+
+                y:
+                    p.y-
+                    Math.sin(
+                        p.angle||0
+                    )*
+                    i*8
+            });
+        }
+
+        drawSnake(
+
+            {
+
+                x:p.x,
+                y:p.y,
+
+                angle:
+                    p.angle||0,
+
+                color:
+                    p.color||
+                    "#4da6ff",
+
+                skin:
+                    p.skin||
+                    "blue",
+
+                name:
+                    p.name||
+                    "Player"
+            },
+
+            remoteBody
+        );
+    }
+}
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function draw(){
+
+    /*
+       BACKGROUND
+    */
+
+    ctx.fillStyle=
+        "#071008";
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+    if(!running)
+        return;
+
+    ctx.save();
+
+    /*
+       CAMERA
+    */
+
+    ctx.translate(
+        W/2-me.x,
+        H/2-me.y
+    );
+
+    drawGrid();
+
+    drawBorder();
+
+    drawFood();
+
+    /*
+       BOTS
+    */
+
+    for(const bot of bots){
+
+        drawSnake(
+            bot,
+            bot.body
+        );
+    }
+
+    /*
+       MULTIPLAYER
+    */
+
+    drawOtherPlayers();
+
+    /*
+       PLAYER
+    */
+
+    drawSnake(
+
+        {
+
+            x:me.x,
+            y:me.y,
+
+            angle:me.angle,
+
+            color:me.color,
+
+            skin:me.skin,
+
+            name:getName()
+        },
+
+        body
+    );
+
+    ctx.restore();
+}
+
+/* =========================================================
+   ERROR HELPERS
+========================================================= */
+
+function setError(text){
+
+    document.getElementById(
+        "error"
+    ).textContent=
+        text;
+}
+
+function clearError(){
+
+    document.getElementById(
+        "error"
+    ).textContent="";
+}
+
+/* =========================================================
+   START LOOP
+========================================================= */
+
+connectServer();
+
+function loop(){
+
+    update();
+
+    draw();
+
+    requestAnimationFrame(
+        loop
+    );
+}
+
+loop();
+
+</script>
+
+</body>
+</html>
