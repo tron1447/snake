@@ -2,7 +2,12 @@
 <html lang="et">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1,
+      maximum-scale=1,
+      user-scalable=no">
+
 <title>Snake Arena</title>
 
 <style>
@@ -18,9 +23,9 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#020604;
-    font-family:Arial,sans-serif;
+    background:#071007;
     touch-action:none;
+    font-family:Arial,sans-serif;
 }
 
 canvas{
@@ -30,381 +35,207 @@ canvas{
     height:100%;
 }
 
-/* ================= MENU ================= */
+/* MENU */
 
 #menu{
     position:fixed;
     inset:0;
-    z-index:100;
+    z-index:20;
     display:flex;
-    align-items:center;
     justify-content:center;
-    overflow:auto;
-
+    align-items:center;
     background:
-        radial-gradient(
-            circle at 50% 30%,
-            rgba(67,255,105,.18),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 20% 80%,
-            rgba(20,120,255,.12),
-            transparent 25%
-        ),
-        #020604;
+        radial-gradient(circle at center,
+        #17351b 0%,
+        #071007 55%,
+        #020502 100%);
 }
 
-.menuGlow{
-    position:absolute;
-    width:500px;
-    height:500px;
-    border-radius:50%;
-    background:rgba(60,255,100,.07);
-    filter:blur(80px);
-    animation:glow 4s infinite alternate;
-}
-
-@keyframes glow{
-    from{transform:scale(.8)}
-    to{transform:scale(1.2)}
-}
-
-.card{
-    position:relative;
-    z-index:2;
-    width:min(94vw,470px);
+.menuBox{
+    width:min(90vw,430px);
     padding:30px;
-    border-radius:30px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(13,31,17,.97),
-            rgba(2,8,4,.98)
-        );
-
-    border:1px solid rgba(105,255,130,.35);
-
-    box-shadow:
-        0 0 100px rgba(50,255,90,.12),
-        inset 0 0 50px rgba(80,255,100,.025);
-
+    border-radius:25px;
     text-align:center;
     color:white;
+    background:rgba(5,15,7,.95);
+    border:1px solid #3f9c4c;
+    box-shadow:0 0 50px rgba(50,255,80,.15);
 }
 
 .logo{
-    font-size:75px;
-    filter:drop-shadow(0 0 18px rgba(80,255,100,.5));
-    animation:snakeFloat 2s ease-in-out infinite;
-}
-
-@keyframes snakeFloat{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-8px)}
+    font-size:70px;
 }
 
 h1{
-    margin-top:5px;
+    color:#63ff78;
     font-size:42px;
-    font-weight:900;
-    letter-spacing:2px;
-    color:#63ff7e;
-    text-shadow:0 0 25px rgba(70,255,100,.45);
+    margin:5px 0 10px;
 }
 
 .subtitle{
-    color:#829987;
-    margin:5px 0 22px;
+    color:#8ca68e;
+    margin-bottom:20px;
 }
 
-.nameInput{
+#name{
     width:100%;
-    padding:15px;
-    border-radius:13px;
-    border:1px solid #315238;
-    background:#071009;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #315b37;
+    background:#0a160c;
     color:white;
-    outline:none;
-    font-size:16px;
     text-align:center;
+    font-size:17px;
+    outline:none;
 }
 
-.nameInput:focus{
-    border-color:#63ff7e;
-    box-shadow:0 0 15px rgba(70,255,100,.15);
-}
-
-.sectionTitle{
-    color:#6f8373;
-    font-size:10px;
-    letter-spacing:2px;
-    margin:18px 0 9px;
-}
-
-.skins{
-    display:flex;
-    justify-content:center;
-    gap:9px;
-    flex-wrap:wrap;
-}
-
-.skin{
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    border:3px solid transparent;
-    cursor:pointer;
-    transition:.15s;
-}
-
-.skin:hover{
-    transform:scale(1.12);
-}
-
-.skin.active{
-    border-color:white;
-    transform:scale(1.15);
-    box-shadow:0 0 14px rgba(255,255,255,.3);
-}
-
-.playButton{
+#play{
     width:100%;
-    padding:16px;
-    margin-top:20px;
+    margin-top:15px;
+    padding:15px;
     border:0;
-    border-radius:14px;
-    background:linear-gradient(135deg,#71ff8c,#38d65c);
-    color:#031006;
+    border-radius:12px;
+    background:#63ff78;
+    color:#061008;
     font-size:18px;
-    font-weight:900;
-    cursor:pointer;
-    box-shadow:0 8px 25px rgba(60,255,90,.2);
+    font-weight:bold;
 }
 
-.playButton:hover{
-    filter:brightness(1.08);
-}
-
-.playButton:active{
-    transform:scale(.98);
-}
-
-.infoRow{
-    display:flex;
-    justify-content:space-between;
-    margin-top:17px;
-    color:#617364;
-    font-size:11px;
-}
-
-.tip{
-    margin-top:16px;
-    padding:10px;
-    border-radius:10px;
-    background:rgba(80,255,100,.04);
-    color:#657967;
-    font-size:11px;
-}
-
-/* ================= HUD ================= */
+/* HUD */
 
 #hud{
     position:fixed;
-    z-index:20;
-    top:12px;
-    left:12px;
+    top:10px;
+    left:10px;
+    z-index:10;
     display:none;
-    gap:6px;
+    gap:7px;
 }
 
 .stat{
-    min-width:75px;
-    padding:7px 10px;
-    border-radius:11px;
-    background:rgba(2,9,4,.86);
-    border:1px solid rgba(100,255,130,.25);
+    padding:8px 12px;
+    border-radius:10px;
+    background:rgba(0,0,0,.65);
     color:white;
-    text-align:center;
-    backdrop-filter:blur(5px);
+    border:1px solid rgba(100,255,120,.3);
 }
 
 .stat small{
     display:block;
-    color:#718574;
+    color:#78917c;
     font-size:9px;
 }
 
 .stat b{
-    font-size:16px;
+    font-size:17px;
 }
 
-/* ================= MINIMAP ================= */
+/* MINIMAP */
 
 #minimap{
     position:fixed;
-    z-index:20;
-    top:12px;
     right:12px;
-    width:180px;
-    height:180px;
+    top:12px;
+    z-index:15;
+    width:170px;
+    height:170px;
     display:none;
-    border-radius:17px;
+    border-radius:15px;
     overflow:hidden;
-    background:#061009;
-    border:2px solid rgba(105,255,130,.55);
-    box-shadow:0 0 25px rgba(50,255,90,.12);
+    background:#061008;
+    border:2px solid #62ff79;
+    box-shadow:0 0 20px rgba(60,255,90,.2);
 }
 
-#map{
+#mapCanvas{
     width:100%;
     height:100%;
 }
 
-.mapLabel{
+.mapTitle{
     position:absolute;
-    top:6px;
-    left:9px;
-    color:#8dff9e;
+    left:7px;
+    top:5px;
+    color:#8dff9d;
     font-size:9px;
     font-weight:bold;
 }
 
-/* ================= JOYSTICK ================= */
+/* JOYSTICK */
 
 #joystick{
     position:fixed;
-    z-index:30;
     left:25px;
     bottom:25px;
-    width:150px;
-    height:150px;
+    width:145px;
+    height:145px;
+    z-index:20;
     display:none;
     border-radius:50%;
-    background:rgba(100,150,105,.18);
-    border:2px solid rgba(145,255,155,.38);
-    box-shadow:
-        inset 0 0 30px rgba(0,0,0,.3),
-        0 0 25px rgba(50,255,90,.08);
+    background:rgba(100,180,110,.16);
+    border:2px solid rgba(130,255,150,.4);
 }
 
 #stick{
     position:absolute;
     left:50%;
     top:50%;
-    width:64px;
-    height:64px;
+    width:60px;
+    height:60px;
     transform:translate(-50%,-50%);
     border-radius:50%;
-    background:radial-gradient(circle,#82ff9a,#1ab13d);
-    border:3px solid rgba(255,255,255,.8);
-    box-shadow:0 0 25px rgba(80,255,100,.4);
+    background:#54e96d;
+    border:3px solid white;
+    box-shadow:0 0 20px rgba(60,255,90,.5);
 }
 
-/* ================= BOOST ================= */
+/* BOOST */
 
 #boost{
     position:fixed;
-    z-index:30;
-    right:30px;
+    right:25px;
     bottom:30px;
-    width:105px;
-    height:105px;
+    z-index:20;
     display:none;
+    width:100px;
+    height:100px;
     border-radius:50%;
-    border:3px solid #a9e5ff;
-    background:radial-gradient(circle,#51bdff,#07548e);
+    border:3px solid #8bdcff;
+    background:#086aa0;
     color:white;
-    font-size:30px;
-    box-shadow:0 0 30px rgba(50,170,255,.35);
+    font-size:28px;
 }
 
-#boost small{
-    display:block;
-    font-size:10px;
-    margin-top:3px;
-}
-
-/* ================= ROTATE ================= */
+/* ROTATE */
 
 #rotate{
     position:fixed;
     inset:0;
-    z-index:1000;
+    z-index:100;
     display:none;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    background:#020604;
+    background:#020502;
     color:white;
-}
-
-.rotateBox{
-    padding:30px;
-}
-
-.phone{
-    font-size:75px;
-    animation:phone 1.5s infinite;
-}
-
-@keyframes phone{
-    0%,100%{transform:rotate(0)}
-    50%{transform:rotate(90deg)}
-}
-
-.rotateBox h2{
-    color:#63ff7e;
-    margin:15px 0;
-}
-
-/* ================= DEATH ================= */
-
-#death{
-    position:fixed;
-    inset:0;
-    z-index:200;
-    display:none;
-    align-items:center;
     justify-content:center;
-    background:rgba(0,0,0,.78);
-}
-
-.deathCard{
-    width:min(90%,390px);
-    padding:30px;
-    border-radius:25px;
-    background:#071109;
-    border:1px solid #63ff7e;
-    color:white;
+    align-items:center;
     text-align:center;
 }
 
-.deathCard h2{
-    font-size:30px;
-    color:#63ff7e;
+.rotateInner{
+    padding:30px;
 }
 
-.deathScore{
-    margin:10px;
-    color:#849687;
+.rotateIcon{
+    font-size:70px;
 }
 
-.deathButton{
-    width:100%;
-    padding:14px;
-    margin-top:8px;
-    border:0;
-    border-radius:12px;
-    background:#63ff7e;
-    color:#031006;
-    font-weight:bold;
+#rotate h2{
+    color:#63ff78;
+    margin:15px;
 }
 
-/* ================= MOBILE ================= */
+/* MOBILE */
 
-@media(max-width:800px) and (orientation:landscape){
+@media(max-width:800px){
 
     #joystick{
         display:block;
@@ -418,23 +249,18 @@ h1{
         width:135px;
         height:135px;
     }
-
-    .stat{
-        min-width:65px;
-    }
 }
 
 @media(max-width:800px) and (orientation:portrait){
 
-    #rotate{
-        display:flex;
-    }
-
     #menu{
         display:none;
     }
-}
 
+    #rotate{
+        display:flex;
+    }
+}
 </style>
 </head>
 
@@ -442,93 +268,38 @@ h1{
 
 <canvas id="game"></canvas>
 
-<!-- ROTATE -->
+<!-- ROTATE SCREEN -->
 
 <div id="rotate">
-
-    <div class="rotateBox">
-
-        <div class="phone">📱</div>
-
-        <h2>
-            PÖÖRA TELEFON KÜLILI
-        </h2>
-
-        <p>
-            Snake Arena töötab kõige paremini
-            horisontaalselt.
-        </p>
-
+    <div class="rotateInner">
+        <div class="rotateIcon">📱</div>
+        <h2>PÖÖRA TELEFON KÜLILI</h2>
+        <p>Snake Arena töötab horisontaalselt.</p>
     </div>
-
 </div>
 
 <!-- MENU -->
 
 <div id="menu">
 
-    <div class="menuGlow"></div>
+    <div class="menuBox">
 
-    <div class="card">
+        <div class="logo">🐍</div>
 
-        <div class="logo">
-            🐍
-        </div>
-
-        <h1>
-            SNAKE ARENA
-        </h1>
+        <h1>SNAKE ARENA</h1>
 
         <div class="subtitle">
-            Kasvata oma madu hiiglaslikuks!
+            Kasvata oma madu ja võitle teistega!
         </div>
 
         <input
             id="name"
-            class="nameInput"
             maxlength="16"
-            placeholder="✏️ Sinu nimi"
-        >
+            placeholder="Sinu nimi">
 
-        <div class="sectionTitle">
-            VALI OMA SKIN
-        </div>
-
-        <div
-            id="skins"
-            class="skins">
-        </div>
-
-        <button
-            id="play"
-            class="playButton">
-
-            🚀 ALUSTA MÄNGU
-
+        <button id="play">
+            MÄNGI
         </button>
-
-        <div class="tip">
-            💻 Arvuti: WASD või hiir
-            &nbsp; • &nbsp;
-            📱 Telefon: joystick
-        </div>
-
-        <div class="infoRow">
-
-            <span>
-                🗺️ WORLD 20K
-            </span>
-
-            <span>
-                ⚡ BOOST
-            </span>
-
-            <span>
-                🏆 BEST:
-                <b id="best">0</b>
-            </span>
-
-        </div>
 
     </div>
 
@@ -539,23 +310,13 @@ h1{
 <div id="hud">
 
     <div class="stat">
-
         <small>SCORE</small>
-
-        <b id="score">
-            0
-        </b>
-
+        <b id="score">0</b>
     </div>
 
     <div class="stat">
-
         <small>LENGTH</small>
-
-        <b id="length">
-            20
-        </b>
-
+        <b id="length">20</b>
     </div>
 
 </div>
@@ -565,13 +326,13 @@ h1{
 <div id="minimap">
 
     <canvas
-        id="map"
-        width="180"
-        height="180">
+        id="mapCanvas"
+        width="170"
+        height="170">
     </canvas>
 
-    <div class="mapLabel">
-        🗺️ WORLD MAP
+    <div class="mapTitle">
+        🗺️ MAP
     </div>
 
 </div>
@@ -579,67 +340,28 @@ h1{
 <!-- JOYSTICK -->
 
 <div id="joystick">
-
     <div id="stick"></div>
-
 </div>
 
 <!-- BOOST -->
 
 <button id="boost">
-
     ⚡
-
-    <small>
-        BOOST
-    </small>
-
 </button>
 
-<!-- DEATH -->
-
-<div id="death">
-
-    <div class="deathCard">
-
-        <div style="font-size:60px">
-            💥
-        </div>
-
-        <h2>
-            GAME OVER
-        </h2>
-
-        <div
-            id="deathScore"
-            class="deathScore">
-            Score: 0
-        </div>
-
-        <button
-            id="again"
-            class="deathButton">
-
-            🔄 PROOVI UUESTI
-
-        </button>
-
-        <button
-            id="back"
-            class="deathButton"
-            style="
-            background:#18231a;
-            color:white;">
-
-            🏠 MENU
-
-        </button>
-
-    </div>
-
-</div>
-
 <script>
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+/*
+   ÄRA MUUDA WORLD väärtust, kui tahad
+   sama maailma suurust säilitada.
+*/
+
+const WORLD = 20000;
+
 
 /* =====================================================
    CANVAS
@@ -652,7 +374,7 @@ const ctx =
     canvas.getContext("2d");
 
 const mapCanvas =
-    document.getElementById("map");
+    document.getElementById("mapCanvas");
 
 const mapCtx =
     mapCanvas.getContext("2d");
@@ -666,137 +388,77 @@ function resize(){
     H = innerHeight;
 
     const dpr =
-        Math.min(
-            devicePixelRatio || 1,
-            2
-        );
+        Math.min(devicePixelRatio || 1,2);
 
-    canvas.width =
-        W*dpr;
+    canvas.width = W*dpr;
+    canvas.height = H*dpr;
 
-    canvas.height =
-        H*dpr;
-
-    canvas.style.width =
-        W+"px";
-
-    canvas.style.height =
-        H+"px";
+    canvas.style.width = W+"px";
+    canvas.style.height = H+"px";
 
     ctx.setTransform(
         dpr,0,0,dpr,0,0
     );
-
 }
 
-window.addEventListener(
-    "resize",
-    resize
-);
+addEventListener("resize",resize);
 
 resize();
 
 
 /* =====================================================
-   WORLD
+   GAME VARIABLES
 ===================================================== */
 
-const WORLD = 20000;
+let playing=false;
 
-let playing = false;
+let score=0;
 
-let score = 0;
+let snakeLength=20;
 
-let snakeLength = 25;
+let snake=[];
 
-let snake = [];
+let food=[];
 
-let foods = [];
+let otherPlayers={};
 
-let decorations = [];
+let player={
+    x:WORLD/2,
+    y:WORLD/2,
+    angle:0,
+    target:0
+};
 
-let particles = [];
-
-let selectedSkin = 0;
-
-let boosting = false;
-
-let camera = {
+let camera={
     x:WORLD/2,
     y:WORLD/2
 };
 
-let player = {
-
-    x:WORLD/2,
-
-    y:WORLD/2,
-
-    angle:0,
-
-    target:0
-
-};
+let boosting=false;
 
 
 /* =====================================================
-   SKINS
+   COLORS
 ===================================================== */
 
-const SKINS = [
-
-    "#63ff7e",
+const COLORS=[
+    "#63ff78",
     "#42a5ff",
     "#ff4dd8",
     "#ffd83d",
-    "#ff713d",
-    "#a95cff",
+    "#ff7043",
+    "#b05cff",
     "#00eaff",
     "#ffffff",
-    "#ff4268",
-    "#9cff32",
-    "#ff9f1c",
-    "#00ffc8"
-
+    "#ff4268"
 ];
 
-const skinBox =
-    document.getElementById("skins");
-
-SKINS.forEach(
-    (color,i)=>{
-
-        const el =
-            document.createElement("div");
-
-        el.className =
-            "skin";
-
-        el.style.background =
-            color;
-
-        if(i===0)
-            el.classList.add("active");
-
-        el.onclick = ()=>{
-
-            selectedSkin = i;
-
-            document
-            .querySelectorAll(".skin")
-            .forEach(
-                x =>
-                x.classList.remove("active")
-            );
-
-            el.classList.add("active");
-
-        };
-
-        skinBox.appendChild(el);
-
-    }
-);
+let myColor =
+    COLORS[
+        Math.floor(
+            Math.random()*COLORS.length
+        )
+    ];
 
 
 /* =====================================================
@@ -805,33 +467,14 @@ SKINS.forEach(
 
 function createFood(){
 
-    foods = [];
+    food=[];
 
-    for(
-        let i=0;
-        i<1800;
-        i++
-    ){
+    for(let i=0;i<900;i++){
 
-        foods.push({
-
+        food.push({
             x:Math.random()*WORLD,
-
             y:Math.random()*WORLD,
-
-            size:
-                Math.random()<.07
-                ? 9
-                : 5,
-
-            value:
-                Math.random()<.07
-                ? 10
-                : 1,
-
-            phase:
-                Math.random()*20
-
+            size:4+Math.random()*3
         });
 
     }
@@ -840,44 +483,127 @@ function createFood(){
 
 
 /* =====================================================
-   WORLD DECORATIONS
+   WEBSOCKET
 ===================================================== */
 
-function createDecorations(){
+let socket=null;
 
-    decorations = [];
 
-    for(
-        let i=0;
-        i<900;
-        i++
-    ){
+/*
+   Kui mäng jookseb Renderis:
+   kasutab automaatselt sama aadressi.
 
-        const type =
-            Math.random();
+   Kui frontend on Netlifys,
+   muuda allolev URL Renderi aadressiks.
+*/
 
-        decorations.push({
+const SERVER_URL =
+    location.protocol==="https:"
+    ? "wss://"+location.host
+    : "ws://"+location.host;
 
-            x:
-                Math.random()*WORLD,
 
-            y:
-                Math.random()*WORLD,
+function connectServer(){
 
-            type:
-                type<.48
-                ? "tree"
-                : type<.75
-                ? "rock"
-                : "flower",
+    try{
 
-            size:
-                20+
-                Math.random()*45
+        socket =
+            new WebSocket(SERVER_URL);
 
-        });
+        socket.onopen=()=>{
+
+            console.log(
+                "Multiplayer ühendatud"
+            );
+
+            sendState();
+
+        };
+
+        socket.onmessage=(event)=>{
+
+            try{
+
+                const data =
+                    JSON.parse(event.data);
+
+                if(data.type==="players"){
+
+                    otherPlayers =
+                        data.players || {};
+
+                }
+
+            }catch(e){
+
+                console.log(e);
+
+            }
+
+        };
+
+        socket.onclose=()=>{
+
+            console.log(
+                "Serveriga ühendus katkes"
+            );
+
+            socket=null;
+
+        };
+
+    }catch(e){
+
+        console.log(e);
 
     }
+
+}
+
+
+/* =====================================================
+   SEND PLAYER
+===================================================== */
+
+let lastSend=0;
+
+function sendState(){
+
+    if(
+        !socket ||
+        socket.readyState!==1
+    )
+        return;
+
+    const now=performance.now();
+
+    if(now-lastSend<50)
+        return;
+
+    lastSend=now;
+
+    socket.send(
+        JSON.stringify({
+
+            type:"state",
+
+            x:player.x,
+
+            y:player.y,
+
+            angle:player.angle,
+
+            length:snakeLength,
+
+            color:myColor,
+
+            name:
+                document.getElementById(
+                    "name"
+                ).value || "Player"
+
+        })
+    );
 
 }
 
@@ -886,34 +612,26 @@ function createDecorations(){
    START
 ===================================================== */
 
-function start(){
+function startGame(){
 
-    playing = true;
+    playing=true;
 
     document.getElementById(
         "menu"
-    ).style.display =
-        "none";
-
-    document.getElementById(
-        "death"
-    ).style.display =
-        "none";
+    ).style.display="none";
 
     document.getElementById(
         "hud"
-    ).style.display =
-        "flex";
+    ).style.display="flex";
 
     document.getElementById(
         "minimap"
-    ).style.display =
-        "block";
+    ).style.display="block";
 
 
-    score = 0;
+    score=0;
 
-    snakeLength = 25;
+    snakeLength=20;
 
 
     player.x =
@@ -923,14 +641,17 @@ function start(){
         WORLD/2;
 
     player.angle =
-        Math.random()*
-        Math.PI*2;
+        Math.random()*Math.PI*2;
 
     player.target =
         player.angle;
 
 
-    snake = [];
+    camera.x=player.x;
+    camera.y=player.y;
+
+
+    snake=[];
 
 
     for(
@@ -956,16 +677,9 @@ function start(){
     }
 
 
-    camera.x =
-        player.x;
-
-    camera.y =
-        player.y;
-
-
     createFood();
 
-    createDecorations();
+    connectServer();
 
 }
 
@@ -974,38 +688,32 @@ function start(){
    KEYBOARD
 ===================================================== */
 
-const keys = {};
+const keys={};
 
-window.addEventListener(
+addEventListener(
     "keydown",
     e=>{
 
         keys[
             e.key.toLowerCase()
-        ] = true;
+        ]=true;
 
-        if(e.key==="Shift"){
-
-            boosting = true;
-
-        }
+        if(e.key==="Shift")
+            boosting=true;
 
     }
 );
 
-window.addEventListener(
+addEventListener(
     "keyup",
     e=>{
 
         keys[
             e.key.toLowerCase()
-        ] = false;
+        ]=false;
 
-        if(e.key==="Shift"){
-
-            boosting = false;
-
-        }
+        if(e.key==="Shift")
+            boosting=false;
 
     }
 );
@@ -1040,13 +748,11 @@ function keyboard(){
     )
         dx++;
 
-    if(dx || dy){
+
+    if(dx!==0 || dy!==0){
 
         player.target =
-            Math.atan2(
-                dy,
-                dx
-            );
+            Math.atan2(dy,dx);
 
     }
 
@@ -1057,14 +763,14 @@ function keyboard(){
    MOUSE
 ===================================================== */
 
-window.addEventListener(
+addEventListener(
     "mousemove",
     e=>{
 
         if(!playing)
             return;
 
-        if(W<=800)
+        if(innerWidth<=800)
             return;
 
         player.target =
@@ -1088,19 +794,17 @@ canvas.addEventListener(
         if(!playing)
             return;
 
-        e.preventDefault();
+        /*
+           Kui joystickit kasutatakse,
+           canvas ei muuda suunda.
+        */
 
-        const t =
-            e.touches[0];
-
-        if(!t)
+        if(
+            e.touches.length===0
+        )
             return;
 
-        player.target =
-            Math.atan2(
-                t.clientY-H/2,
-                t.clientX-W/2
-            );
+        e.preventDefault();
 
     },
     {passive:false}
@@ -1121,39 +825,45 @@ const stick =
         "stick"
     );
 
-let joyActive = false;
+let joystickActive=false;
 
 
-function joystickMove(x,y){
+function joystickMove(
+    clientX,
+    clientY
+){
 
-    const r =
+    const rect =
         joystick.getBoundingClientRect();
 
     const cx =
-        r.left+r.width/2;
+        rect.left+
+        rect.width/2;
 
     const cy =
-        r.top+r.height/2;
+        rect.top+
+        rect.height/2;
 
     let dx =
-        x-cx;
+        clientX-cx;
 
     let dy =
-        y-cy;
+        clientY-cy;
 
     const max =
-        r.width/2-32;
+        rect.width/2-30;
 
-    const distance =
+    const dist =
         Math.hypot(dx,dy);
 
-    if(distance>max){
+
+    if(dist>max){
 
         dx =
-            dx/distance*max;
+            dx/dist*max;
 
         dy =
-            dy/distance*max;
+            dy/dist*max;
 
     }
 
@@ -1165,7 +875,7 @@ function joystickMove(x,y){
         `calc(50% + ${dy}px)`;
 
 
-    if(distance>5){
+    if(dist>5){
 
         player.target =
             Math.atan2(
@@ -1178,15 +888,12 @@ function joystickMove(x,y){
 }
 
 
-function joystickReset(){
+function resetJoystick(){
 
-    joyActive = false;
+    joystickActive=false;
 
-    stick.style.left =
-        "50%";
-
-    stick.style.top =
-        "50%";
+    stick.style.left="50%";
+    stick.style.top="50%";
 
 }
 
@@ -1197,7 +904,7 @@ joystick.addEventListener(
 
         e.preventDefault();
 
-        joyActive=true;
+        joystickActive=true;
 
         const t =
             e.changedTouches[0];
@@ -1218,7 +925,7 @@ joystick.addEventListener(
 
         e.preventDefault();
 
-        if(!joyActive)
+        if(!joystickActive)
             return;
 
         const t =
@@ -1240,7 +947,7 @@ joystick.addEventListener(
 
         e.preventDefault();
 
-        joystickReset();
+        resetJoystick();
 
     },
     {passive:false}
@@ -1256,6 +963,7 @@ const boostButton =
         "boost"
     );
 
+
 boostButton.addEventListener(
     "touchstart",
     e=>{
@@ -1267,6 +975,7 @@ boostButton.addEventListener(
     },
     {passive:false}
 );
+
 
 boostButton.addEventListener(
     "touchend",
@@ -1307,23 +1016,13 @@ function update(){
 
 
     player.angle +=
-        diff*.12;
+        diff*.13;
 
 
-    let speed =
+    const speed =
         boosting
-        ? 9
-        : 5.5;
-
-
-    if(boosting){
-
-        snakeLength -= .025;
-
-        if(snakeLength<18)
-            snakeLength=18;
-
-    }
+        ? 8
+        : 5;
 
 
     player.x +=
@@ -1337,26 +1036,56 @@ function update(){
 
     /* WORLD BORDER */
 
-    if(player.x<40)
-        player.x=40;
+    player.x =
+        Math.max(
+            20,
+            Math.min(
+                WORLD-20,
+                player.x
+            )
+        );
 
-    if(player.x>WORLD-40)
-        player.x=WORLD-40;
-
-    if(player.y<40)
-        player.y=40;
-
-    if(player.y>WORLD-40)
-        player.y=WORLD-40;
+    player.y =
+        Math.max(
+            20,
+            Math.min(
+                WORLD-20,
+                player.y
+            )
+        );
 
 
     snake.unshift({
 
         x:player.x,
-
         y:player.y
 
     });
+
+
+    while(
+        snake.length<
+        Math.floor(snakeLength)
+    ){
+
+        /*
+           kasvatame saba ainult
+           siis, kui pikkus suureneb
+        */
+
+        snake.push({
+
+            x:
+                snake[snake.length-1]?.x
+                ||player.x,
+
+            y:
+                snake[snake.length-1]?.y
+                ||player.y
+
+        });
+
+    }
 
 
     while(
@@ -1372,62 +1101,29 @@ function update(){
     /* FOOD */
 
     for(
-        let i=foods.length-1;
+        let i=food.length-1;
         i>=0;
         i--
     ){
 
-        const f =
-            foods[i];
+        const f=food[i];
 
-        const d =
+        if(
             Math.hypot(
                 player.x-f.x,
                 player.y-f.y
-            );
+            )<25
+        ){
 
+            score++;
 
-        if(d<32){
+            snakeLength+=1.5;
 
-            score +=
-                f.value;
-
-            snakeLength +=
-                f.value*1.7;
-
-
-            createParticles(
-                f.x,
-                f.y,
-                7
-            );
-
-
-            foods.splice(i,1);
-
-
-            foods.push({
-
-                x:
-                    Math.random()*WORLD,
-
-                y:
-                    Math.random()*WORLD,
-
-                size:
-                    Math.random()<.07
-                    ? 9
-                    : 5,
-
-                value:
-                    Math.random()<.07
-                    ? 10
-                    : 1,
-
-                phase:
-                    Math.random()*20
-
-            });
+            food[i]={
+                x:Math.random()*WORLD,
+                y:Math.random()*WORLD,
+                size:4+Math.random()*3
+            };
 
         }
 
@@ -1437,83 +1133,30 @@ function update(){
     /* CAMERA */
 
     camera.x +=
-        (player.x-camera.x)*
-        .10;
+        (player.x-camera.x)*.12;
 
     camera.y +=
-        (player.y-camera.y)*
-        .10;
+        (player.y-camera.y)*.12;
 
 
-    /* PARTICLES */
-
-    for(
-        const p of particles
-    ){
-
-        p.x += p.vx;
-        p.y += p.vy;
-
-        p.life--;
-
-    }
-
-
-    particles =
-        particles.filter(
-            p=>p.life>0
-        );
+    sendState();
 
 
     document.getElementById(
         "score"
-    ).textContent =
+    ).textContent=
         Math.floor(score);
-
 
     document.getElementById(
         "length"
-    ).textContent =
+    ).textContent=
         Math.floor(snakeLength);
 
 }
 
 
 /* =====================================================
-   PARTICLES
-===================================================== */
-
-function createParticles(x,y,n){
-
-    for(
-        let i=0;
-        i<n;
-        i++
-    ){
-
-        particles.push({
-
-            x:x,
-
-            y:y,
-
-            vx:
-                (Math.random()-.5)*5,
-
-            vy:
-                (Math.random()-.5)*5,
-
-            life:30
-
-        });
-
-    }
-
-}
-
-
-/* =====================================================
-   DRAW WORLD
+   DRAW
 ===================================================== */
 
 function draw(){
@@ -1529,32 +1172,28 @@ function draw(){
     );
 
 
-    if(!playing){
+    ctx.fillStyle="#071007";
 
-        ctx.fillStyle =
-            "#020604";
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
 
-        ctx.fillRect(
-            0,
-            0,
-            W,
-            H
-        );
 
+    if(!playing)
         return;
-
-    }
 
 
     /*
-       Smaller number =
-       more zoomed out.
+       Maailm jääb suureks.
     */
 
     const zoom =
-        W<900
+        W<800
         ? 1.05
-        : 1.25;
+        : 1.2;
 
 
     ctx.save();
@@ -1576,12 +1215,9 @@ function draw(){
     );
 
 
-    /* =================
-       GRASS
-    ================= */
+    /* WORLD */
 
-    ctx.fillStyle =
-        "#07150a";
+    ctx.fillStyle="#0b1b0d";
 
     ctx.fillRect(
         0,
@@ -1591,44 +1227,32 @@ function draw(){
     );
 
 
-    /* =================
-       LARGE REGIONS
-    ================= */
-
-    drawRegions();
-
-
-    /* =================
-       GRID
-    ================= */
+    /* GRID */
 
     const grid=200;
 
-    const left =
-        camera.x-W/zoom/2-700;
+    const left=
+        camera.x-W/zoom/2-500;
 
-    const right =
-        camera.x+W/zoom/2+700;
+    const right=
+        camera.x+W/zoom/2+500;
 
-    const top =
-        camera.y-H/zoom/2-700;
+    const top=
+        camera.y-H/zoom/2-500;
 
-    const bottom =
-        camera.y+H/zoom/2+700;
+    const bottom=
+        camera.y+H/zoom/2+500;
 
 
-    ctx.strokeStyle =
-        "rgba(120,255,140,.035)";
+    ctx.strokeStyle=
+        "rgba(100,255,120,.035)";
 
     ctx.lineWidth=1;
 
 
     for(
-        let x=
-        Math.floor(left/grid)*grid;
-
+        let x=Math.floor(left/grid)*grid;
         x<right;
-
         x+=grid
     ){
 
@@ -1644,11 +1268,8 @@ function draw(){
 
 
     for(
-        let y=
-        Math.floor(top/grid)*grid;
-
+        let y=Math.floor(top/grid)*grid;
         y<bottom;
-
         y+=grid
     ){
 
@@ -1663,70 +1284,24 @@ function draw(){
     }
 
 
-    /* =================
-       DECORATIONS
-    ================= */
+    /* FOOD */
 
-    for(
-        const d of decorations
-    ){
+    for(const f of food){
 
         if(
-            d.x<left-100 ||
-            d.x>right+100 ||
-            d.y<top-100 ||
-            d.y>bottom+100
+            f.x<left ||
+            f.x>right ||
+            f.y<top ||
+            f.y>bottom
         )
             continue;
 
 
-        if(d.type==="tree")
-            drawTree(d);
+        ctx.fillStyle="#ff536f";
 
-        else if(d.type==="rock")
-            drawRock(d);
+        ctx.shadowColor="#ff536f";
 
-        else
-            drawFlower(d);
-
-    }
-
-
-    /* =================
-       FOOD
-    ================= */
-
-    for(
-        const f of foods
-    ){
-
-        if(
-            f.x<left-50 ||
-            f.x>right+50 ||
-            f.y<top-50 ||
-            f.y>bottom+50
-        )
-            continue;
-
-
-        const pulse =
-            Math.sin(
-                performance.now()/180+
-                f.phase
-            )*1.5;
-
-
-        const color =
-            f.value>=10
-            ? "#ffd83d"
-            : "#ff5274";
-
-
-        ctx.fillStyle=color;
-
-        ctx.shadowColor=color;
-
-        ctx.shadowBlur=12;
+        ctx.shadowBlur=8;
 
 
         ctx.beginPath();
@@ -1734,7 +1309,7 @@ function draw(){
         ctx.arc(
             f.x,
             f.y,
-            f.size+pulse,
+            f.size,
             0,
             Math.PI*2
         );
@@ -1746,57 +1321,44 @@ function draw(){
     ctx.shadowBlur=0;
 
 
-    /* =================
-       SNAKE
-    ================= */
-
-    drawSnake();
-
-
-    /* =================
-       PARTICLES
-    ================= */
+    /* OTHER PLAYERS */
 
     for(
-        const p of particles
+        const id in otherPlayers
     ){
 
-        ctx.globalAlpha =
-            p.life/30;
+        const p=
+            otherPlayers[id];
 
-        ctx.fillStyle =
-            SKINS[selectedSkin];
+        if(!p)
+            continue;
 
-        ctx.beginPath();
 
-        ctx.arc(
-            p.x,
-            p.y,
-            3,
-            0,
-            Math.PI*2
-        );
+        if(
+            Math.hypot(
+                p.x-camera.x,
+                p.y-camera.y
+            )>
+            Math.max(W,H)
+        )
+            continue;
 
-        ctx.fill();
+
+        drawOtherSnake(p);
 
     }
 
-    ctx.globalAlpha=1;
+
+    /* MY SNAKE */
+
+    drawMySnake();
 
 
-    /* =================
-       WORLD BORDER
-    ================= */
+    /* WORLD BORDER */
 
-    ctx.strokeStyle =
-        "#45ff69";
+    ctx.strokeStyle="#48ff68";
 
-    ctx.lineWidth=35;
-
-    ctx.shadowColor =
-        "#45ff69";
-
-    ctx.shadowBlur=20;
+    ctx.lineWidth=25;
 
     ctx.strokeRect(
         0,
@@ -1804,8 +1366,6 @@ function draw(){
         WORLD,
         WORLD
     );
-
-    ctx.shadowBlur=0;
 
 
     ctx.restore();
@@ -1817,300 +1377,10 @@ function draw(){
 
 
 /* =====================================================
-   REGIONS
+   MY SNAKE
 ===================================================== */
 
-function drawRegions(){
-
-    /*
-       Four huge zones.
-    */
-
-    ctx.fillStyle =
-        "rgba(20,80,30,.18)";
-
-    ctx.fillRect(
-        0,
-        0,
-        WORLD/2,
-        WORLD/2
-    );
-
-
-    ctx.fillStyle =
-        "rgba(20,50,100,.16)";
-
-    ctx.fillRect(
-        WORLD/2,
-        0,
-        WORLD/2,
-        WORLD/2
-    );
-
-
-    ctx.fillStyle =
-        "rgba(100,70,20,.12)";
-
-    ctx.fillRect(
-        0,
-        WORLD/2,
-        WORLD/2,
-        WORLD/2
-    );
-
-
-    ctx.fillStyle =
-        "rgba(80,20,80,.12)";
-
-    ctx.fillRect(
-        WORLD/2,
-        WORLD/2,
-        WORLD/2,
-        WORLD/2
-    );
-
-
-    /* center */
-
-    ctx.fillStyle =
-        "rgba(100,255,120,.06)";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        WORLD/2,
-        WORLD/2,
-        1600,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-}
-
-
-/* =====================================================
-   TREE
-===================================================== */
-
-function drawTree(d){
-
-    const s=d.size;
-
-
-    /* shadow */
-
-    ctx.fillStyle =
-        "rgba(0,0,0,.2)";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        d.x,
-        d.y+s*.35,
-        s*.65,
-        s*.25,
-        0,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    /* trunk */
-
-    ctx.fillStyle =
-        "#70482c";
-
-    ctx.fillRect(
-        d.x-s*.12,
-        d.y,
-        s*.24,
-        s*.6
-    );
-
-
-    /* leaves */
-
-    ctx.fillStyle =
-        "#176b2d";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        d.x,
-        d.y,
-        s*.5,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    ctx.fillStyle =
-        "#238b3c";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        d.x-s*.25,
-        d.y+s*.05,
-        s*.3,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-}
-
-
-/* =====================================================
-   ROCK
-===================================================== */
-
-function drawRock(d){
-
-    const s=d.size*.55;
-
-
-    ctx.fillStyle =
-        "#47504a";
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        d.x-s,
-        d.y+s*.3
-    );
-
-    ctx.lineTo(
-        d.x-s*.5,
-        d.y-s*.6
-    );
-
-    ctx.lineTo(
-        d.x+s*.35,
-        d.y-s*.7
-    );
-
-    ctx.lineTo(
-        d.x+s,
-        d.y+s*.25
-    );
-
-    ctx.lineTo(
-        d.x+s*.3,
-        d.y+s*.7
-    );
-
-    ctx.lineTo(
-        d.x-s*.5,
-        d.y+s*.65
-    );
-
-    ctx.closePath();
-
-    ctx.fill();
-
-}
-
-
-/* =====================================================
-   FLOWER
-===================================================== */
-
-function drawFlower(d){
-
-    const s =
-        Math.min(
-            d.size*.18,
-            10
-        );
-
-
-    ctx.strokeStyle =
-        "#318c43";
-
-    ctx.lineWidth=2;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        d.x,
-        d.y
-    );
-
-    ctx.lineTo(
-        d.x,
-        d.y+s*3
-    );
-
-    ctx.stroke();
-
-
-    ctx.fillStyle =
-        "#ff72a5";
-
-    for(
-        let i=0;
-        i<5;
-        i++
-    ){
-
-        const a =
-            i*Math.PI*2/5;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            d.x+
-            Math.cos(a)*s,
-
-            d.y+
-            Math.sin(a)*s,
-
-            s*.65,
-
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-
-    }
-
-
-    ctx.fillStyle =
-        "#ffd83d";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        d.x,
-        d.y,
-        s*.45,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-}
-
-
-/* =====================================================
-   SNAKE
-===================================================== */
-
-function drawSnake(){
-
-    const color =
-        SKINS[selectedSkin];
-
+function drawMySnake(){
 
     for(
         let i=snake.length-1;
@@ -2118,24 +1388,20 @@ function drawSnake(){
         i--
     ){
 
-        const p =
-            snake[i];
-
-        const ratio =
-            i/snake.length;
+        const p=snake[i];
 
         const size =
             Math.max(
                 7,
-                16-ratio*8
+                15-i/snake.length*6
             );
 
 
-        ctx.fillStyle=color;
+        ctx.fillStyle=myColor;
 
-        ctx.shadowColor=color;
+        ctx.shadowColor=myColor;
 
-        ctx.shadowBlur=9;
+        ctx.shadowBlur=7;
 
 
         ctx.beginPath();
@@ -2152,7 +1418,135 @@ function drawSnake(){
 
     }
 
+
     ctx.shadowBlur=0;
+
+
+    /* HEAD */
+
+    ctx.fillStyle=myColor;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x,
+        player.y,
+        18,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* EYES */
+
+    const dx=
+        Math.cos(player.angle);
+
+    const dy=
+        Math.sin(player.angle);
+
+    const sx=
+        -Math.sin(player.angle);
+
+    const sy=
+        Math.cos(player.angle);
+
+
+    ctx.fillStyle="#061008";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x+dx*9+sx*5,
+        player.y+dy*9+sy*5,
+        4,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x+dx*9-sx*5,
+        player.y+dy*9-sy*5,
+        4,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+}
+
+
+/* =====================================================
+   OTHER SNAKE
+===================================================== */
+
+function drawOtherSnake(p){
+
+    const color=
+        p.color || "#42a5ff";
+
+    const length=
+        Math.max(
+            10,
+            Math.min(
+                60,
+                Math.floor(p.length||20)
+            )
+        );
+
+
+    /*
+       Teiste madu keha on lihtsustatud,
+       sest server saadab hetkel asukohta.
+    */
+
+    for(
+        let i=length;
+        i>0;
+        i--
+    ){
+
+        const x=
+            p.x-
+            Math.cos(p.angle||0)*
+            i*8;
+
+        const y=
+            p.y-
+            Math.sin(p.angle||0)*
+            i*8;
+
+
+        ctx.fillStyle=color;
+
+        ctx.globalAlpha=
+            1-i/(length+10);
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            10,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+    ctx.globalAlpha=1;
 
 
     /* HEAD */
@@ -2162,9 +1556,9 @@ function drawSnake(){
     ctx.beginPath();
 
     ctx.arc(
-        player.x,
-        player.y,
-        19,
+        p.x,
+        p.y,
+        17,
         0,
         Math.PI*2
     );
@@ -2172,101 +1566,21 @@ function drawSnake(){
     ctx.fill();
 
 
-    /* eyes */
+    /* NAME */
 
-    const dx =
-        Math.cos(player.angle);
+    if(p.name){
 
-    const dy =
-        Math.sin(player.angle);
+        ctx.font="bold 12px Arial";
 
-    const sx =
-        -Math.sin(player.angle);
+        ctx.textAlign="center";
 
-    const sy =
-        Math.cos(player.angle);
+        ctx.fillStyle="white";
 
-
-    ctx.fillStyle =
-        "#041007";
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        player.x+
-        dx*9+
-        sx*5,
-
-        player.y+
-        dy*9+
-        sy*5,
-
-        4,
-
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        player.x+
-        dx*9-
-        sx*5,
-
-        player.y+
-        dy*9-
-        sy*5,
-
-        4,
-
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    /* boost */
-
-    if(boosting){
-
-        ctx.strokeStyle =
-            "#62caff";
-
-        ctx.lineWidth=5;
-
-        ctx.shadowColor =
-            "#62caff";
-
-        ctx.shadowBlur=15;
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            player.x-
-            dx*10,
-
-            player.y-
-            dy*10
+        ctx.fillText(
+            p.name,
+            p.x,
+            p.y-25
         );
-
-        ctx.lineTo(
-            player.x-
-            dx*65,
-
-            player.y-
-            dy*65
-        );
-
-        ctx.stroke();
-
-        ctx.shadowBlur=0;
 
     }
 
@@ -2279,7 +1593,7 @@ function drawSnake(){
 
 function drawMinimap(){
 
-    const size=180;
+    const size=170;
 
 
     mapCtx.clearRect(
@@ -2290,8 +1604,7 @@ function drawMinimap(){
     );
 
 
-    mapCtx.fillStyle =
-        "#061008";
+    mapCtx.fillStyle="#071108";
 
     mapCtx.fillRect(
         0,
@@ -2301,67 +1614,17 @@ function drawMinimap(){
     );
 
 
-    /* regions */
-
-    mapCtx.fillStyle =
-        "rgba(30,100,40,.18)";
-
-    mapCtx.fillRect(
-        0,
-        0,
-        size/2,
-        size/2
-    );
-
-
-    mapCtx.fillStyle =
-        "rgba(30,60,120,.18)";
-
-    mapCtx.fillRect(
-        size/2,
-        0,
-        size/2,
-        size/2
-    );
-
-
-    mapCtx.fillStyle =
-        "rgba(120,80,30,.15)";
-
-    mapCtx.fillRect(
-        0,
-        size/2,
-        size/2,
-        size/2
-    );
-
-
-    mapCtx.fillStyle =
-        "rgba(100,30,100,.15)";
-
-    mapCtx.fillRect(
-        size/2,
-        size/2,
-        size/2,
-        size/2
-    );
-
-
     /* grid */
 
-    mapCtx.strokeStyle =
-        "rgba(130,255,150,.1)";
+    mapCtx.strokeStyle=
+        "rgba(120,255,140,.12)";
 
     mapCtx.lineWidth=1;
 
 
-    for(
-        let i=0;
-        i<=10;
-        i++
-    ){
+    for(let i=0;i<=10;i++){
 
-        const p =
+        const p=
             i*size/10;
 
 
@@ -2385,44 +1648,68 @@ function drawMinimap(){
     }
 
 
-    /* food dots */
-
-    mapCtx.fillStyle =
-        "rgba(255,80,110,.55)";
-
+    /* OTHER PLAYERS */
 
     for(
-        let i=0;
-        i<foods.length;
-        i+=8
+        const id in otherPlayers
     ){
 
-        const f=foods[i];
+        const p=
+            otherPlayers[id];
 
-        mapCtx.fillRect(
-            f.x/WORLD*size,
-            f.y/WORLD*size,
-            2,
-            2
+        if(!p)
+            continue;
+
+
+        const x=
+            p.x/WORLD*size;
+
+        const y=
+            p.y/WORLD*size;
+
+
+        /*
+           🔴 teised mängijad
+        */
+
+        mapCtx.fillStyle="#ff3f55";
+
+        mapCtx.shadowColor="#ff3f55";
+
+        mapCtx.shadowBlur=7;
+
+
+        mapCtx.beginPath();
+
+        mapCtx.arc(
+            x,
+            y,
+            4,
+            0,
+            Math.PI*2
         );
+
+        mapCtx.fill();
 
     }
 
 
-    /* player */
+    /* ME */
 
-    const px =
+    const meX=
         player.x/WORLD*size;
 
-    const py =
+    const meY=
         player.y/WORLD*size;
 
 
-    mapCtx.fillStyle =
-        SKINS[selectedSkin];
+    /*
+       🟢 sina
+    */
 
-    mapCtx.shadowColor =
-        SKINS[selectedSkin];
+    mapCtx.fillStyle="#63ff78";
+
+    mapCtx.shadowColor="#63ff78";
 
     mapCtx.shadowBlur=12;
 
@@ -2430,8 +1717,8 @@ function drawMinimap(){
     mapCtx.beginPath();
 
     mapCtx.arc(
-        px,
-        py,
+        meX,
+        meY,
         6,
         0,
         Math.PI*2
@@ -2443,31 +1730,11 @@ function drawMinimap(){
     mapCtx.shadowBlur=0;
 
 
-    /* direction */
+    /* BORDER */
 
-    mapCtx.strokeStyle="white";
+    mapCtx.strokeStyle="#63ff78";
 
     mapCtx.lineWidth=2;
-
-    mapCtx.beginPath();
-
-    mapCtx.moveTo(px,py);
-
-    mapCtx.lineTo(
-        px+
-        Math.cos(player.angle)*13,
-
-        py+
-        Math.sin(player.angle)*13
-    );
-
-    mapCtx.stroke();
-
-
-    /* border */
-
-    mapCtx.strokeStyle =
-        "#4eff70";
 
     mapCtx.strokeRect(
         1,
@@ -2480,132 +1747,21 @@ function drawMinimap(){
 
 
 /* =====================================================
-   BUTTONS
+   PLAY BUTTON
 ===================================================== */
 
 document.getElementById(
     "play"
-).onclick = ()=>{
+).onclick=()=>{
 
-    const name =
-        document.getElementById(
-            "name"
-        ).value.trim();
-
-    if(!name){
-
-        document.getElementById(
-            "name"
-        ).value =
-            "Player";
-
-    }
-
-    start();
-
-};
-
-
-document.getElementById(
-    "again"
-).onclick = ()=>{
-
-    start();
-
-};
-
-
-document.getElementById(
-    "back"
-).onclick = ()=>{
-
-    playing=false;
-
-    document.getElementById(
-        "death"
-    ).style.display =
-        "none";
-
-    document.getElementById(
-        "hud"
-    ).style.display =
-        "none";
-
-    document.getElementById(
-        "minimap"
-    ).style.display =
-        "none";
-
-    document.getElementById(
-        "menu"
-    ).style.display =
-        "flex";
+    startGame();
 
 };
 
 
 /* =====================================================
-   BEST SCORE
+   START
 ===================================================== */
-
-let best =
-    Number(
-        localStorage.getItem(
-            "snakeBest"
-        ) || 0
-    );
-
-
-document.getElementById(
-    "best"
-).textContent =
-    best;
-
-
-/* =====================================================
-   CHECK BEST
-===================================================== */
-
-setInterval(()=>{
-
-    if(
-        playing &&
-        score>best
-    ){
-
-        best =
-            Math.floor(score);
-
-        localStorage.setItem(
-            "snakeBest",
-            best
-        );
-
-        document.getElementById(
-            "best"
-        ).textContent =
-            best;
-
-    }
-
-},500);
-
-
-/* =====================================================
-   MAIN LOOP
-===================================================== */
-
-function gameLoop(){
-
-    update();
-
-    requestAnimationFrame(
-        gameLoop
-    );
-
-}
-
-gameLoop();
 
 draw();
 
