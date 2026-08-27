@@ -1,14 +1,16 @@
 {
   "name": "snake-arena",
   "version": "2.0.0",
-  "private": true,
+  "description": "Snake Arena multiplayer game",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "dependencies": {
-    "ws": "^8.18.0"
-  },
   "engines": {
     "node": ">=20 <25"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
   }
 }
