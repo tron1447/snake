@@ -34,7 +34,9 @@ canvas{
     display:block;
 }
 
-/* MENU */
+button,input{
+    font-family:inherit;
+}
 
 #menu{
     position:fixed;
@@ -46,7 +48,11 @@ canvas{
     justify-content:center;
     align-items:center;
     background:
-        radial-gradient(circle at 50% 0%,#24582c,#061006 65%);
+        radial-gradient(
+            circle at 50% 0%,
+            #24582c,
+            #061006 70%
+        );
 }
 
 .panel{
@@ -63,18 +69,17 @@ canvas{
 }
 
 .logo{
-    font-size:64px;
+    font-size:60px;
 }
 
 h1{
     color:#63ff78;
     font-size:40px;
-    margin-bottom:4px;
 }
 
 .subtitle{
     color:#819482;
-    margin-bottom:18px;
+    margin:5px 0 18px;
 }
 
 input{
@@ -89,10 +94,6 @@ input{
     outline:none;
     text-align:center;
     font-size:16px;
-}
-
-input:focus{
-    border-color:#63ff78;
 }
 
 .mainBtn{
@@ -119,7 +120,7 @@ input:focus{
 
 #coinMenu{
     margin:12px 0;
-    padding:11px;
+    padding:10px;
     border-radius:12px;
     background:#121f13;
     color:#ffd84d;
@@ -169,9 +170,8 @@ input:focus{
 .skinPreview{
     width:55px;
     height:55px;
-    margin:0 auto 7px;
+    margin:auto;
     border-radius:50%;
-    box-shadow:0 0 15px currentColor;
 }
 
 .shopBuy{
@@ -186,7 +186,6 @@ input:focus{
 
 .buy{
     background:#ffd84d;
-    color:#211800;
 }
 
 .owned{
@@ -208,7 +207,6 @@ input:focus{
     font-size:32px;
     font-weight:bold;
     letter-spacing:5px;
-    margin:5px;
 }
 
 #players{
@@ -236,8 +234,6 @@ input:focus{
     font-size:12px;
 }
 
-/* HUD */
-
 #hud{
     position:fixed;
     z-index:20;
@@ -246,7 +242,7 @@ input:focus{
     display:none;
     gap:5px;
     flex-wrap:wrap;
-    max-width:280px;
+    max-width:300px;
 }
 
 .stat{
@@ -267,8 +263,6 @@ input:focus{
 .stat b{
     font-size:15px;
 }
-
-/* LEADERBOARD */
 
 #leaderboard{
     position:fixed;
@@ -293,12 +287,9 @@ input:focus{
 .lbRow{
     display:flex;
     justify-content:space-between;
-    gap:5px;
     padding:4px;
     font-size:12px;
 }
-
-/* CONTROLS */
 
 #joystick{
     position:fixed;
@@ -323,7 +314,6 @@ input:focus{
     border-radius:50%;
     background:#63ff78;
     border:3px solid white;
-    box-shadow:0 0 15px #63ff78;
 }
 
 #boost{
@@ -342,10 +332,6 @@ input:focus{
     font-weight:bold;
 }
 
-#boost:active{
-    transform:scale(.94);
-}
-
 #mouseHint{
     position:fixed;
     z-index:25;
@@ -358,8 +344,6 @@ input:focus{
     color:rgba(255,255,255,.55);
     pointer-events:none;
 }
-
-/* KILL */
 
 #killText{
     position:fixed;
@@ -380,8 +364,6 @@ input:focus{
     opacity:1;
     transform:translate(-50%,-50%) scale(1);
 }
-
-/* GAME OVER */
 
 #gameOver{
     position:fixed;
@@ -425,7 +407,7 @@ input:focus{
     }
 
     #leaderboard{
-        width:150px;
+        width:155px;
     }
 
     #hud{
@@ -446,8 +428,6 @@ input:focus{
 
 <canvas id="game"></canvas>
 
-<!-- MENU -->
-
 <div id="menu">
 
 <div class="panel">
@@ -465,6 +445,7 @@ Snake.io stiilis võitlus
 <input
     id="name"
     maxlength="16"
+    autocomplete="off"
     placeholder="Sinu nimi"
 >
 
@@ -472,39 +453,32 @@ Snake.io stiilis võitlus
 🪙 <span id="menuCoins">0</span> COINS
 </div>
 
-<button
-    id="shopButton"
-    class="mainBtn dark">
+<button id="shopButton" class="mainBtn dark">
 🛒 POOD
 </button>
 
 <h3 style="margin-top:14px">
-Vali oma skin
+Vali skin
 </h3>
 
 <div id="skins"></div>
 
-<button
-    id="singleBtn"
-    class="mainBtn green">
+<button id="singleBtn" class="mainBtn green">
 🤖 SINGLEPLAYER — BOTID
 </button>
 
-<button
-    id="createBtn"
-    class="mainBtn dark">
+<button id="createBtn" class="mainBtn dark">
 🏠 CREATE ROOM
 </button>
 
 <input
     id="roomInput"
     maxlength="6"
+    autocomplete="off"
     placeholder="ROOM CODE"
 >
 
-<button
-    id="joinBtn"
-    class="mainBtn dark">
+<button id="joinBtn" class="mainBtn dark">
 🚪 JOIN ROOM
 </button>
 
@@ -520,9 +494,7 @@ ROOM CODE
 
 <div id="players"></div>
 
-<button
-    id="startBtn"
-    class="mainBtn green">
+<button id="startBtn" class="mainBtn green">
 ▶ ALUSTA MÄNG
 </button>
 
@@ -536,27 +508,17 @@ ROOM CODE
 
 </div>
 
-<!-- SHOP -->
-
 <div id="shop">
 
 <h2>🛒 POOD</h2>
 
-<p style="
-color:#718172;
-margin:7px 0 12px;
-">
-Iga kill annab +10 🪙
+<p style="color:#718172;margin:7px 0 12px">
+Iga kill = +10 🪙
 </p>
 
-<div
-    id="shopGrid"
-    class="shopGrid">
-</div>
+<div id="shopGrid" class="shopGrid"></div>
 
-<button
-    id="closeShop"
-    class="mainBtn dark">
+<button id="closeShop" class="mainBtn dark">
 ⬅ TAGASI
 </button>
 
@@ -564,8 +526,6 @@ Iga kill annab +10 🪙
 
 </div>
 </div>
-
-<!-- HUD -->
 
 <div id="hud">
 
@@ -591,8 +551,6 @@ Iga kill annab +10 🪙
 
 </div>
 
-<!-- LEADERBOARD -->
-
 <div id="leaderboard">
 
 <div class="lbTitle">
@@ -604,14 +562,12 @@ Iga kill annab +10 🪙
 </div>
 
 <div id="mouseHint">
-🖱️ Hiir juhib madu • SHIFT = BOOST
+🖱️ Liiguta hiirt • SHIFT = BOOST
 </div>
 
 <div id="killText">
 💥 KILL! +10 🪙
 </div>
-
-<!-- MOBILE -->
 
 <div id="joystick">
 <div id="stick"></div>
@@ -620,8 +576,6 @@ Iga kill annab +10 🪙
 <button id="boost">
 ⚡
 </button>
-
-<!-- GAME OVER -->
 
 <div id="gameOver">
 
@@ -643,145 +597,151 @@ Kills:
 <b id="finalKills">0</b>
 </p>
 
-<button
-    id="backMenu"
-    class="mainBtn green">
+<button id="backMenu" class="mainBtn green">
 🔄 TAGASI MENÜÜSSE
 </button>
 
 </div>
-
 </div>
 
 <script>
 
-/* =========================================================
-   BASIC
-========================================================= */
+/* =====================================================
+   CANVAS
+===================================================== */
 
 const canvas =
-    document.getElementById("game");
+document.getElementById("game");
 
 const ctx =
-    canvas.getContext("2d");
+canvas.getContext("2d");
 
 let W = innerWidth;
 let H = innerHeight;
 
 function resize(){
 
-    W = innerWidth;
-    H = innerHeight;
+    W=innerWidth;
+    H=innerHeight;
 
-    canvas.width = W;
-    canvas.height = H;
+    canvas.width=W;
+    canvas.height=H;
 }
 
-addEventListener("resize",resize);
+addEventListener(
+    "resize",
+    resize
+);
 
 resize();
 
-const WORLD = 16000;
+/* =====================================================
+   WORLD
+===================================================== */
 
-/* =========================================================
+const WORLD=16000;
+
+/* =====================================================
    SKINS
-========================================================= */
+===================================================== */
 
-const SKINS = [
+const SKINS=[
 
-    {
-        id:"green",
-        name:"Classic",
-        color:"#63ff78",
-        price:0
-    },
+{
+    id:"green",
+    name:"Classic",
+    color:"#63ff78",
+    price:0
+},
 
-    {
-        id:"blue",
-        name:"Ocean",
-        color:"#4da6ff",
-        price:30
-    },
+{
+    id:"blue",
+    name:"Ocean",
+    color:"#4da6ff",
+    price:30
+},
 
-    {
-        id:"red",
-        name:"Red",
-        color:"#ff5268",
-        price:50
-    },
+{
+    id:"red",
+    name:"Red",
+    color:"#ff5268",
+    price:50
+},
 
-    {
-        id:"yellow",
-        name:"Gold",
-        color:"#ffd84d",
-        price:80
-    },
+{
+    id:"yellow",
+    name:"Gold",
+    color:"#ffd84d",
+    price:80
+},
 
-    {
-        id:"purple",
-        name:"Purple",
-        color:"#b86cff",
-        price:100
-    },
+{
+    id:"purple",
+    name:"Purple",
+    color:"#b86cff",
+    price:100
+},
 
-    {
-        id:"orange",
-        name:"Fire",
-        color:"#ff8a3d",
-        price:120
-    },
+{
+    id:"orange",
+    name:"Fire",
+    color:"#ff8a3d",
+    price:120
+},
 
-    {
-        id:"cyan",
-        name:"Cyber",
-        color:"#00e5d4",
-        price:150
-    },
+{
+    id:"cyan",
+    name:"Cyber",
+    color:"#00e5d4",
+    price:150
+},
 
-    {
-        id:"white",
-        name:"Ghost",
-        color:"#ffffff",
-        price:200
-    }
-];
-
-let coins =
-    Number(
-        localStorage.getItem(
-            "snakeCoins"
-        ) || 0
-    );
-
-let owned =
-    JSON.parse(
-        localStorage.getItem(
-            "snakeOwned"
-        ) ||
-        '["green"]'
-    );
-
-let selectedSkin =
-    localStorage.getItem(
-        "snakeSkin"
-    ) || "green";
-
-if(!owned.includes("green")){
-    owned.unshift("green");
+{
+    id:"white",
+    name:"Ghost",
+    color:"#ffffff",
+    price:200
 }
 
-let selected =
-    SKINS.find(
-        s => s.id === selectedSkin
-    ) || SKINS[0];
+];
 
-/* =========================================================
+let coins=
+Number(
+localStorage.getItem(
+"snakeCoins"
+)||0
+);
+
+let owned=
+JSON.parse(
+localStorage.getItem(
+"snakeOwned"
+)||'["green"]'
+);
+
+let selectedSkin=
+localStorage.getItem(
+"snakeSkin"
+)||"green";
+
+if(!owned.includes("green")){
+    owned.push("green");
+}
+
+let selected=
+SKINS.find(
+s=>s.id===selectedSkin
+)||SKINS[0];
+
+/* =====================================================
    PLAYER
-========================================================= */
+===================================================== */
 
-const me = {
+const me={
 
-    id:null,
+    id:"",
+
+    name:"Player",
 
     x:8000,
     y:8000,
@@ -800,21 +760,20 @@ const me = {
 
 let body=[];
 
-/* =========================================================
-   WORLD
-========================================================= */
+/* =====================================================
+   FOOD
+===================================================== */
 
 let foods=[];
 
-const FOOD_COLORS = [
-
-    "#63ff78",
-    "#ffd84d",
-    "#ff6070",
-    "#4da6ff",
-    "#b86cff",
-    "#ff8a3d",
-    "#00e5d4"
+const FOOD_COLORS=[
+"#63ff78",
+"#ffd84d",
+"#ff6070",
+"#4da6ff",
+"#b86cff",
+"#ff8a3d",
+"#00e5d4"
 ];
 
 function randomFood(){
@@ -822,122 +781,123 @@ function randomFood(){
     return {
 
         x:
-            500+
-            Math.random()*
-            (WORLD-1000),
+        500+
+        Math.random()*
+        (WORLD-1000),
 
         y:
-            500+
-            Math.random()*
-            (WORLD-1000),
+        500+
+        Math.random()*
+        (WORLD-1000),
 
         radius:
-            3+
-            Math.random()*5,
+        3+
+        Math.random()*5,
 
         value:
-            1+
-            Math.floor(
-                Math.random()*4
-            ),
+        1+
+        Math.floor(
+            Math.random()*4
+        ),
 
         color:
-            FOOD_COLORS[
-                Math.floor(
-                    Math.random()*
-                    FOOD_COLORS.length
-                )
-            ]
+        FOOD_COLORS[
+            Math.floor(
+                Math.random()*
+                FOOD_COLORS.length
+            )
+        ]
     };
 }
 
-for(let i=0;i<1200;i++){
-
+for(let i=0;i<1000;i++){
     foods.push(
         randomFood()
     );
 }
 
-/* =========================================================
+/* =====================================================
    BOTS
-========================================================= */
+===================================================== */
 
 let bots=[];
 
-const BOT_COLORS = [
+const BOT_NAMES=[
 
-    "#4da6ff",
-    "#ff5268",
-    "#ffd84d",
-    "#b86cff",
-    "#ff8a3d",
-    "#00e5d4",
-    "#ffffff"
+"Viper",
+"Cobra",
+"Shadow",
+"Hunter",
+"Blaze",
+"Toxic",
+"Python",
+"Ghost",
+"Rex",
+"Speedy",
+"Storm",
+"Ninja",
+"Venom",
+"KingCobra",
+"SnakePro"
 ];
 
-const BOT_NAMES = [
-
-    "Viper",
-    "Cobra",
-    "Shadow",
-    "Hunter",
-    "Blaze",
-    "Toxic",
-    "Python",
-    "Ghost",
-    "Rex",
-    "Speedy",
-    "Storm",
-    "Ninja"
+const BOT_COLORS=[
+"#4da6ff",
+"#ff5268",
+"#ffd84d",
+"#b86cff",
+"#ff8a3d",
+"#00e5d4",
+"#ffffff"
 ];
 
 function makeBot(){
 
-    const bot = {
+    const bot={
 
         id:
-            "bot_" +
-            Math.random()
-            .toString(36)
-            .slice(2),
-
-        x:
-            1000+
-            Math.random()*
-            (WORLD-2000),
-
-        y:
-            1000+
-            Math.random()*
-            (WORLD-2000),
-
-        angle:
-            Math.random()*
-            Math.PI*2,
-
-        targetAngle:
-            Math.random()*
-            Math.PI*2,
-
-        length:
-            25+
-            Math.random()*100,
-
-        color:
-            BOT_COLORS[
-                Math.floor(
-                    Math.random()*
-                    BOT_COLORS.length
-                )
-            ],
+        "bot_"+
+        Math.random()
+        .toString(36)
+        .slice(2),
 
         name:
-            BOT_NAMES[
-                Math.floor(
-                    Math.random()*
-                    BOT_NAMES.length
-                )
-            ],
+        BOT_NAMES[
+            Math.floor(
+                Math.random()*
+                BOT_NAMES.length
+            )
+        ],
+
+        x:
+        1000+
+        Math.random()*
+        (WORLD-2000),
+
+        y:
+        1000+
+        Math.random()*
+        (WORLD-2000),
+
+        angle:
+        Math.random()*
+        Math.PI*2,
+
+        targetAngle:
+        Math.random()*
+        Math.PI*2,
+
+        length:
+        25+
+        Math.random()*90,
+
+        color:
+        BOT_COLORS[
+            Math.floor(
+                Math.random()*
+                BOT_COLORS.length
+            )
+        ],
 
         body:[],
 
@@ -948,21 +908,21 @@ function makeBot(){
 
     for(
         let i=0;
-        i<bot.length;
+        i<Math.floor(bot.length);
         i++
     ){
 
         bot.body.push({
 
             x:
-                bot.x-
-                Math.cos(bot.angle)*
-                i*8,
+            bot.x-
+            Math.cos(bot.angle)*
+            i*8,
 
             y:
-                bot.y-
-                Math.sin(bot.angle)*
-                i*8
+            bot.y-
+            Math.sin(bot.angle)*
+            i*8
         });
     }
 
@@ -973,7 +933,7 @@ function createBots(){
 
     bots=[];
 
-    for(let i=0;i<10;i++){
+    for(let i=0;i<12;i++){
 
         bots.push(
             makeBot()
@@ -981,256 +941,66 @@ function createBots(){
     }
 }
 
-/* =========================================================
-   MULTIPLAYER
-========================================================= */
-
-let socket=null;
-let connected=false;
-
-let others={};
-
-function connectServer(){
-
-    if(location.protocol==="file:"){
-
-        document.getElementById(
-            "connection"
-        ).textContent=
-            "🟡 Server puudub — singleplayer töötab";
-
-        return;
-    }
-
-    const protocol =
-        location.protocol === "https:"
-        ? "wss:"
-        : "ws:";
-
-    try{
-
-        socket =
-            new WebSocket(
-                protocol+
-                "//"+
-                location.host
-            );
-
-        socket.onopen=()=>{
-
-            connected=true;
-
-            document.getElementById(
-                "connection"
-            ).textContent=
-                "🟢 Server connected";
-
-            send({
-
-                type:"hello",
-
-                name:getName(),
-
-                color:me.color,
-
-                skin:me.skin
-            });
-        };
-
-        socket.onclose=()=>{
-
-            connected=false;
-
-            document.getElementById(
-                "connection"
-            ).textContent=
-                "🔴 Server disconnected";
-        };
-
-        socket.onerror=()=>{
-
-            connected=false;
-
-        };
-
-        socket.onmessage=e=>{
-
-            try{
-
-                handleServer(
-                    JSON.parse(e.data)
-                );
-
-            }catch(err){
-
-                console.log(
-                    "Server message error:",
-                    err
-                );
-            }
-        };
-
-    }catch(err){
-
-        console.log(err);
-    }
-}
-
-function send(data){
-
-    if(
-        socket &&
-        socket.readyState===
-        WebSocket.OPEN
-    ){
-
-        socket.send(
-            JSON.stringify(data)
-        );
-
-        return true;
-    }
-
-    return false;
-}
-
-function handleServer(data){
-
-    if(
-        data.type==="roomCreated" ||
-        data.type==="roomJoined"
-    ){
-
-        me.id=data.id;
-
-        document.getElementById(
-            "roomBox"
-        ).style.display=
-            "block";
-
-        document.getElementById(
-            "roomCode"
-        ).textContent=
-            data.code;
-
-        return;
-    }
-
-    if(data.type==="lobby"){
-
-        const box=
-            document.getElementById(
-                "players"
-            );
-
-        box.innerHTML="";
-
-        (data.players||[])
-        .forEach(p=>{
-
-            const row=
-                document.createElement(
-                    "div"
-                );
-
-            row.className=
-                "playerRow";
-
-            row.textContent=
-                "🐍 "+p.name;
-
-            row.style.color=
-                p.color ||
-                "white";
-
-            box.appendChild(row);
-        });
-
-        return;
-    }
-
-    if(data.type==="gameStart"){
-
-        me.id=data.id;
-
-        startGame(false);
-
-        return;
-    }
-
-    if(data.type==="players"){
-
-        others=
-            data.players ||
-            {};
-
-        return;
-    }
-
-    if(data.type==="kill"){
-
-        me.kills=
-            data.kills ||
-            me.kills+1;
-
-        me.score=
-            data.score ||
-            me.score+10;
-
-        const reward =
-            data.coins ||
-            10;
-
-        coins += reward;
-
-        saveCoins();
-        updateCoins();
-
-        showKill();
-
-        return;
-    }
-
-    if(data.type==="gameOver"){
-
-        die(
-            data.reason ||
-            "Sinu madu sai pihta!"
-        );
-
-        return;
-    }
-
-    if(data.type==="error"){
-
-        document.getElementById(
-            "error"
-        ).textContent=
-            data.message ||
-            "Viga";
-    }
-}
-
-/* =========================================================
-   NAME
-========================================================= */
+/* =====================================================
+   GAME STATE
+===================================================== */
+
+let running=false;
+let dead=false;
+let single=false;
+
+/* =====================================================
+   PLAYER NAME
+===================================================== */
+
+const nameInput=
+document.getElementById("name");
+
+nameInput.value=
+localStorage.getItem(
+"snakePlayerName"
+)||"";
 
 function getName(){
 
-    const value=
-        document.getElementById(
-            "name"
-        ).value.trim();
+    let name=
+    nameInput.value
+    .trim();
 
-    return(
-        value ||
-        "Player"
-    ).slice(0,16);
+    if(!name){
+        name="Player";
+    }
+
+    name=
+    name
+    .replace(/[<>]/g,"")
+    .slice(0,16);
+
+    localStorage.setItem(
+        "snakePlayerName",
+        name
+    );
+
+    return name;
 }
 
-/* =========================================================
+/* =====================================================
+   UPDATE PLAYER NAME
+===================================================== */
+
+function refreshPlayerName(){
+
+    me.name=getName();
+}
+
+nameInput.addEventListener(
+"input",
+refreshPlayerName
+);
+
+/* =====================================================
    COINS
-========================================================= */
+===================================================== */
 
 function saveCoins(){
 
@@ -1257,53 +1027,58 @@ function updateCoins(){
 
     document.getElementById(
         "menuCoins"
-    ).textContent=
-        coins;
+    ).textContent=coins;
 
     document.getElementById(
         "coins"
-    ).textContent=
-        coins;
+    ).textContent=coins;
 
     saveCoins();
 }
 
-/* =========================================================
-   SKIN SELECTOR
-========================================================= */
+/* =====================================================
+   SKINS
+===================================================== */
 
 function renderSkinSelector(){
 
     const box=
-        document.getElementById(
-            "skins"
-        );
+    document.getElementById(
+        "skins"
+    );
 
     box.innerHTML="";
 
-    SKINS.forEach(skin=>{
+    SKINS.forEach(
+    skin=>{
 
-        if(!owned.includes(skin.id))
+        if(
+            !owned.includes(
+                skin.id
+            )
+        ){
             return;
+        }
 
         const button=
-            document.createElement(
-                "button"
-            );
+        document.createElement(
+            "button"
+        );
 
         button.className=
-            "skinSelect "+
-            (
-                selectedSkin===skin.id
-                ?"selected"
-                :""
-            );
+        "skinSelect "+
+        (
+            selectedSkin===
+            skin.id
+            ?"selected"
+            :""
+        );
 
         button.style.background=
-            skin.color;
+        skin.color;
 
         button.title=
-            skin.name;
+        skin.name;
 
         button.onclick=()=>{
 
@@ -1312,31 +1087,37 @@ function renderSkinSelector(){
             );
         };
 
-        box.appendChild(button);
+        box.appendChild(
+            button
+        );
     });
 }
 
 function selectSkin(id){
 
-    if(!owned.includes(id))
+    if(
+        !owned.includes(id)
+    ){
         return;
+    }
 
     const skin=
-        SKINS.find(
-            s=>s.id===id
-        );
+    SKINS.find(
+        s=>s.id===id
+    );
 
-    if(!skin)
+    if(!skin){
         return;
+    }
 
     selectedSkin=id;
     selected=skin;
 
     me.color=
-        skin.color;
+    skin.color;
 
     me.skin=
-        skin.id;
+    skin.id;
 
     saveSkins();
 
@@ -1347,68 +1128,66 @@ function selectSkin(id){
 renderSkinSelector();
 updateCoins();
 
-/* =========================================================
+/* =====================================================
    SHOP
-========================================================= */
+===================================================== */
 
 function renderShop(){
 
     const grid=
-        document.getElementById(
-            "shopGrid"
-        );
+    document.getElementById(
+        "shopGrid"
+    );
 
     grid.innerHTML="";
 
-    SKINS.forEach(skin=>{
+    SKINS.forEach(
+    skin=>{
 
         const item=
-            document.createElement(
-                "div"
-            );
+        document.createElement(
+            "div"
+        );
 
         item.className=
-            "shopItem";
+        "shopItem";
 
         const have=
-            owned.includes(
-                skin.id
-            );
+        owned.includes(
+            skin.id
+        );
 
         item.innerHTML=`
 
-            <div
-                class="skinPreview"
-                style="
-                    background:${skin.color};
-                    color:${skin.color};
-                ">
-            </div>
-
-            <b>${skin.name}</b>
-
-            <div style="
-                color:#ffd84d;
-                margin-top:5px;
+        <div
+            class="skinPreview"
+            style="
+                background:${skin.color};
+                box-shadow:
+                0 0 20px ${skin.color};
             ">
-                ${
-                    skin.price===0
-                    ?"TASUTA"
-                    :"🪙 "+skin.price
-                }
-            </div>
+        </div>
 
-            <button
-                class="
-                    shopBuy
-                    ${have?"owned":"buy"}
-                ">
-                ${
-                    have
-                    ?"✓ KASUTA"
-                    :"OSTA"
-                }
-            </button>
+        <b>${skin.name}</b>
+
+        <div style="
+            color:#ffd84d;
+            margin-top:5px;
+        ">
+            ${
+                skin.price===0
+                ?"TASUTA"
+                :"🪙 "+skin.price
+            }
+        </div>
+
+        <button
+            class="
+            shopBuy
+            ${have?"owned":"buy"}
+            ">
+            ${have?"✓ KASUTA":"OSTA"}
+        </button>
         `;
 
         item.querySelector(
@@ -1424,7 +1203,10 @@ function renderShop(){
                 return;
             }
 
-            if(coins<skin.price){
+            if(
+                coins<
+                skin.price
+            ){
 
                 alert(
                     "Sul on vaja veel "+
@@ -1438,7 +1220,8 @@ function renderShop(){
                 return;
             }
 
-            coins -= skin.price;
+            coins-=
+            skin.price;
 
             owned.push(
                 skin.id
@@ -1455,148 +1238,52 @@ function renderShop(){
             renderShop();
         };
 
-        grid.appendChild(item);
+        grid.appendChild(
+            item
+        );
     });
 }
 
 document.getElementById(
-    "shopButton"
+"shopButton"
 ).onclick=()=>{
 
     document.getElementById(
         "mainMenu"
-    ).style.display=
-        "none";
+    ).style.display="none";
 
     document.getElementById(
         "shop"
-    ).style.display=
-        "block";
+    ).style.display="block";
 
     renderShop();
 };
 
 document.getElementById(
-    "closeShop"
+"closeShop"
 ).onclick=()=>{
 
     document.getElementById(
         "shop"
-    ).style.display=
-        "none";
+    ).style.display="none";
 
     document.getElementById(
         "mainMenu"
-    ).style.display=
-        "block";
+    ).style.display="block";
 };
 
-/* =========================================================
-   ROOM
-========================================================= */
-
-document.getElementById(
-    "createBtn"
-).onclick=()=>{
-
-    clearError();
-
-    if(!connected){
-
-        setError(
-            "Serveriga pole ühendust. Singleplayer töötab ikka."
-        );
-
-        return;
-    }
-
-    send({
-
-        type:"createRoom",
-
-        name:getName(),
-
-        color:me.color,
-
-        skin:me.skin
-    });
-};
-
-document.getElementById(
-    "joinBtn"
-).onclick=()=>{
-
-    clearError();
-
-    const code=
-        document.getElementById(
-            "roomInput"
-        ).value
-        .trim()
-        .toUpperCase();
-
-    if(code.length<4){
-
-        setError(
-            "Sisesta õige room code."
-        );
-
-        return;
-    }
-
-    if(!connected){
-
-        setError(
-            "Serveriga pole ühendust."
-        );
-
-        return;
-    }
-
-    send({
-
-        type:"joinRoom",
-
-        code:code,
-
-        name:getName(),
-
-        color:me.color,
-
-        skin:me.skin
-    });
-};
-
-document.getElementById(
-    "startBtn"
-).onclick=()=>{
-
-    if(connected){
-
-        send({
-            type:"startGame"
-        });
-
-    }else{
-
-        startGame(false);
-    }
-};
-
-/* =========================================================
+/* =====================================================
    SINGLEPLAYER
-========================================================= */
+===================================================== */
 
 document.getElementById(
-    "singleBtn"
+"singleBtn"
 ).onclick=()=>{
+
+    me.name=getName();
 
     startGame(true);
 };
-
-let single=false;
-let running=false;
-let dead=false;
 
 function startGame(botMode){
 
@@ -1605,37 +1292,36 @@ function startGame(botMode){
     running=true;
     dead=false;
 
+    me.name=getName();
+
     document.getElementById(
         "menu"
-    ).style.display=
-        "none";
+    ).style.display="none";
 
     document.getElementById(
         "hud"
-    ).style.display=
-        "flex";
+    ).style.display="flex";
 
     document.getElementById(
         "leaderboard"
-    ).style.display=
-        "block";
+    ).style.display="block";
 
     me.x=
-        3000+
-        Math.random()*
-        (WORLD-6000);
+    3000+
+    Math.random()*
+    (WORLD-6000);
 
     me.y=
-        3000+
-        Math.random()*
-        (WORLD-6000);
+    3000+
+    Math.random()*
+    (WORLD-6000);
 
     me.angle=
-        Math.random()*
-        Math.PI*2;
+    Math.random()*
+    Math.PI*2;
 
     me.targetAngle=
-        me.angle;
+    me.angle;
 
     me.length=25;
     me.score=0;
@@ -1643,182 +1329,191 @@ function startGame(botMode){
 
     body=[];
 
-    for(let i=0;i<25;i++){
+    for(
+        let i=0;
+        i<25;
+        i++
+    ){
 
         body.push({
 
             x:
-                me.x-
-                Math.cos(me.angle)*
-                i*8,
+            me.x-
+            Math.cos(me.angle)*
+            i*8,
 
             y:
-                me.y-
-                Math.sin(me.angle)*
-                i*8
+            me.y-
+            Math.sin(me.angle)*
+            i*8
         });
     }
 
     if(single){
-
         createBots();
     }else{
-
         bots=[];
     }
 
     updateHUD();
 }
 
-/* =========================================================
-   MOUSE CONTROL
-========================================================= */
+/* =====================================================
+   MOUSE
+===================================================== */
 
-let mouseX=W/2;
-let mouseY=H/2;
+let mouseX=
+W/2;
+
+let mouseY=
+H/2;
 
 addEventListener(
-    "mousemove",
-    e=>{
+"mousemove",
+e=>{
 
-        mouseX=e.clientX;
-        mouseY=e.clientY;
-    }
-);
+    mouseX=
+    e.clientX;
+
+    mouseY=
+    e.clientY;
+});
 
 function mouseControl(){
 
     const dx=
-        mouseX-
-        W/2;
+    mouseX-
+    W/2;
 
     const dy=
-        mouseY-
-        H/2;
+    mouseY-
+    H/2;
 
-    const d=
+    if(
         Math.hypot(
             dx,
             dy
-        );
-
-    if(d<7)
+        )<7
+    ){
         return;
+    }
 
     me.targetAngle=
-        Math.atan2(
-            dy,
-            dx
-        );
+    Math.atan2(
+        dy,
+        dx
+    );
 }
 
-/* =========================================================
-   MOBILE JOYSTICK
-========================================================= */
+/* =====================================================
+   JOYSTICK
+===================================================== */
 
 const joystick=
-    document.getElementById(
-        "joystick"
-    );
+document.getElementById(
+"joystick"
+);
 
 const stick=
-    document.getElementById(
-        "stick"
-    );
+document.getElementById(
+"stick"
+);
 
 let joyId=null;
 
 joystick.addEventListener(
-    "pointerdown",
-    e=>{
+"pointerdown",
+e=>{
 
-        joyId=e.pointerId;
+    joyId=
+    e.pointerId;
 
-        joystick.setPointerCapture(
-            e.pointerId
-        );
+    joystick.setPointerCapture(
+        e.pointerId
+    );
+
+    joystickMove(
+        e.clientX,
+        e.clientY
+    );
+});
+
+joystick.addEventListener(
+"pointermove",
+e=>{
+
+    if(
+        e.pointerId===
+        joyId
+    ){
 
         joystickMove(
             e.clientX,
             e.clientY
         );
     }
+});
+
+joystick.addEventListener(
+"pointerup",
+resetJoystick
 );
 
 joystick.addEventListener(
-    "pointermove",
-    e=>{
-
-        if(e.pointerId===joyId){
-
-            joystickMove(
-                e.clientX,
-                e.clientY
-            );
-        }
-    }
-);
-
-joystick.addEventListener(
-    "pointerup",
-    joyReset
-);
-
-joystick.addEventListener(
-    "pointercancel",
-    joyReset
+"pointercancel",
+resetJoystick
 );
 
 function joystickMove(x,y){
 
-    const rect=
-        joystick.getBoundingClientRect();
+    const r=
+    joystick.getBoundingClientRect();
 
     const cx=
-        rect.left+
-        rect.width/2;
+    r.left+
+    r.width/2;
 
     const cy=
-        rect.top+
-        rect.height/2;
+    r.top+
+    r.height/2;
 
     let dx=x-cx;
     let dy=y-cy;
 
     const max=52;
 
-    const distance=
-        Math.hypot(
-            dx,
-            dy
-        );
+    const d=
+    Math.hypot(
+        dx,
+        dy
+    );
 
-    if(distance>max){
+    if(d>max){
 
         dx=
-            dx/distance*max;
+        dx/d*max;
 
         dy=
-            dy/distance*max;
+        dy/d*max;
     }
 
     stick.style.left=
-        `calc(50% + ${dx}px)`;
+    `calc(50% + ${dx}px)`;
 
     stick.style.top=
-        `calc(50% + ${dy}px)`;
+    `calc(50% + ${dy}px)`;
 
-    if(distance>7){
+    if(d>7){
 
         me.targetAngle=
-            Math.atan2(
-                dy,
-                dx
-            );
+        Math.atan2(
+            dy,
+            dx
+        );
     }
 }
 
-function joyReset(){
+function resetJoystick(){
 
     joyId=null;
 
@@ -1826,115 +1521,109 @@ function joyReset(){
     stick.style.top="50%";
 }
 
-/* =========================================================
+/* =====================================================
    BOOST
-========================================================= */
+===================================================== */
 
 let boosting=false;
 
 const boostButton=
-    document.getElementById(
-        "boost"
-    );
+document.getElementById(
+"boost"
+);
 
 boostButton.addEventListener(
-    "pointerdown",
-    ()=>{
+"pointerdown",
+()=>{
+    boosting=true;
+});
+
+boostButton.addEventListener(
+"pointerup",
+()=>{
+    boosting=false;
+});
+
+boostButton.addEventListener(
+"pointercancel",
+()=>{
+    boosting=false;
+});
+
+addEventListener(
+"keydown",
+e=>{
+
+    if(
+        e.key==="Shift"
+    ){
         boosting=true;
     }
-);
-
-boostButton.addEventListener(
-    "pointerup",
-    ()=>{
-        boosting=false;
-    }
-);
-
-boostButton.addEventListener(
-    "pointercancel",
-    ()=>{
-        boosting=false;
-    }
-);
+});
 
 addEventListener(
-    "keydown",
-    e=>{
+"keyup",
+e=>{
 
-        if(
-            e.key==="Shift" ||
-            e.code==="ShiftLeft" ||
-            e.code==="ShiftRight"
-        ){
-
-            boosting=true;
-        }
+    if(
+        e.key==="Shift"
+    ){
+        boosting=false;
     }
-);
+});
 
-addEventListener(
-    "keyup",
-    e=>{
+/* =====================================================
+   PLAYER UPDATE
+===================================================== */
 
-        if(
-            e.key==="Shift" ||
-            e.code==="ShiftLeft" ||
-            e.code==="ShiftRight"
-        ){
-
-            boosting=false;
-        }
-    }
-);
-
-/* =========================================================
-   UPDATE
-========================================================= */
+let dropCooldown=0;
 
 function update(){
 
-    if(!running||dead)
+    if(
+        !running ||
+        dead
+    ){
         return;
+    }
 
-    if(innerWidth>800){
-
+    if(
+        innerWidth>800
+    ){
         mouseControl();
     }
 
     let turn=
-        me.targetAngle-
-        me.angle;
+    me.targetAngle-
+    me.angle;
 
-    while(turn>Math.PI)
+    while(
+        turn>Math.PI
+    ){
         turn-=Math.PI*2;
+    }
 
-    while(turn<-Math.PI)
+    while(
+        turn<-Math.PI
+    ){
         turn+=Math.PI*2;
-
-    const turnSpeed=
-        boosting
-        ?0.24
-        :0.18;
+    }
 
     me.angle +=
-        turn*
-        turnSpeed;
+    turn*.18;
 
     const speed=
-        boosting
-        ?11
-        :7.2;
+    boosting
+    ?11
+    :7.3;
 
     me.x +=
-        Math.cos(me.angle)*
-        speed;
+    Math.cos(me.angle)*
+    speed;
 
     me.y +=
-        Math.sin(me.angle)*
-        speed;
-
-    /* WORLD EDGE */
+    Math.sin(me.angle)*
+    speed;
 
     if(
         me.x<30 ||
@@ -1979,70 +1668,43 @@ function update(){
     eatFood();
 
     if(boosting){
-
-        leaveBoostPieces();
+        dropBoostPiece();
     }
 
     if(single){
 
         updateBots();
 
-        checkBotCollisions();
-
-    }else{
-
-        send({
-
-            type:"state",
-
-            x:me.x,
-            y:me.y,
-
-            angle:me.angle,
-
-            length:me.length,
-
-            score:me.score,
-
-            kills:me.kills,
-
-            name:getName(),
-
-            color:me.color,
-
-            skin:me.skin
-        });
+        checkCollisions();
     }
 
     updateHUD();
 }
 
-/* =========================================================
+/* =====================================================
    BOOST PIECES
-========================================================= */
+===================================================== */
 
-let boostDropCooldown=0;
+function dropBoostPiece(){
 
-function leaveBoostPieces(){
+    dropCooldown--;
 
-    boostDropCooldown--;
-
-    if(boostDropCooldown>0)
+    if(
+        dropCooldown>0 ||
+        me.length<15
+    ){
         return;
+    }
 
-    boostDropCooldown=7;
-
-    if(me.length<=15)
-        return;
-
-    const index=
-        Math.min(
-            body.length-1,
-            8
-        );
+    dropCooldown=7;
 
     const p=
-        body[index];
+    body[
+        Math.min(
+            10,
+            body.length-1
+        )
+    ];
 
     foods.push({
 
@@ -2051,23 +1713,19 @@ function leaveBoostPieces(){
 
         radius:6,
 
-        color:me.color,
-
         value:4,
+
+        color:me.color,
 
         boostPiece:true
     });
 
-    /*
-       Boost sööb pikkust.
-    */
-
-    me.length -= .15;
+    me.length-=.15;
 }
 
-/* =========================================================
+/* =====================================================
    FOOD
-========================================================= */
+===================================================== */
 
 function eatFood(){
 
@@ -2077,26 +1735,28 @@ function eatFood(){
         i--
     ){
 
-        const food=
-            foods[i];
+        const f=
+        foods[i];
 
         if(
             Math.hypot(
-                me.x-food.x,
-                me.y-food.y
+                me.x-f.x,
+                me.y-f.y
             )<
-            24+
-            food.radius
+            25+
+            f.radius
         ){
 
-            me.score +=
-                food.value;
+            me.score+=
+            f.value;
 
-            me.length +=
-                food.value*
-                .55;
+            me.length+=
+            f.value*.55;
 
-            foods.splice(i,1);
+            foods.splice(
+                i,
+                1
+            );
 
             foods.push(
                 randomFood()
@@ -2105,86 +1765,88 @@ function eatFood(){
     }
 }
 
-/* =========================================================
-   BOT AI
-========================================================= */
+/* =====================================================
+   BOT UPDATE
+===================================================== */
 
 function updateBots(){
 
-    for(const bot of bots){
+    for(
+        const bot of bots
+    ){
 
         bot.timer--;
 
-        if(bot.timer<=0){
+        if(
+            bot.timer<=0
+        ){
 
             bot.timer=
-                30+
-                Math.random()*100;
-
-            /*
-               Mõnikord jälitab mängijat.
-            */
+            40+
+            Math.random()*100;
 
             if(
-                Math.random()<.22
+                Math.random()<.25
             ){
 
                 bot.targetAngle=
-                    Math.atan2(
-                        me.y-bot.y,
-                        me.x-bot.x
-                    );
+                Math.atan2(
+                    me.y-bot.y,
+                    me.x-bot.x
+                );
 
             }else{
 
                 const food=
-                    foods[
-                        Math.floor(
-                            Math.random()*
-                            foods.length
-                        )
-                    ];
+                foods[
+                    Math.floor(
+                        Math.random()*
+                        foods.length
+                    )
+                ];
 
                 if(food){
 
                     bot.targetAngle=
-                        Math.atan2(
-                            food.y-bot.y,
-                            food.x-bot.x
-                        );
+                    Math.atan2(
+                        food.y-bot.y,
+                        food.x-bot.x
+                    );
                 }
             }
         }
 
         let turn=
-            bot.targetAngle-
-            bot.angle;
+        bot.targetAngle-
+        bot.angle;
 
-        while(turn>Math.PI)
+        while(
+            turn>Math.PI
+        ){
             turn-=Math.PI*2;
+        }
 
-        while(turn<-Math.PI)
+        while(
+            turn<-Math.PI
+        ){
             turn+=Math.PI*2;
+        }
 
-        bot.angle +=
-            turn*.055;
+        bot.angle+=
+        turn*.06;
 
-        const botSpeed=
-            bot.boostTimer>0
-            ?8
-            :5.4;
+        const speed=
+        bot.boostTimer>0
+        ?8
+        :5.5;
 
-        bot.x +=
-            Math.cos(bot.angle)*
-            botSpeed;
+        bot.x+=
+        Math.cos(bot.angle)*
+        speed;
 
-        bot.y +=
-            Math.sin(bot.angle)*
-            botSpeed;
-
-        /*
-           Seinast pöörab ümber.
-        */
+        bot.y+=
+        Math.sin(bot.angle)*
+        speed;
 
         if(
             bot.x<100 ||
@@ -2193,8 +1855,8 @@ function updateBots(){
             bot.y>WORLD-100
         ){
 
-            bot.targetAngle +=
-                Math.PI;
+            bot.targetAngle+=
+            Math.PI;
         }
 
         bot.body.unshift({
@@ -2223,14 +1885,17 @@ function updateBots(){
             bot.body.pop();
         }
 
-        if(bot.boostTimer>0)
+        if(
+            bot.boostTimer>0
+        ){
             bot.boostTimer--;
+        }
 
-        botEatFood(bot);
+        botEat(bot);
     }
 }
 
-function botEatFood(bot){
+function botEat(bot){
 
     for(
         let i=foods.length-1;
@@ -2238,22 +1903,25 @@ function botEatFood(bot){
         i--
     ){
 
-        const food=
-            foods[i];
+        const f=
+        foods[i];
 
         if(
             Math.hypot(
-                bot.x-food.x,
-                bot.y-food.y
+                bot.x-f.x,
+                bot.y-f.y
             )<
             22+
-            food.radius
+            f.radius
         ){
 
-            bot.length +=
-                food.value*.5;
+            bot.length+=
+            f.value*.5;
 
-            foods.splice(i,1);
+            foods.splice(
+                i,
+                1
+            );
 
             foods.push(
                 randomFood()
@@ -2264,37 +1932,34 @@ function botEatFood(bot){
     }
 }
 
-/* =========================================================
-   COLLISIONS
-========================================================= */
+/* =====================================================
+   COLLISION
+===================================================== */
 
-function checkBotCollisions(){
+function checkCollisions(){
 
-    for(const bot of [...bots]){
+    for(
+        const bot of [...bots]
+    ){
 
         /*
-           MINU PEA -> BOTI KEHA
-
-           See tähendab, et kui sinu pea
-           läheb bot'i keha vastu,
-           SINA SURED.
+           BOTI KEHA VASTU
         */
 
         for(
-            let i=6;
+            let i=7;
             i<bot.body.length;
             i++
         ){
 
             const p=
-                bot.body[i];
+            bot.body[i];
 
             if(
                 Math.hypot(
                     me.x-p.x,
                     me.y-p.y
-                )<
-                24
+                )<22
             ){
 
                 die(
@@ -2307,28 +1972,23 @@ function checkBotCollisions(){
         }
 
         /*
-           BOTI PEA -> MINU KEHA
-
-           Kui bot tuleb oma peaga
-           sinu keha vastu,
-           BOT SUREB.
+           BOTI PEA MINU KEHA VASTU
         */
 
         for(
-            let i=6;
+            let i=7;
             i<body.length;
             i++
         ){
 
             const p=
-                body[i];
+            body[i];
 
             if(
                 Math.hypot(
                     bot.x-p.x,
                     bot.y-p.y
-                )<
-                24
+                )<22
             ){
 
                 killBot(bot);
@@ -2338,9 +1998,7 @@ function checkBotCollisions(){
         }
 
         /*
-           PEA vs PEA
-
-           Suurem madu võidab.
+           HEAD TO HEAD
         */
 
         if(
@@ -2361,7 +2019,7 @@ function checkBotCollisions(){
 
                 die(
                     bot.name+
-                    " võitis pea-vastu-pea!"
+                    " võitis!"
                 );
 
                 return;
@@ -2370,21 +2028,18 @@ function checkBotCollisions(){
     }
 }
 
-/* =========================================================
+/* =====================================================
    KILL BOT
-========================================================= */
+===================================================== */
 
 function killBot(bot){
 
     const index=
-        bots.indexOf(bot);
+    bots.indexOf(bot);
 
-    if(index===-1)
+    if(index<0){
         return;
-
-    /*
-       BOT jätab maha palju toitu.
-    */
+    }
 
     for(
         let i=0;
@@ -2393,7 +2048,7 @@ function killBot(bot){
     ){
 
         const p=
-            bot.body[i];
+        bot.body[i];
 
         foods.push({
 
@@ -2401,16 +2056,17 @@ function killBot(bot){
             y:p.y,
 
             radius:
-                5+
-                Math.random()*3,
-
-            color:bot.color,
+            5+
+            Math.random()*3,
 
             value:
-                2+
-                Math.floor(
-                    Math.random()*3
-                )
+            2+
+            Math.floor(
+                Math.random()*3
+            ),
+
+            color:
+            bot.color
         });
     }
 
@@ -2425,21 +2081,14 @@ function killBot(bot){
 
     me.length+=12;
 
-    /*
-       IGA KILL = 10 COINS
-    */
-
     coins+=10;
 
     updateCoins();
 
     showKill();
 
-    /*
-       Uus bot tuleb tagasi.
-    */
-
-    setTimeout(()=>{
+    setTimeout(
+    ()=>{
 
         if(
             running &&
@@ -2452,250 +2101,186 @@ function killBot(bot){
             );
         }
 
-    },1000);
+    },
+    1000
+    );
 }
 
-/* =========================================================
+/* =====================================================
    HUD
-========================================================= */
+===================================================== */
 
 function updateHUD(){
 
     document.getElementById(
         "score"
     ).textContent=
-        Math.floor(me.score);
+    Math.floor(me.score);
 
     document.getElementById(
         "kills"
     ).textContent=
-        me.kills;
+    me.kills;
 
     document.getElementById(
         "length"
     ).textContent=
-        Math.floor(me.length);
+    Math.floor(me.length);
 
     document.getElementById(
         "coins"
     ).textContent=
-        coins;
+    coins;
 
     updateLeaderboard();
 }
+
+/* =====================================================
+   LEADERBOARD
+===================================================== */
 
 function updateLeaderboard(){
 
     const players=[];
 
+    /*
+       SIIN ON NÜÜD PÄRIS MÄNGIJA NIMI
+    */
+
     players.push({
 
-        name:getName(),
+        name:
+        me.name ||
+        getName(),
 
-        score:me.score,
+        score:
+        me.score,
 
-        color:me.color
+        color:
+        me.color
     });
 
     /*
-       Singleplayer botid
+       BOTI NIMED
     */
 
-    for(const bot of bots){
-
-        players.push({
-
-            name:bot.name,
-
-            score:
-                Math.floor(
-                    bot.length
-                ),
-
-            color:bot.color
-        });
-    }
-
-    /*
-       Multiplayer mängijad
-    */
-
-    for(const id in others){
-
-        const p=
-            others[id];
-
-        if(!p)
-            continue;
+    for(
+        const bot of bots
+    ){
 
         players.push({
 
             name:
-                p.name||
-                "Player",
+            bot.name,
 
             score:
-                p.score||
-                0,
+            Math.floor(
+                bot.length
+            ),
 
             color:
-                p.color||
-                "#fff"
+            bot.color
         });
     }
 
     players.sort(
         (a,b)=>
-            b.score-a.score
+        b.score-a.score
     );
 
     const rows=
-        document.getElementById(
-            "lbRows"
-        );
+    document.getElementById(
+        "lbRows"
+    );
 
     rows.innerHTML="";
 
     players
-        .slice(0,3)
-        .forEach((p,index)=>{
+    .slice(0,3)
+    .forEach(
+    (p,index)=>{
 
-            const row=
-                document.createElement(
-                    "div"
-                );
+        const row=
+        document.createElement(
+            "div"
+        );
 
-            row.className=
-                "lbRow";
+        row.className=
+        "lbRow";
 
-            row.innerHTML=`
+        row.innerHTML=`
 
-                <span style="
-                    color:${p.color};
-                ">
-                    ${index+1}.
-                    ${escapeHTML(p.name)}
-                </span>
+        <span style="
+            color:${p.color};
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+            max-width:120px;
+        ">
+            ${index+1}.
+            ${safe(p.name)}
+        </span>
 
-                <b>
-                    ${Math.floor(p.score)}
-                </b>
+        <b>
+            ${Math.floor(p.score)}
+        </b>
+        `;
 
-            `;
-
-            rows.appendChild(row);
-        });
+        rows.appendChild(
+            row
+        );
+    });
 }
 
-function escapeHTML(value){
+/* =====================================================
+   SAFE TEXT
+===================================================== */
+
+function safe(value){
 
     return String(value)
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            '"',
-            "&quot;"
-        );
-}
-
-/* =========================================================
-   KILL TEXT
-========================================================= */
-
-function showKill(){
-
-    const el=
-        document.getElementById(
-            "killText"
-        );
-
-    el.classList.add(
-        "show"
+    .replaceAll(
+        "&",
+        "&amp;"
+    )
+    .replaceAll(
+        "<",
+        "&lt;"
+    )
+    .replaceAll(
+        ">",
+        "&gt;"
+    )
+    .replaceAll(
+        '"',
+        "&quot;"
+    )
+    .replaceAll(
+        "'",
+        "&#039;"
     );
-
-    setTimeout(()=>{
-
-        el.classList.remove(
-            "show"
-        );
-
-    },900);
 }
 
-/* =========================================================
-   DEATH
-========================================================= */
-
-function die(reason){
-
-    if(dead)
-        return;
-
-    dead=true;
-    running=false;
-
-    document.getElementById(
-        "deathReason"
-    ).textContent=
-        reason;
-
-    document.getElementById(
-        "finalScore"
-    ).textContent=
-        Math.floor(me.score);
-
-    document.getElementById(
-        "finalKills"
-    ).textContent=
-        me.kills;
-
-    document.getElementById(
-        "gameOver"
-    ).style.display=
-        "flex";
-}
-
-document.getElementById(
-    "backMenu"
-).onclick=()=>{
-
-    location.reload();
-};
-
-/* =========================================================
+/* =====================================================
    DRAW GRID
-========================================================= */
+===================================================== */
 
 function drawGrid(){
 
     const size=250;
 
     const startX=
-        Math.floor(
-            (me.x-W)/
-            size
-        )*
-        size;
+    Math.floor(
+        (me.x-W)/size
+    )*size;
 
     const startY=
-        Math.floor(
-            (me.y-H)/
-            size
-        )*
-        size;
+    Math.floor(
+        (me.y-H)/size
+    )*size;
 
     ctx.strokeStyle=
-        "rgba(99,255,120,.055)";
+    "rgba(99,255,120,.055)";
 
     ctx.lineWidth=1;
 
@@ -2742,19 +2327,19 @@ function drawGrid(){
     }
 }
 
-/* =========================================================
-   DRAW WORLD BORDER
-========================================================= */
+/* =====================================================
+   BORDER
+===================================================== */
 
 function drawBorder(){
 
     ctx.strokeStyle=
-        "#63ff78";
+    "#63ff78";
 
     ctx.lineWidth=12;
 
     ctx.shadowColor=
-        "#63ff78";
+    "#63ff78";
 
     ctx.shadowBlur=18;
 
@@ -2768,47 +2353,51 @@ function drawBorder(){
     ctx.shadowBlur=0;
 }
 
-/* =========================================================
-   DRAW FOOD
-========================================================= */
+/* =====================================================
+   FOOD DRAW
+===================================================== */
 
 function drawFood(){
 
-    for(const food of foods){
+    for(
+        const f of foods
+    ){
 
         if(
             Math.abs(
-                food.x-me.x
+                f.x-me.x
             )>
-            W+150
-        )
+            W+200
+        ){
             continue;
+        }
 
         if(
             Math.abs(
-                food.y-me.y
+                f.y-me.y
             )>
-            H+150
-        )
+            H+200
+        ){
             continue;
+        }
 
         ctx.fillStyle=
-            food.color;
+        f.color;
 
         ctx.shadowColor=
-            food.color;
+        f.color;
 
         ctx.shadowBlur=
-            food.boostPiece
-            ?15
-            :7;
+        f.boostPiece
+        ?15
+        :7;
 
         ctx.beginPath();
 
         ctx.arc(
-            food.x,
-            food.y,
-            food.radius,
+            f.x,
+            f.y,
+            f.radius,
             0,
             Math.PI*2
         );
@@ -2819,9 +2408,9 @@ function drawFood(){
     ctx.shadowBlur=0;
 }
 
-/* =========================================================
+/* =====================================================
    DRAW SNAKE
-========================================================= */
+===================================================== */
 
 function drawSnake(
     snake,
@@ -2830,17 +2419,18 @@ function drawSnake(
 
     if(
         !snakeBody ||
-        snakeBody.length===0
-    )
+        !snakeBody.length
+    ){
         return;
+    }
 
     /*
-       KEHA
+       BODY
     */
 
     for(
         let i=
-            snakeBody.length-1;
+        snakeBody.length-1;
 
         i>=0;
 
@@ -2848,30 +2438,30 @@ function drawSnake(
     ){
 
         const p=
-            snakeBody[i];
+        snakeBody[i];
 
         const progress=
-            i/
-            snakeBody.length;
+        i/
+        snakeBody.length;
 
         const radius=
-            8+
-            (1-progress)*8;
+        8+
+        (1-progress)*8;
 
         ctx.globalAlpha=
-            .92-
-            progress*.18;
+        .94-
+        progress*.15;
 
         ctx.fillStyle=
-            snake.color;
+        snake.color;
 
         ctx.shadowColor=
-            snake.color;
+        snake.color;
 
         ctx.shadowBlur=
-            i<15
-            ?8
-            :2;
+        i<15
+        ?8
+        :2;
 
         ctx.beginPath();
 
@@ -2886,13 +2476,15 @@ function drawSnake(
         ctx.fill();
 
         /*
-           KEHA DETAIL
+           SCALE DETAIL
         */
 
-        if(i%4===0){
+        if(
+            i%4===0
+        ){
 
             ctx.fillStyle=
-                "rgba(255,255,255,.16)";
+            "rgba(255,255,255,.16)";
 
             ctx.beginPath();
 
@@ -2909,11 +2501,10 @@ function drawSnake(
     }
 
     ctx.globalAlpha=1;
-
     ctx.shadowBlur=0;
 
     /*
-       PEA
+       HEAD
     */
 
     drawHead(
@@ -2929,16 +2520,15 @@ function drawSnake(
     */
 
     drawName(
-        snake.name||
-        "Player",
+        snake.name,
         snake.x,
-        snake.y-35
+        snake.y-42
     );
 }
 
-/* =========================================================
-   DRAW HEAD
-========================================================= */
+/* =====================================================
+   HEAD
+===================================================== */
 
 function drawHead(
     x,
@@ -2964,13 +2554,12 @@ function drawHead(
     */
 
     ctx.fillStyle=
-        color;
+    color;
 
     ctx.shadowColor=
-        color;
+    color;
 
-    ctx.shadowBlur=
-        15;
+    ctx.shadowBlur=15;
 
     ctx.beginPath();
 
@@ -2987,53 +2576,11 @@ function drawHead(
     ctx.shadowBlur=0;
 
     /*
-       HORNS FOR PURPLE
-    */
-
-    if(skin==="purple"){
-
-        ctx.fillStyle=
-            color;
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            -12,-15
-        );
-
-        ctx.lineTo(
-            -8,-30
-        );
-
-        ctx.lineTo(
-            -1,-17
-        );
-
-        ctx.fill();
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            1,-17
-        );
-
-        ctx.lineTo(
-            9,-30
-        );
-
-        ctx.lineTo(
-            13,-15
-        );
-
-        ctx.fill();
-    }
-
-    /*
        EYES
     */
 
     ctx.fillStyle=
-        "white";
+    "white";
 
     ctx.beginPath();
 
@@ -3063,8 +2610,7 @@ function drawHead(
 
     ctx.fill();
 
-    ctx.fillStyle=
-        "#111";
+    ctx.fillStyle="#111";
 
     ctx.beginPath();
 
@@ -3095,7 +2641,7 @@ function drawHead(
     */
 
     ctx.strokeStyle=
-        "#111";
+    "#111";
 
     ctx.lineWidth=2;
 
@@ -3116,9 +2662,7 @@ function drawHead(
     */
 
     ctx.strokeStyle=
-        "#ff6070";
-
-    ctx.lineWidth=2;
+    "#ff6070";
 
     ctx.beginPath();
 
@@ -3128,18 +2672,62 @@ function drawHead(
     );
 
     ctx.lineTo(
-        35,
+        34,
         0
     );
 
     ctx.stroke();
 
+    /*
+       PURPLE HORNS
+    */
+
+    if(
+        skin==="purple"
+    ){
+
+        ctx.fillStyle=
+        color;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            -13,-15
+        );
+
+        ctx.lineTo(
+            -8,-30
+        );
+
+        ctx.lineTo(
+            -1,-16
+        );
+
+        ctx.fill();
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            1,-16
+        );
+
+        ctx.lineTo(
+            9,-30
+        );
+
+        ctx.lineTo(
+            14,-15
+        );
+
+        ctx.fill();
+    }
+
     ctx.restore();
 }
 
-/* =========================================================
-   DRAW NAME
-========================================================= */
+/* =====================================================
+   NAME DRAWING
+===================================================== */
 
 function drawName(
     name,
@@ -3147,25 +2735,66 @@ function drawName(
     y
 ){
 
+    /*
+       See on tähtis:
+       nimi joonistatakse alati
+       mängija PEA kohale.
+    */
+
+    if(
+        !name
+    ){
+        return;
+    }
+
     ctx.save();
 
     ctx.textAlign=
-        "center";
+    "center";
+
+    ctx.textBaseline=
+    "middle";
+
+    const text=
+    String(name)
+    .slice(0,16);
 
     ctx.font=
-        "bold 12px Arial";
+    "bold 14px Arial";
+
+    /*
+       must taust nime taga
+       teeb selle alati nähtavaks
+    */
+
+    const width=
+    ctx.measureText(
+        text
+    ).width;
 
     ctx.fillStyle=
-        "white";
+    "rgba(0,0,0,.68)";
+
+    roundRect(
+        x-width/2-7,
+        y-10,
+        width+14,
+        20,
+        7
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle=
+    "#ffffff";
 
     ctx.shadowColor=
-        "#000";
+    "#000";
 
-    ctx.shadowBlur=
-        5;
+    ctx.shadowBlur=4;
 
     ctx.fillText(
-        name,
+        text,
         x,
         y
     );
@@ -3173,104 +2802,161 @@ function drawName(
     ctx.restore();
 }
 
-/* =========================================================
-   DRAW MULTIPLAYER
-========================================================= */
+/* =====================================================
+   ROUNDED RECT
+===================================================== */
 
-function drawOtherPlayers(){
+function roundRect(
+    x,
+    y,
+    w,
+    h,
+    r
+){
 
-    for(const id in others){
+    const rr=
+    Math.min(
+        r,
+        w/2,
+        h/2
+    );
 
-        if(id===me.id)
-            continue;
+    ctx.beginPath();
 
-        const p=
-            others[id];
+    ctx.moveTo(
+        x+rr,
+        y
+    );
 
-        if(
-            !p ||
-            p.alive===false
-        )
-            continue;
+    ctx.lineTo(
+        x+w-rr,
+        y
+    );
 
-        const remoteBody=[];
+    ctx.quadraticCurveTo(
+        x+w,
+        y,
+        x+w,
+        y+rr
+    );
 
-        const len=
-            Math.max(
-                15,
-                Math.min(
-                    500,
-                    Math.floor(
-                        p.length||
-                        25
-                    )
-                )
-            );
+    ctx.lineTo(
+        x+w,
+        y+h-rr
+    );
 
-        for(
-            let i=0;
-            i<len;
-            i++
-        ){
+    ctx.quadraticCurveTo(
+        x+w,
+        y+h,
+        x+w-rr,
+        y+h
+    );
 
-            remoteBody.push({
+    ctx.lineTo(
+        x+rr,
+        y+h
+    );
 
-                x:
-                    p.x-
-                    Math.cos(
-                        p.angle||0
-                    )*
-                    i*8,
+    ctx.quadraticCurveTo(
+        x,
+        y+h,
+        x,
+        y+h-rr
+    );
 
-                y:
-                    p.y-
-                    Math.sin(
-                        p.angle||0
-                    )*
-                    i*8
-            });
-        }
+    ctx.lineTo(
+        x,
+        y+rr
+    );
 
-        drawSnake(
+    ctx.quadraticCurveTo(
+        x,
+        y,
+        x+rr,
+        y
+    );
 
-            {
-
-                x:p.x,
-                y:p.y,
-
-                angle:
-                    p.angle||0,
-
-                color:
-                    p.color||
-                    "#4da6ff",
-
-                skin:
-                    p.skin||
-                    "blue",
-
-                name:
-                    p.name||
-                    "Player"
-            },
-
-            remoteBody
-        );
-    }
+    ctx.closePath();
 }
 
-/* =========================================================
-   DRAW
-========================================================= */
+/* =====================================================
+   KILL MESSAGE
+===================================================== */
+
+function showKill(){
+
+    const el=
+    document.getElementById(
+        "killText"
+    );
+
+    el.classList.add(
+        "show"
+    );
+
+    setTimeout(
+    ()=>{
+
+        el.classList.remove(
+            "show"
+        );
+
+    },
+    900
+    );
+}
+
+/* =====================================================
+   DEATH
+===================================================== */
+
+function die(reason){
+
+    if(dead){
+        return;
+    }
+
+    dead=true;
+    running=false;
+
+    document.getElementById(
+        "deathReason"
+    ).textContent=
+    reason;
+
+    document.getElementById(
+        "finalScore"
+    ).textContent=
+    Math.floor(
+        me.score
+    );
+
+    document.getElementById(
+        "finalKills"
+    ).textContent=
+    me.kills;
+
+    document.getElementById(
+        "gameOver"
+    ).style.display=
+    "flex";
+}
+
+document.getElementById(
+"backMenu"
+).onclick=()=>{
+
+    location.reload();
+};
+
+/* =====================================================
+   MAIN DRAW
+===================================================== */
 
 function draw(){
 
-    /*
-       BACKGROUND
-    */
-
     ctx.fillStyle=
-        "#071008";
+    "#071008";
 
     ctx.fillRect(
         0,
@@ -3279,13 +2965,14 @@ function draw(){
         H
     );
 
-    if(!running)
+    if(!running){
         return;
+    }
 
     ctx.save();
 
     /*
-       CAMERA
+       CAMERA FOLLOW PLAYER
     */
 
     ctx.translate(
@@ -3300,22 +2987,18 @@ function draw(){
     drawFood();
 
     /*
-       BOTS
+       BOTID
     */
 
-    for(const bot of bots){
+    for(
+        const bot of bots
+    ){
 
         drawSnake(
             bot,
             bot.body
         );
     }
-
-    /*
-       MULTIPLAYER
-    */
-
-    drawOtherPlayers();
 
     /*
        PLAYER
@@ -3334,7 +3017,7 @@ function draw(){
 
             skin:me.skin,
 
-            name:getName()
+            name:me.name
         },
 
         body
@@ -3343,30 +3026,9 @@ function draw(){
     ctx.restore();
 }
 
-/* =========================================================
-   ERROR HELPERS
-========================================================= */
-
-function setError(text){
-
-    document.getElementById(
-        "error"
-    ).textContent=
-        text;
-}
-
-function clearError(){
-
-    document.getElementById(
-        "error"
-    ).textContent="";
-}
-
-/* =========================================================
-   START LOOP
-========================================================= */
-
-connectServer();
+/* =====================================================
+   GAME LOOP
+===================================================== */
 
 function loop(){
 
@@ -3380,6 +3042,15 @@ function loop(){
 }
 
 loop();
+
+/* =====================================================
+   START
+===================================================== */
+
+me.name=
+getName();
+
+updateCoins();
 
 </script>
 
