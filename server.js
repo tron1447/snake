@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname)));
 
 const rooms = new Map();
 
-function makeRoomCode() {
+function roomCode() {
     let code;
 
     do {
@@ -33,12 +33,18 @@ function send(ws, data) {
 }
 
 function broadcast(room, data) {
-    for (const player of room.players.values()) {
-        send(player.ws, data);
+    for (const p of room.players.values()) {
+        send(p.ws, data);
     }
 }
 
-function state(room) {
+function cleanName(name) {
+    return String(name || "Player")
+        .replace(/[<>]/g, "")
+        .substring(0, 16) || "Player";
+}
+
+function getState(room) {
     return {
         type: "state",
         players: [...room.players.values()].map(p => ({
@@ -58,73 +64,95 @@ function state(room) {
 
 wss.on("connection", ws => {
 
-    const player = {
-        id: Math.random().toString(36).substring(2, 10),
+    const p = {
+        id: Math.random()
+            .toString(36)
+            .substring(2, 10),
+
         ws,
         room: null,
 
         name: "Player",
+
         x: 9000,
         y: 9000,
+
         angle: 0,
 
         length: 25,
+
         score: 0,
         kills: 0,
 
         color: "#63ff78",
+
         body: []
     };
 
     send(ws, {
         type: "connected",
-        id: player.id
+        id: p.id
     });
 
-    ws.on("message", message => {
+    ws.on("message", raw => {
 
         let data;
 
         try {
-            data = JSON.parse(message.toString());
+            data = JSON.parse(
+                raw.toString()
+            );
         } catch {
             return;
         }
 
         if (data.type === "create") {
 
-            if (player.room) return;
+            if (p.room) return;
 
-            const code = makeRoomCode();
+            const code = roomCode();
 
             const room = {
                 code,
-                players: new Map(),
-                started: false
+                players: new Map()
             };
 
             rooms.set(code, room);
-            player.room = room;
 
-            player.name =
-                String(data.name || "Player")
-                .replace(/[<>]/g, "")
-                .substring(0, 16);
+            p.room = room;
 
-            player.color =
+            p.name =
+                cleanName(data.name);
+
+            p.color =
                 typeof data.color === "string"
                     ? data.color
                     : "#63ff78";
 
-            room.players.set(player.id, player);
+            p.x =
+                2000 +
+                Math.random() * 14000;
+
+            p.y =
+                2000 +
+                Math.random() * 14000;
+
+            room.players.set(
+                p.id,
+                p
+            );
 
             send(ws, {
                 type: "created",
                 code,
-                id: player.id
+                id: p.id
             });
 
-            broadcast(room, state(room));
+            broadcast(
+                room,
+                getState(room)
+            );
+
             return;
         }
 
@@ -132,134 +160,191 @@ wss.on("connection", ws => {
 
             const code =
                 String(data.code || "")
-                .trim()
-                .toUpperCase();
+                    .trim()
+                    .toUpperCase();
 
-            const room = rooms.get(code);
+            const room =
+                rooms.get(code);
 
             if (!room) {
+
                 send(ws, {
                     type: "error",
                     message: "Roomi ei leitud."
                 });
+
                 return;
             }
 
-            if (room.players.size >= 10) {
+            if (room.players.size >= 12) {
+
                 send(ws, {
                     type: "error",
                     message: "Room on täis."
                 });
+
                 return;
             }
 
-            player.room = room;
+            p.room = room;
 
-            player.name =
-                String(data.name || "Player")
-                .replace(/[<>]/g, "")
-                .substring(0, 16);
+            p.name =
+                cleanName(data.name);
 
-            player.color =
+            p.color =
                 typeof data.color === "string"
                     ? data.color
                     : "#4da6ff";
 
-            player.x =
-                2000 +
-                Math.random() * 14000;
+            p.x =
+                1500 +
+                Math.random() * 15000;
 
-            player.y =
-                2000 +
-                Math.random() * 14000;
+            p.y =
+                1500 +
+                Math.random() * 15000;
 
-            player.angle =
-                Math.random() * Math.PI * 2;
+            p.angle =
+                Math.random() *
+                Math.PI * 2;
 
-            room.players.set(player.id, player);
+            room.players.set(
+                p.id,
+                p
+            );
 
             send(ws, {
                 type: "joined",
                 code,
-                id: player.id
+                id: p.id
             });
 
-            broadcast(room, state(room));
+            broadcast(
+                room,
+                getState(room)
+            );
+
             return;
         }
 
         if (data.type === "start") {
 
-            if (!player.room) return;
+            if (!p.room) return;
 
-            player.room.started = true;
-
-            broadcast(player.room, {
-                type: "startGame"
-            });
+            broadcast(
+                p.room,
+                {
+                    type: "startGame"
+                }
+            );
 
             return;
         }
 
         if (data.type === "update") {
 
-            if (!player.room) return;
+            if (!p.room) return;
 
-            if (typeof data.x === "number")
-                player.x = data.x;
+            if (
+                Number.isFinite(data.x)
+            )
+                p.x = data.x;
 
-            if (typeof data.y === "number")
-                player.y = data.y;
+            if (
+                Number.isFinite(data.y)
+            )
+                p.y = data.y;
 
-            if (typeof data.angle === "number")
-                player.angle = data.angle;
+            if (
+                Number.isFinite(data.angle)
+            )
+                p.angle = data.angle;
 
-            if (typeof data.length === "number")
-                player.length = data.length;
+            if (
+                Number.isFinite(data.length)
+            )
+                p.length = data.length;
 
-            if (typeof data.score === "number")
-                player.score = data.score;
+            if (
+                Number.isFinite(data.score)
+            )
+                p.score = data.score;
 
-            if (typeof data.kills === "number")
-                player.kills = data.kills;
+            if (
+                Number.isFinite(data.kills)
+            )
+                p.kills = data.kills;
 
-            if (Array.isArray(data.body))
-                player.body = data.body.slice(0, 250);
+            if (
+                Array.isArray(data.body)
+            )
+                p.body =
+                    data.body.slice(
+                        0,
+                        220
+                    );
 
-            broadcast(player.room, state(player.room));
+            broadcast(
+                p.room,
+                getState(p.room)
+            );
+
+            return;
         }
 
         if (data.type === "kill") {
 
-            if (!player.room) return;
+            if (!p.room) return;
 
-            player.kills++;
-            player.score += 10;
+            p.kills++;
+            p.score += 10;
 
-            broadcast(player.room, {
-                type: "kill",
-                killer: player.id,
-                victim: data.victim
-            });
+            broadcast(
+                p.room,
+                {
+                    type: "kill",
+                    killer: p.id,
+                    victim: data.victim
+                }
+            );
         }
     });
 
     ws.on("close", () => {
 
-        if (!player.room) return;
+        if (!p.room) return;
 
-        const room = player.room;
+        const room = p.room;
 
-        room.players.delete(player.id);
+        room.players.delete(
+            p.id
+        );
 
-        if (room.players.size === 0) {
-            rooms.delete(room.code);
+        if (
+            room.players.size === 0
+        ) {
+
+            rooms.delete(
+                room.code
+            );
+
         } else {
-            broadcast(room, state(room));
+
+            broadcast(
+                room,
+                getState(room)
+            );
+
         }
     });
 });
 
-server.listen(PORT, "0.0.0.0", () => {
-    console.log("Snake Arena server running on port " + PORT);
-});
+server.listen(
+    PORT,
+    "0.0.0.0",
+    () => {
+        console.log(
+            `Snake Arena running on ${PORT}`
+        );
+    }
+);
