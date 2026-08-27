@@ -4,64 +4,153 @@ const path = require("path");
 const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 3000;
-
 const WORLD = 20000;
-const MAX_PLAYERS = 20;
-
 const rooms = new Map();
 
-const foodColors = [
-  "#63ff78",
-  "#ffd84d",
-  "#ff6075",
-  "#55c9ff",
-  "#c76cff",
-  "#ff963d"
-];
-
-function makeFood(){
-  return {
-    x:50 + Math.random() * (WORLD-100),
-    y:50 + Math.random() * (WORLD-100),
-    radius:3 + Math.random()*4,
-    color:foodColors[
-      Math.floor(Math.random()*foodColors.length)
-    ],
-    value:1 + Math.floor(Math.random()*4)
-  };
+function send(ws, data) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(data));
+  }
 }
 
-const globalFoods = [];
-
-for(let i=0;i<700;i++){
-  globalFoods.push(makeFood());
+function roomCode() {
+  let code;
+  do {
+    code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  } while (rooms.has(code));
+  return code;
 }
 
+function cleanName(name) {
+  return String(name || "Player")
+    .replace(/[<>]/g, "")
+    .substring(0, 16) || "Player";
+}
 
-/* =========================
-   HTTP SERVER
-========================= */
+function broadcastLobby(room) {
+  const players = [...room.players.values()].map(p => ({
+    id: p.id,
+    name: p.name,
+    color: p.color,
+    host: p.host
+  }));
 
-const server = http.createServer((req,res) => {
+  for (const p of room.players.values()) {
+    send(p.ws, {
+      type: "lobby",
+      players
+    });
+  }
+}
 
+function broadcastPlayers(room) {
+  const players = {};
+
+  for (const p of room.players.values()) {
+    players[p.id] = {
+      x: p.x,
+      y: p.y,
+      angle: p.angle,
+      length: p.length,
+      color: p.color,
+      skin: p.skin,
+      name: p.name,
+      alive: p.alive
+    };
+  }
+
+  for (const p of room.players.values()) {
+    send(p.ws, {
+      type: "players",
+      players
+    });
+  }
+}
+
+function killPlayer(room, victim, killer) {
+  if (!victim.alive) return;
+
+  victim.alive = false;
+
+  if (killer) {
+    killer.length += Math.max(3, victim.length * 0.25);
+
+    send(killer.ws, {
+      type: "kill",
+      name: victim.name
+    });
+  }
+
+  send(victim.ws, {
+    type: "gameOver",
+    reason: killer
+      ? `${killer.name} tappis sind!`
+      : "Sind tapeti!"
+  });
+}
+
+function checkCombat(room) {
+  const players = [...room.players.values()];
+
+  for (const a of players) {
+    if (!a.alive) continue;
+
+    for (const b of players) {
+      if (a === b || !b.alive) continue;
+
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+
+      if (Math.hypot(dx, dy) > 120) continue;
+
+      /*
+       * Suurema snake'i pea puudutab väiksema snake'i keha.
+       */
+      const aRadius = 22;
+      const bRadius = 10;
+
+      if (a.length <= b.length) continue;
+
+      const bodyLength = Math.min(
+        Math.floor(b.length),
+        180
+      );
+
+      for (let i = 4; i < bodyLength; i++) {
+        const bx =
+          b.x - Math.cos(b.angle) * i * 8;
+
+        const by =
+          b.y - Math.sin(b.angle) * i * 8;
+
+        if (
+          Math.hypot(a.x - bx, a.y - by) <
+          aRadius + bRadius
+        ) {
+          killPlayer(room, b, a);
+          break;
+        }
+      }
+    }
+  }
+}
+
+const server = http.createServer((req, res) => {
   let requested = req.url.split("?")[0];
 
-  if(requested === "/"){
+  if (requested === "/") {
     requested = "/index.html";
   }
 
-  const file = path.join(
-    __dirname,
-    requested
-  );
+  const file = path.join(__dirname, requested);
 
-  if(!file.startsWith(__dirname)){
+  if (!file.startsWith(__dirname)) {
     res.writeHead(403);
     res.end("Forbidden");
     return;
   }
 
-  if(!fs.existsSync(file)){
+  if (!fs.existsSync(file)) {
     res.writeHead(404);
     res.end("Not found");
     return;
@@ -70,232 +159,91 @@ const server = http.createServer((req,res) => {
   const ext = path.extname(file);
 
   const types = {
-    ".html":"text/html; charset=utf-8",
-    ".js":"application/javascript; charset=utf-8",
-    ".css":"text/css; charset=utf-8",
-    ".json":"application/json; charset=utf-8"
+    ".html": "text/html; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".json": "application/json; charset=utf-8"
   };
 
-  res.writeHead(200,{
-    "Content-Type":
-      types[ext] || "application/octet-stream"
+  res.writeHead(200, {
+    "Content-Type": types[ext] || "text/plain"
   });
 
   fs.createReadStream(file).pipe(res);
 });
 
+const wss = new WebSocket.Server({ server });
 
-/* =========================
-   WEBSOCKET
-========================= */
-
-const wss = new WebSocket.Server({
-  server
-});
-
-
-function makeId(){
-
-  return Math.random()
-    .toString(36)
-    .substring(2,10);
-}
-
-
-function makeRoomCode(){
-
-  let code;
-
-  do{
-    code = Math.random()
-      .toString(36)
-      .substring(2,8)
-      .toUpperCase();
-  }while(rooms.has(code));
-
-  return code;
-}
-
-
-function send(ws,data){
-
-  if(
-    ws &&
-    ws.readyState === WebSocket.OPEN
-  ){
-    ws.send(JSON.stringify(data));
-  }
-}
-
-
-function broadcast(room,data){
-
-  for(const player of room.players.values()){
-    send(player.ws,data);
-  }
-}
-
-
-function sendLobby(room){
-
-  const players = [...room.players.values()]
-    .map(p => ({
-      id:p.id,
-      name:p.name,
-      color:p.color,
-      host:p.host
-    }));
-
-  broadcast(room,{
-    type:"lobby",
-    players
-  });
-}
-
-
-function sendPlayers(room){
-
-  const players = {};
-
-  for(const [id,p] of room.players){
-
-    if(!p.alive) continue;
-
-    players[id] = {
-      x:p.x,
-      y:p.y,
-      angle:p.angle,
-      length:p.length,
-      color:p.color,
-      name:p.name,
-      boosting:p.boosting
-    };
-  }
-
-  broadcast(room,{
-    type:"players",
-    players
-  });
-}
-
-
-/* =========================
-   CONNECTION
-========================= */
-
-wss.on("connection",ws => {
-
+wss.on("connection", ws => {
   const player = {
-
     ws,
+    id: Math.random().toString(36).substring(2, 10),
+    name: "Player",
+    color: "#63ff78",
+    skin: "green",
+    room: null,
+    host: false,
 
-    id:makeId(),
-
-    name:"Player",
-
-    color:"#63ff78",
-
-    room:null,
-
-    host:false,
-
-    alive:true,
-
-    x:10000,
-
-    y:10000,
-
-    angle:0,
-
-    length:20,
-
-    boosting:false
+    x: 10000,
+    y: 10000,
+    angle: 0,
+    length: 20,
+    alive: true
   };
 
   ws.player = player;
 
-  send(ws,{
-    type:"welcome",
-    id:player.id
-  });
-
-
-  ws.on("message",raw => {
-
+  ws.on("message", raw => {
     let data;
 
-    try{
+    try {
       data = JSON.parse(raw.toString());
-    }catch{
+    } catch {
       return;
     }
 
+    /* CREATE */
+    if (data.type === "createRoom") {
+      if (player.room) return;
 
-    /* =========================
-       CREATE
-    ========================= */
-
-    if(data.type === "createRoom"){
-
-      if(player.room){
-        return;
-      }
-
-      const code = makeRoomCode();
+      const code = roomCode();
 
       const room = {
         code,
-        started:false,
-        players:new Map()
+        started: false,
+        players: new Map()
       };
 
-      player.name =
-        String(data.name || "Player")
-          .substring(0,16);
-
+      player.name = cleanName(data.name);
       player.color =
         typeof data.color === "string"
           ? data.color
           : "#63ff78";
 
+      player.skin =
+        typeof data.skin === "string"
+          ? data.skin
+          : "green";
+
       player.room = room;
       player.host = true;
 
-      room.players.set(
-        player.id,
-        player
-      );
+      room.players.set(player.id, player);
+      rooms.set(code, room);
 
-      rooms.set(
+      send(ws, {
+        type: "roomCreated",
         code,
-        room
-      );
-
-      send(ws,{
-        type:"roomCreated",
-        code
+        id: player.id,
+        host: true
       });
 
-      sendLobby(room);
-
+      broadcastLobby(room);
       return;
     }
 
-
-    /* =========================
-       JOIN
-    ========================= */
-
-    if(data.type === "joinRoom"){
-
-      if(player.room){
-        send(ws,{
-          type:"error",
-          message:"Oled juba toas."
-        });
-        return;
-      }
-
+    /* JOIN */
+    if (data.type === "joinRoom") {
       const code =
         String(data.code || "")
           .trim()
@@ -303,451 +251,195 @@ wss.on("connection",ws => {
 
       const room = rooms.get(code);
 
-      if(!room){
-
-        send(ws,{
-          type:"error",
-          message:"Seda tuba ei ole olemas."
+      if (!room) {
+        send(ws, {
+          type: "error",
+          message: "Seda roomi ei ole."
         });
-
         return;
       }
 
-      if(room.started){
-
-        send(ws,{
-          type:"error",
-          message:"Mäng on juba alanud."
+      if (room.started) {
+        send(ws, {
+          type: "error",
+          message: "Mäng on juba alanud."
         });
-
         return;
       }
 
-      if(room.players.size >= MAX_PLAYERS){
-
-        send(ws,{
-          type:"error",
-          message:"Tuba on täis."
+      if (room.players.size >= 20) {
+        send(ws, {
+          type: "error",
+          message: "Room on täis."
         });
-
         return;
       }
 
-      player.name =
-        String(data.name || "Player")
-          .substring(0,16);
+      player.name = cleanName(data.name);
 
       player.color =
         typeof data.color === "string"
           ? data.color
           : "#4da6ff";
 
+      player.skin =
+        typeof data.skin === "string"
+          ? data.skin
+          : "blue";
+
       player.room = room;
       player.host = false;
 
-      room.players.set(
-        player.id,
-        player
-      );
+      room.players.set(player.id, player);
 
-      send(ws,{
-        type:"roomJoined",
-        code
+      send(ws, {
+        type: "roomJoined",
+        code,
+        id: player.id,
+        host: false
       });
 
-      sendLobby(room);
-
+      broadcastLobby(room);
       return;
     }
 
-
-    /* =========================
-       START
-    ========================= */
-
-    if(data.type === "startGame"){
-
+    /* START */
+    if (data.type === "startGame") {
       const room = player.room;
 
-      if(!room) return;
-
-      if(!player.host) return;
-
-      if(room.started) return;
+      if (!room || !player.host) return;
 
       room.started = true;
 
-      for(const p of room.players.values()){
-
-        p.alive = true;
-
-        p.length = 20;
-
+      for (const p of room.players.values()) {
         p.x =
-          1500 +
-          Math.random()*(WORLD-3000);
+          3000 +
+          Math.random() * (WORLD - 6000);
 
         p.y =
-          1500 +
-          Math.random()*(WORLD-3000);
+          3000 +
+          Math.random() * (WORLD - 6000);
 
         p.angle =
-          Math.random()*Math.PI*2;
+          Math.random() * Math.PI * 2;
 
-        send(p.ws,{
-          type:"gameStart",
-          spawn:{
-            x:p.x,
-            y:p.y
-          }
+        p.length = 20;
+        p.alive = true;
+
+        send(p.ws, {
+          type: "gameStart",
+          id: p.id,
+          x: p.x,
+          y: p.y,
+          angle: p.angle
         });
       }
 
-      broadcast(room,{
-        type:"foods",
-        foods:globalFoods
-      });
-
       return;
     }
 
+    /* STATE */
+    if (data.type === "state") {
+      if (!player.room || !player.room.started) return;
+      if (!player.alive) return;
 
-    /* =========================
-       STATE
-    ========================= */
-
-    if(data.type === "state"){
-
-      if(!player.room) return;
-
-      if(!roomStarted(player.room)) return;
-
-      if(!player.alive) return;
-
-      if(Number.isFinite(data.x)){
-        player.x =
-          Math.max(
-            20,
-            Math.min(
-              WORLD-20,
-              data.x
-            )
-          );
+      if (Number.isFinite(data.x)) {
+        player.x = Math.max(
+          20,
+          Math.min(WORLD - 20, data.x)
+        );
       }
 
-      if(Number.isFinite(data.y)){
-        player.y =
-          Math.max(
-            20,
-            Math.min(
-              WORLD-20,
-              data.y
-            )
-          );
+      if (Number.isFinite(data.y)) {
+        player.y = Math.max(
+          20,
+          Math.min(WORLD - 20, data.y)
+        );
       }
 
-      if(Number.isFinite(data.angle)){
+      if (Number.isFinite(data.angle)) {
         player.angle = data.angle;
       }
 
-      if(Number.isFinite(data.length)){
-        player.length =
-          Math.max(
-            20,
-            Math.min(
-              1000,
-              data.length
-            )
-          );
-      }
-
-      if(typeof data.color === "string"){
-        player.color = data.color.substring(0,20);
-      }
-
-      if(typeof data.name === "string"){
-        player.name =
-          data.name.substring(0,16);
-      }
-
-      player.boosting =
-        !!data.boosting;
-
-      return;
-    }
-
-
-    /* =========================
-       EAT
-    ========================= */
-
-    if(data.type === "eat"){
-
-      if(!player.room) return;
-
-      if(!roomStarted(player.room)) return;
-
-      if(!player.alive) return;
-
-      const index = Number(data.index);
-
-      if(
-        !Number.isInteger(index) ||
-        index < 0 ||
-        index >= globalFoods.length
-      ){
-        return;
-      }
-
-      const food = globalFoods[index];
-
-      const distance =
-        Math.hypot(
-          food.x-player.x,
-          food.y-player.y
+      if (Number.isFinite(data.length)) {
+        player.length = Math.max(
+          20,
+          Math.min(1000, data.length)
         );
-
-      if(distance > 80){
-        return;
       }
 
-      player.length += food.value*.5;
+      if (typeof data.color === "string") {
+        player.color = data.color;
+      }
 
-      globalFoods[index] = makeFood();
+      if (typeof data.skin === "string") {
+        player.skin = data.skin;
+      }
 
-      broadcast(
-        player.room,
-        {
-          type:"foods",
-          foods:globalFoods
-        }
-      );
-
-      return;
+      if (typeof data.name === "string") {
+        player.name = cleanName(data.name);
+      }
     }
 
+    /* RESTART */
+    if (data.type === "restart") {
+      if (!player.room) return;
+
+      player.alive = true;
+      player.length = 20;
+      player.x =
+        3000 + Math.random() * 14000;
+      player.y =
+        3000 + Math.random() * 14000;
+
+      send(player.ws, {
+        type: "gameStart",
+        id: player.id,
+        x: player.x,
+        y: player.y,
+        angle: player.angle
+      });
+    }
   });
 
-
-  /* =========================
-     CLOSE
-  ========================= */
-
-  ws.on("close",() => {
-
+  ws.on("close", () => {
     const room = player.room;
 
-    if(!room){
-      return;
-    }
+    if (!room) return;
 
-    room.players.delete(
-      player.id
-    );
+    room.players.delete(player.id);
 
-    if(player.host){
-
+    if (player.host && room.players.size > 0) {
       const next =
         room.players.values().next().value;
 
-      if(next){
+      if (next) {
         next.host = true;
+
+        send(next.ws, {
+          type: "youAreHost"
+        });
       }
     }
 
-    if(room.players.size === 0){
-
-      rooms.delete(
-        room.code
-      );
-
-    }else{
-
-      sendLobby(room);
+    if (room.players.size === 0) {
+      rooms.delete(room.code);
+    } else {
+      broadcastLobby(room);
     }
   });
-
 });
 
-
-function roomStarted(room){
-
-  return !!(
-    room &&
-    room.started
-  );
-}
-
-
-/* =========================
-   COMBAT
-========================= */
-
-function killPlayer(room,victim,killer){
-
-  if(!victim.alive){
-    return;
-  }
-
-  victim.alive = false;
-
-  send(victim.ws,{
-    type:"gameOver",
-    reason:
-      killer
-      ? killer.name + " tappis sind!"
-      : "Sind tapetud!"
-  });
-
-  if(killer){
-
-    killer.length +=
-      Math.max(
-        10,
-        victim.length*.25
-      );
-
-    broadcast(room,{
-      type:"playerKilled",
-      killer:killer.id,
-      victim:victim.id
-    });
-  }
-
-  /* surnud snake muutub toiduks */
-
-  const drops =
-    Math.min(
-      80,
-      Math.floor(victim.length/2)
-    );
-
-  for(let i=0;i<drops;i++){
-
-    globalFoods.push({
-      x:
-        victim.x+
-        (Math.random()-.5)*150,
-
-      y:
-        victim.y+
-        (Math.random()-.5)*150,
-
-      radius:4+Math.random()*3,
-
-      color:victim.color,
-
-      value:1
-    });
-  }
-
-  /* piirame toidu hulka */
-
-  while(globalFoods.length > 1200){
-    globalFoods.shift();
-  }
-
-  broadcast(room,{
-    type:"foods",
-    foods:globalFoods
-  });
-}
-
-
-function checkCombat(room){
-
-  const players =
-    [...room.players.values()]
-      .filter(p => p.alive);
-
-  for(const attacker of players){
-
-    /*
-      Snake.io stiilis:
-      kui sinu pea puudutab teise keha,
-      saad sina surma.
-    */
-
-    for(const victim of players){
-
-      if(attacker === victim){
-        continue;
-      }
-
-      const bodyLength =
-        Math.min(
-          200,
-          Math.floor(victim.length)
-        );
-
-      for(let i=8;i<bodyLength;i+=3){
-
-        const bx =
-          victim.x-
-          Math.cos(victim.angle)*
-          i*8;
-
-        const by =
-          victim.y-
-          Math.sin(victim.angle)*
-          i*8;
-
-        const distance =
-          Math.hypot(
-            attacker.x-bx,
-            attacker.y-by
-          );
-
-        if(distance < 25){
-
-          killPlayer(
-            room,
-            attacker,
-            victim
-          );
-
-          break;
-        }
-      }
-
-      if(!attacker.alive){
-        break;
-      }
-    }
-  }
-}
-
-
-/* =========================
-   GAME LOOP
-========================= */
-
+/* Multiplayer update */
 setInterval(() => {
-
-  for(const room of rooms.values()){
-
-    if(!room.started){
-      continue;
-    }
+  for (const room of rooms.values()) {
+    if (!room.started) continue;
 
     checkCombat(room);
-    sendPlayers(room);
+    broadcastPlayers(room);
   }
+}, 100);
 
-},100);
-
-
-/* =========================
-   START SERVER
-========================= */
-
-server.listen(
-  PORT,
-  "0.0.0.0",
-  () => {
-    console.log(
-      "Snake Arena server running on port " +
-      PORT
-    );
-  }
-);
+server.listen(PORT, () => {
+  console.log(`Snake Arena running on port ${PORT}`);
+});
