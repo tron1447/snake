@@ -18,7 +18,7 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#07100a;
+    background:#020604;
     font-family:Arial,sans-serif;
     touch-action:none;
 }
@@ -30,100 +30,189 @@ canvas{
     height:100%;
 }
 
+/* ================= MENU ================= */
+
 #menu{
     position:fixed;
     inset:0;
-    z-index:10;
+    z-index:100;
     display:flex;
     align-items:center;
     justify-content:center;
+    overflow:auto;
+
     background:
-        radial-gradient(circle,#173d1e 0%,#030805 65%);
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(67,255,105,.18),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 20% 80%,
+            rgba(20,120,255,.12),
+            transparent 25%
+        ),
+        #020604;
+}
+
+.menuGlow{
+    position:absolute;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    background:rgba(60,255,100,.07);
+    filter:blur(80px);
+    animation:glow 4s infinite alternate;
+}
+
+@keyframes glow{
+    from{transform:scale(.8)}
+    to{transform:scale(1.2)}
 }
 
 .card{
-    width:min(92%,430px);
-    padding:28px;
-    border-radius:25px;
-    background:rgba(5,15,8,.96);
-    border:1px solid #3d7046;
-    box-shadow:0 0 60px rgba(60,255,100,.15);
+    position:relative;
+    z-index:2;
+    width:min(94vw,470px);
+    padding:30px;
+    border-radius:30px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(13,31,17,.97),
+            rgba(2,8,4,.98)
+        );
+
+    border:1px solid rgba(105,255,130,.35);
+
+    box-shadow:
+        0 0 100px rgba(50,255,90,.12),
+        inset 0 0 50px rgba(80,255,100,.025);
+
     text-align:center;
     color:white;
 }
 
 .logo{
-    font-size:65px;
+    font-size:75px;
+    filter:drop-shadow(0 0 18px rgba(80,255,100,.5));
+    animation:snakeFloat 2s ease-in-out infinite;
+}
+
+@keyframes snakeFloat{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-8px)}
 }
 
 h1{
-    font-size:40px;
-    color:#63ff7e;
-    margin-bottom:5px;
-}
-
-.sub{
-    color:#829486;
-    margin-bottom:20px;
-}
-
-input{
-    width:100%;
-    padding:14px;
-    border:1px solid #315238;
-    border-radius:12px;
-    background:#09140b;
-    color:white;
-    text-align:center;
-    font-size:16px;
-    outline:none;
-}
-
-button{
-    width:100%;
-    padding:14px;
-    margin-top:9px;
-    border:0;
-    border-radius:12px;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-#play{
-    background:#63ff7e;
-    color:#041007;
-}
-
-.label{
-    color:#728475;
-    font-size:11px;
-    margin:17px 0 8px;
+    margin-top:5px;
+    font-size:42px;
+    font-weight:900;
     letter-spacing:2px;
+    color:#63ff7e;
+    text-shadow:0 0 25px rgba(70,255,100,.45);
+}
+
+.subtitle{
+    color:#829987;
+    margin:5px 0 22px;
+}
+
+.nameInput{
+    width:100%;
+    padding:15px;
+    border-radius:13px;
+    border:1px solid #315238;
+    background:#071009;
+    color:white;
+    outline:none;
+    font-size:16px;
+    text-align:center;
+}
+
+.nameInput:focus{
+    border-color:#63ff7e;
+    box-shadow:0 0 15px rgba(70,255,100,.15);
+}
+
+.sectionTitle{
+    color:#6f8373;
+    font-size:10px;
+    letter-spacing:2px;
+    margin:18px 0 9px;
 }
 
 .skins{
     display:flex;
     justify-content:center;
+    gap:9px;
     flex-wrap:wrap;
-    gap:10px;
 }
 
 .skin{
-    width:34px;
-    height:34px;
+    width:36px;
+    height:36px;
     border-radius:50%;
     border:3px solid transparent;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.skin:hover{
+    transform:scale(1.12);
 }
 
 .skin.active{
     border-color:white;
     transform:scale(1.15);
+    box-shadow:0 0 14px rgba(255,255,255,.3);
 }
+
+.playButton{
+    width:100%;
+    padding:16px;
+    margin-top:20px;
+    border:0;
+    border-radius:14px;
+    background:linear-gradient(135deg,#71ff8c,#38d65c);
+    color:#031006;
+    font-size:18px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 8px 25px rgba(60,255,90,.2);
+}
+
+.playButton:hover{
+    filter:brightness(1.08);
+}
+
+.playButton:active{
+    transform:scale(.98);
+}
+
+.infoRow{
+    display:flex;
+    justify-content:space-between;
+    margin-top:17px;
+    color:#617364;
+    font-size:11px;
+}
+
+.tip{
+    margin-top:16px;
+    padding:10px;
+    border-radius:10px;
+    background:rgba(80,255,100,.04);
+    color:#657967;
+    font-size:11px;
+}
+
+/* ================= HUD ================= */
 
 #hud{
     position:fixed;
-    z-index:5;
+    z-index:20;
     top:12px;
     left:12px;
     display:none;
@@ -131,17 +220,19 @@ button{
 }
 
 .stat{
-    padding:7px 12px;
-    border-radius:10px;
-    background:rgba(2,10,5,.85);
+    min-width:75px;
+    padding:7px 10px;
+    border-radius:11px;
+    background:rgba(2,9,4,.86);
     border:1px solid rgba(100,255,130,.25);
     color:white;
     text-align:center;
+    backdrop-filter:blur(5px);
 }
 
 .stat small{
     display:block;
-    color:#78907d;
+    color:#718574;
     font-size:9px;
 }
 
@@ -149,17 +240,21 @@ button{
     font-size:16px;
 }
 
+/* ================= MINIMAP ================= */
+
 #minimap{
     position:fixed;
-    z-index:5;
+    z-index:20;
     top:12px;
     right:12px;
-    width:145px;
-    height:145px;
+    width:180px;
+    height:180px;
     display:none;
-    border-radius:14px;
-    background:#061008;
-    border:2px solid rgba(100,255,130,.5);
+    border-radius:17px;
+    overflow:hidden;
+    background:#061009;
+    border:2px solid rgba(105,255,130,.55);
+    box-shadow:0 0 25px rgba(50,255,90,.12);
 }
 
 #map{
@@ -167,62 +262,82 @@ button{
     height:100%;
 }
 
+.mapLabel{
+    position:absolute;
+    top:6px;
+    left:9px;
+    color:#8dff9e;
+    font-size:9px;
+    font-weight:bold;
+}
+
+/* ================= JOYSTICK ================= */
+
 #joystick{
     position:fixed;
-    z-index:6;
+    z-index:30;
     left:25px;
     bottom:25px;
-    width:145px;
-    height:145px;
-    border-radius:50%;
+    width:150px;
+    height:150px;
     display:none;
-    background:rgba(80,120,85,.25);
-    border:2px solid rgba(150,255,160,.4);
+    border-radius:50%;
+    background:rgba(100,150,105,.18);
+    border:2px solid rgba(145,255,155,.38);
+    box-shadow:
+        inset 0 0 30px rgba(0,0,0,.3),
+        0 0 25px rgba(50,255,90,.08);
 }
 
 #stick{
     position:absolute;
-    width:62px;
-    height:62px;
     left:50%;
     top:50%;
+    width:64px;
+    height:64px;
     transform:translate(-50%,-50%);
     border-radius:50%;
-    background:#63ff7e;
-    border:3px solid white;
-    box-shadow:0 0 20px rgba(90,255,120,.5);
+    background:radial-gradient(circle,#82ff9a,#1ab13d);
+    border:3px solid rgba(255,255,255,.8);
+    box-shadow:0 0 25px rgba(80,255,100,.4);
 }
+
+/* ================= BOOST ================= */
 
 #boost{
     position:fixed;
-    z-index:6;
+    z-index:30;
     right:30px;
     bottom:30px;
     width:105px;
     height:105px;
     display:none;
     border-radius:50%;
-    background:#1785d1;
-    border:3px solid #9dddff;
+    border:3px solid #a9e5ff;
+    background:radial-gradient(circle,#51bdff,#07548e);
     color:white;
     font-size:30px;
+    box-shadow:0 0 30px rgba(50,170,255,.35);
 }
 
 #boost small{
     display:block;
     font-size:10px;
+    margin-top:3px;
 }
 
+/* ================= ROTATE ================= */
+
 #rotate{
-    display:none;
     position:fixed;
     inset:0;
-    z-index:100;
-    background:#020604;
-    color:white;
+    z-index:1000;
+    display:none;
     align-items:center;
     justify-content:center;
     text-align:center;
+    background:#020604;
+    color:white;
 }
 
 .rotateBox{
@@ -230,22 +345,34 @@ button{
 }
 
 .phone{
-    font-size:70px;
-    margin-bottom:20px;
+    font-size:75px;
+    animation:phone 1.5s infinite;
 }
+
+@keyframes phone{
+    0%,100%{transform:rotate(0)}
+    50%{transform:rotate(90deg)}
+}
+
+.rotateBox h2{
+    color:#63ff7e;
+    margin:15px 0;
+}
+
+/* ================= DEATH ================= */
 
 #death{
     position:fixed;
     inset:0;
-    z-index:20;
+    z-index:200;
     display:none;
     align-items:center;
     justify-content:center;
-    background:rgba(0,0,0,.75);
+    background:rgba(0,0,0,.78);
 }
 
 .deathCard{
-    width:min(90%,380px);
+    width:min(90%,390px);
     padding:30px;
     border-radius:25px;
     background:#071109;
@@ -254,14 +381,28 @@ button{
     text-align:center;
 }
 
-#again{
-    background:#63ff7e;
+.deathCard h2{
+    font-size:30px;
+    color:#63ff7e;
 }
 
-#backMenu{
-    background:#18221a;
-    color:white;
+.deathScore{
+    margin:10px;
+    color:#849687;
 }
+
+.deathButton{
+    width:100%;
+    padding:14px;
+    margin-top:8px;
+    border:0;
+    border-radius:12px;
+    background:#63ff7e;
+    color:#031006;
+    font-weight:bold;
+}
+
+/* ================= MOBILE ================= */
 
 @media(max-width:800px) and (orientation:landscape){
 
@@ -274,8 +415,12 @@ button{
     }
 
     #minimap{
-        width:120px;
-        height:120px;
+        width:135px;
+        height:135px;
+    }
+
+    .stat{
+        min-width:65px;
     }
 }
 
@@ -289,6 +434,7 @@ button{
         display:none;
     }
 }
+
 </style>
 </head>
 
@@ -296,48 +442,95 @@ button{
 
 <canvas id="game"></canvas>
 
+<!-- ROTATE -->
+
 <div id="rotate">
+
     <div class="rotateBox">
+
         <div class="phone">📱</div>
-        <h2>PÖÖRA TELEFON KÜLILI</h2>
-        <p>Snake Arena töötab horisontaalselt.</p>
+
+        <h2>
+            PÖÖRA TELEFON KÜLILI
+        </h2>
+
+        <p>
+            Snake Arena töötab kõige paremini
+            horisontaalselt.
+        </p>
+
     </div>
+
 </div>
 
 <!-- MENU -->
 
 <div id="menu">
 
-<div class="card">
+    <div class="menuGlow"></div>
 
-    <div class="logo">🐍</div>
+    <div class="card">
 
-    <h1>SNAKE ARENA</h1>
+        <div class="logo">
+            🐍
+        </div>
 
-    <div class="sub">
-        Kasvata oma madu!
+        <h1>
+            SNAKE ARENA
+        </h1>
+
+        <div class="subtitle">
+            Kasvata oma madu hiiglaslikuks!
+        </div>
+
+        <input
+            id="name"
+            class="nameInput"
+            maxlength="16"
+            placeholder="✏️ Sinu nimi"
+        >
+
+        <div class="sectionTitle">
+            VALI OMA SKIN
+        </div>
+
+        <div
+            id="skins"
+            class="skins">
+        </div>
+
+        <button
+            id="play"
+            class="playButton">
+
+            🚀 ALUSTA MÄNGU
+
+        </button>
+
+        <div class="tip">
+            💻 Arvuti: WASD või hiir
+            &nbsp; • &nbsp;
+            📱 Telefon: joystick
+        </div>
+
+        <div class="infoRow">
+
+            <span>
+                🗺️ WORLD 20K
+            </span>
+
+            <span>
+                ⚡ BOOST
+            </span>
+
+            <span>
+                🏆 BEST:
+                <b id="best">0</b>
+            </span>
+
+        </div>
+
     </div>
-
-    <input
-        id="name"
-        maxlength="16"
-        placeholder="Sinu nimi"
-    >
-
-    <div class="label">
-        VALI SKIN
-    </div>
-
-    <div
-        id="skins"
-        class="skins">
-    </div>
-
-    <button id="play">
-        ▶ ALUSTA MÄNGU
-    </button>
-
-</div>
 
 </div>
 
@@ -346,13 +539,23 @@ button{
 <div id="hud">
 
     <div class="stat">
+
         <small>SCORE</small>
-        <b id="score">0</b>
+
+        <b id="score">
+            0
+        </b>
+
     </div>
 
     <div class="stat">
-        <small>PICKUPS</small>
-        <b id="length">20</b>
+
+        <small>LENGTH</small>
+
+        <b id="length">
+            20
+        </b>
+
     </div>
 
 </div>
@@ -360,24 +563,37 @@ button{
 <!-- MINIMAP -->
 
 <div id="minimap">
+
     <canvas
         id="map"
-        width="145"
-        height="145">
+        width="180"
+        height="180">
     </canvas>
+
+    <div class="mapLabel">
+        🗺️ WORLD MAP
+    </div>
+
 </div>
 
 <!-- JOYSTICK -->
 
 <div id="joystick">
+
     <div id="stick"></div>
+
 </div>
 
 <!-- BOOST -->
 
 <button id="boost">
+
     ⚡
-    <small>BOOST</small>
+
+    <small>
+        BOOST
+    </small>
+
 </button>
 
 <!-- DEATH -->
@@ -390,18 +606,33 @@ button{
             💥
         </div>
 
-        <h2>GAME OVER</h2>
+        <h2>
+            GAME OVER
+        </h2>
 
-        <p id="finalScore">
+        <div
+            id="deathScore"
+            class="deathScore">
             Score: 0
-        </p>
+        </div>
 
-        <button id="again">
+        <button
+            id="again"
+            class="deathButton">
+
             🔄 PROOVI UUESTI
+
         </button>
 
-        <button id="backMenu">
-            MENU
+        <button
+            id="back"
+            class="deathButton"
+            style="
+            background:#18231a;
+            color:white;">
+
+            🏠 MENU
+
         </button>
 
     </div>
@@ -410,9 +641,9 @@ button{
 
 <script>
 
-/* ================================
+/* =====================================================
    CANVAS
-================================ */
+===================================================== */
 
 const canvas =
     document.getElementById("game");
@@ -435,17 +666,27 @@ function resize(){
     H = innerHeight;
 
     const dpr =
-        Math.min(devicePixelRatio || 1,2);
+        Math.min(
+            devicePixelRatio || 1,
+            2
+        );
 
-    canvas.width = W*dpr;
-    canvas.height = H*dpr;
+    canvas.width =
+        W*dpr;
 
-    canvas.style.width = W+"px";
-    canvas.style.height = H+"px";
+    canvas.height =
+        H*dpr;
+
+    canvas.style.width =
+        W+"px";
+
+    canvas.style.height =
+        H+"px";
 
     ctx.setTransform(
         dpr,0,0,dpr,0,0
     );
+
 }
 
 window.addEventListener(
@@ -456,101 +697,121 @@ window.addEventListener(
 resize();
 
 
-/* ================================
-   GAME
-================================ */
+/* =====================================================
+   WORLD
+===================================================== */
 
-const WORLD = 12000;
+const WORLD = 20000;
 
 let playing = false;
 
 let score = 0;
 
-let snakeLength = 20;
+let snakeLength = 25;
+
+let snake = [];
 
 let foods = [];
+
+let decorations = [];
 
 let particles = [];
 
 let selectedSkin = 0;
 
-const skins = [
-    "#63ff7e",
-    "#42a5ff",
-    "#ff4dd8",
-    "#ffd83d",
-    "#ff703d",
-    "#a95cff",
-    "#00eaff",
-    "#ffffff",
-    "#ff4268",
-    "#9cff32"
-];
-
-let snake = [];
-
-let player = {
-    x:WORLD/2,
-    y:WORLD/2,
-    angle:0,
-    target:0
-};
+let boosting = false;
 
 let camera = {
     x:WORLD/2,
     y:WORLD/2
 };
 
-let boosting = false;
+let player = {
+
+    x:WORLD/2,
+
+    y:WORLD/2,
+
+    angle:0,
+
+    target:0
+
+};
 
 
-/* ================================
+/* =====================================================
    SKINS
-================================ */
+===================================================== */
+
+const SKINS = [
+
+    "#63ff7e",
+    "#42a5ff",
+    "#ff4dd8",
+    "#ffd83d",
+    "#ff713d",
+    "#a95cff",
+    "#00eaff",
+    "#ffffff",
+    "#ff4268",
+    "#9cff32",
+    "#ff9f1c",
+    "#00ffc8"
+
+];
 
 const skinBox =
     document.getElementById("skins");
 
-skins.forEach((color,i)=>{
+SKINS.forEach(
+    (color,i)=>{
 
-    const div =
-        document.createElement("div");
+        const el =
+            document.createElement("div");
 
-    div.className = "skin";
+        el.className =
+            "skin";
 
-    div.style.background = color;
+        el.style.background =
+            color;
 
-    if(i === 0)
-        div.classList.add("active");
+        if(i===0)
+            el.classList.add("active");
 
-    div.onclick = ()=>{
+        el.onclick = ()=>{
 
-        selectedSkin = i;
+            selectedSkin = i;
 
-        document
-        .querySelectorAll(".skin")
-        .forEach(x =>
-            x.classList.remove("active")
-        );
+            document
+            .querySelectorAll(".skin")
+            .forEach(
+                x =>
+                x.classList.remove("active")
+            );
 
-        div.classList.add("active");
+            el.classList.add("active");
 
-    };
+        };
 
-    skinBox.appendChild(div);
+        skinBox.appendChild(el);
 
-});
+    }
+);
 
 
-/* ================================
+/* =====================================================
    FOOD
-================================ */
+===================================================== */
 
 function createFood(){
 
     foods = [];
 
-    for(let i=0;i<900;i++){
+    for(
+        let i=0;
+        i<1800;
+        i++
+    ){
 
         foods.push({
 
@@ -559,17 +820,17 @@ function createFood(){
             y:Math.random()*WORLD,
 
             size:
-                Math.random()<.08
-                ? 8
+                Math.random()<.07
+                ? 9
                 : 5,
 
             value:
-                Math.random()<.08
-                ? 5
+                Math.random()<.07
+                ? 10
                 : 1,
 
             phase:
-                Math.random()*10
+                Math.random()*20
 
         });
 
@@ -578,9 +839,52 @@ function createFood(){
 }
 
 
-/* ================================
+/* =====================================================
+   WORLD DECORATIONS
+===================================================== */
+
+function createDecorations(){
+
+    decorations = [];
+
+    for(
+        let i=0;
+        i<900;
+        i++
+    ){
+
+        const type =
+            Math.random();
+
+        decorations.push({
+
+            x:
+                Math.random()*WORLD,
+
+            y:
+                Math.random()*WORLD,
+
+            type:
+                type<.48
+                ? "tree"
+                : type<.75
+                ? "rock"
+                : "flower",
+
+            size:
+                20+
+                Math.random()*45
+
+        });
+
+    }
+
+}
+
+
+/* =====================================================
    START
-================================ */
+===================================================== */
 
 function start(){
 
@@ -588,23 +892,29 @@ function start(){
 
     document.getElementById(
         "menu"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
     document.getElementById(
         "death"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
     document.getElementById(
         "hud"
-    ).style.display = "flex";
+    ).style.display =
+        "flex";
 
     document.getElementById(
         "minimap"
-    ).style.display = "block";
+    ).style.display =
+        "block";
+
 
     score = 0;
 
-    snakeLength = 20;
+    snakeLength = 25;
+
 
     player.x =
         WORLD/2;
@@ -612,11 +922,16 @@ function start(){
     player.y =
         WORLD/2;
 
-    player.angle = 0;
+    player.angle =
+        Math.random()*
+        Math.PI*2;
 
-    player.target = 0;
+    player.target =
+        player.angle;
+
 
     snake = [];
+
 
     for(
         let i=0;
@@ -627,26 +942,37 @@ function start(){
         snake.push({
 
             x:
-                player.x-i*9,
+                player.x-
+                Math.cos(player.angle)*
+                i*10,
 
             y:
-                player.y
+                player.y-
+                Math.sin(player.angle)*
+                i*10
 
         });
 
     }
 
-    camera.x = player.x;
-    camera.y = player.y;
+
+    camera.x =
+        player.x;
+
+    camera.y =
+        player.y;
+
 
     createFood();
+
+    createDecorations();
 
 }
 
 
-/* ================================
+/* =====================================================
    KEYBOARD
-================================ */
+===================================================== */
 
 const keys = {};
 
@@ -658,9 +984,7 @@ window.addEventListener(
             e.key.toLowerCase()
         ] = true;
 
-        if(
-            e.key === "Shift"
-        ){
+        if(e.key==="Shift"){
 
             boosting = true;
 
@@ -677,9 +1001,7 @@ window.addEventListener(
             e.key.toLowerCase()
         ] = false;
 
-        if(
-            e.key === "Shift"
-        ){
+        if(e.key==="Shift"){
 
             boosting = false;
 
@@ -691,34 +1013,49 @@ window.addEventListener(
 
 function keyboard(){
 
-    let dx = 0;
-    let dy = 0;
+    let dx=0;
+    let dy=0;
 
-    if(keys["w"] || keys["arrowup"])
+    if(
+        keys["w"] ||
+        keys["arrowup"]
+    )
         dy--;
 
-    if(keys["s"] || keys["arrowdown"])
+    if(
+        keys["s"] ||
+        keys["arrowdown"]
+    )
         dy++;
 
-    if(keys["a"] || keys["arrowleft"])
+    if(
+        keys["a"] ||
+        keys["arrowleft"]
+    )
         dx--;
 
-    if(keys["d"] || keys["arrowright"])
+    if(
+        keys["d"] ||
+        keys["arrowright"]
+    )
         dx++;
 
-    if(dx !== 0 || dy !== 0){
+    if(dx || dy){
 
         player.target =
-            Math.atan2(dy,dx);
+            Math.atan2(
+                dy,
+                dx
+            );
 
     }
 
 }
 
 
-/* ================================
+/* =====================================================
    MOUSE
-================================ */
+===================================================== */
 
 window.addEventListener(
     "mousemove",
@@ -727,9 +1064,7 @@ window.addEventListener(
         if(!playing)
             return;
 
-        if(
-            window.innerWidth <= 800
-        )
+        if(W<=800)
             return;
 
         player.target =
@@ -742,29 +1077,9 @@ window.addEventListener(
 );
 
 
-/* ================================
+/* =====================================================
    TOUCH
-================================ */
-
-canvas.addEventListener(
-    "touchstart",
-    e=>{
-
-        if(!playing)
-            return;
-
-        const t =
-            e.touches[0];
-
-        player.target =
-            Math.atan2(
-                t.clientY-H/2,
-                t.clientX-W/2
-            );
-
-    },
-    {passive:false}
-);
+===================================================== */
 
 canvas.addEventListener(
     "touchmove",
@@ -778,6 +1093,9 @@ canvas.addEventListener(
         const t =
             e.touches[0];
 
+        if(!t)
+            return;
+
         player.target =
             Math.atan2(
                 t.clientY-H/2,
@@ -789,17 +1107,22 @@ canvas.addEventListener(
 );
 
 
-/* ================================
+/* =====================================================
    JOYSTICK
-================================ */
+===================================================== */
 
 const joystick =
-    document.getElementById("joystick");
+    document.getElementById(
+        "joystick"
+    );
 
 const stick =
-    document.getElementById("stick");
+    document.getElementById(
+        "stick"
+    );
 
 let joyActive = false;
+
 
 function joystickMove(x,y){
 
@@ -812,21 +1135,28 @@ function joystickMove(x,y){
     const cy =
         r.top+r.height/2;
 
-    let dx = x-cx;
-    let dy = y-cy;
+    let dx =
+        x-cx;
+
+    let dy =
+        y-cy;
 
     const max =
         r.width/2-32;
 
-    const dist =
+    const distance =
         Math.hypot(dx,dy);
 
-    if(dist > max){
+    if(distance>max){
 
-        dx = dx/dist*max;
-        dy = dy/dist*max;
+        dx =
+            dx/distance*max;
+
+        dy =
+            dy/distance*max;
 
     }
+
 
     stick.style.left =
         `calc(50% + ${dx}px)`;
@@ -834,23 +1164,32 @@ function joystickMove(x,y){
     stick.style.top =
         `calc(50% + ${dy}px)`;
 
-    if(dist > 6){
+
+    if(distance>5){
 
         player.target =
-            Math.atan2(dy,dx);
+            Math.atan2(
+                dy,
+                dx
+            );
 
     }
 
 }
 
+
 function joystickReset(){
 
     joyActive = false;
 
-    stick.style.left = "50%";
-    stick.style.top = "50%";
+    stick.style.left =
+        "50%";
+
+    stick.style.top =
+        "50%";
 
 }
+
 
 joystick.addEventListener(
     "touchstart",
@@ -858,7 +1197,7 @@ joystick.addEventListener(
 
         e.preventDefault();
 
-        joyActive = true;
+        joyActive=true;
 
         const t =
             e.changedTouches[0];
@@ -871,6 +1210,7 @@ joystick.addEventListener(
     },
     {passive:false}
 );
+
 
 joystick.addEventListener(
     "touchmove",
@@ -893,6 +1233,7 @@ joystick.addEventListener(
     {passive:false}
 );
 
+
 joystick.addEventListener(
     "touchend",
     e=>{
@@ -906,12 +1247,14 @@ joystick.addEventListener(
 );
 
 
-/* ================================
-   BOOST BUTTON
-================================ */
+/* =====================================================
+   BOOST
+===================================================== */
 
 const boostButton =
-    document.getElementById("boost");
+    document.getElementById(
+        "boost"
+    );
 
 boostButton.addEventListener(
     "touchstart",
@@ -919,7 +1262,7 @@ boostButton.addEventListener(
 
         e.preventDefault();
 
-        boosting = true;
+        boosting=true;
 
     },
     {passive:false}
@@ -931,16 +1274,16 @@ boostButton.addEventListener(
 
         e.preventDefault();
 
-        boosting = false;
+        boosting=false;
 
     },
     {passive:false}
 );
 
 
-/* ================================
+/* =====================================================
    UPDATE
-================================ */
+===================================================== */
 
 function update(){
 
@@ -951,72 +1294,73 @@ function update(){
     keyboard();
 
 
-    let difference =
-        player.target-player.angle;
+    let diff =
+        player.target-
+        player.angle;
 
 
-    while(
-        difference > Math.PI
-    )
-        difference -= Math.PI*2;
+    while(diff>Math.PI)
+        diff-=Math.PI*2;
 
-    while(
-        difference < -Math.PI
-    )
-        difference += Math.PI*2;
+    while(diff<-Math.PI)
+        diff+=Math.PI*2;
 
 
     player.angle +=
-        difference*.12;
+        diff*.12;
 
 
-    let speed = 5;
+    let speed =
+        boosting
+        ? 9
+        : 5.5;
 
 
     if(boosting){
 
-        speed = 8;
+        snakeLength -= .025;
 
-        snakeLength -= .03;
-
-        if(snakeLength < 15)
-            snakeLength = 15;
+        if(snakeLength<18)
+            snakeLength=18;
 
     }
 
 
     player.x +=
-        Math.cos(player.angle)*speed;
+        Math.cos(player.angle)*
+        speed;
 
     player.y +=
-        Math.sin(player.angle)*speed;
+        Math.sin(player.angle)*
+        speed;
 
 
-    /* maailma ümber */
+    /* WORLD BORDER */
 
-    if(player.x < 0)
-        player.x = WORLD;
+    if(player.x<40)
+        player.x=40;
 
-    if(player.x > WORLD)
-        player.x = 0;
+    if(player.x>WORLD-40)
+        player.x=WORLD-40;
 
-    if(player.y < 0)
-        player.y = WORLD;
+    if(player.y<40)
+        player.y=40;
 
-    if(player.y > WORLD)
-        player.y = 0;
+    if(player.y>WORLD-40)
+        player.y=WORLD-40;
 
 
     snake.unshift({
 
         x:player.x,
+
         y:player.y
 
     });
 
 
     while(
-        snake.length >
+        snake.length>
         Math.floor(snakeLength)
     ){
 
@@ -1025,7 +1369,7 @@ function update(){
     }
 
 
-    /* food */
+    /* FOOD */
 
     for(
         let i=foods.length-1;
@@ -1033,7 +1377,8 @@ function update(){
         i--
     ){
 
-        const f = foods[i];
+        const f =
+            foods[i];
 
         const d =
             Math.hypot(
@@ -1041,39 +1386,46 @@ function update(){
                 player.y-f.y
             );
 
-        if(d < 30){
 
-            score += f.value;
+        if(d<32){
+
+            score +=
+                f.value;
 
             snakeLength +=
-                f.value*1.8;
+                f.value*1.7;
+
 
             createParticles(
                 f.x,
                 f.y,
-                5
+                7
             );
+
 
             foods.splice(i,1);
 
+
             foods.push({
 
-                x:Math.random()*WORLD,
+                x:
+                    Math.random()*WORLD,
 
-                y:Math.random()*WORLD,
+                y:
+                    Math.random()*WORLD,
 
                 size:
-                    Math.random()<.08
-                    ? 8
+                    Math.random()<.07
+                    ? 9
                     : 5,
 
                 value:
-                    Math.random()<.08
-                    ? 5
+                    Math.random()<.07
+                    ? 10
                     : 1,
 
                 phase:
-                    Math.random()*10
+                    Math.random()*20
 
             });
 
@@ -1082,16 +1434,18 @@ function update(){
     }
 
 
-    /* camera */
+    /* CAMERA */
 
     camera.x +=
-        (player.x-camera.x)*.12;
+        (player.x-camera.x)*
+        .10;
 
     camera.y +=
-        (player.y-camera.y)*.12;
+        (player.y-camera.y)*
+        .10;
 
 
-    /* particles */
+    /* PARTICLES */
 
     for(
         const p of particles
@@ -1104,9 +1458,10 @@ function update(){
 
     }
 
+
     particles =
         particles.filter(
-            p => p.life>0
+            p=>p.life>0
         );
 
 
@@ -1114,6 +1469,7 @@ function update(){
         "score"
     ).textContent =
         Math.floor(score);
+
 
     document.getElementById(
         "length"
@@ -1123,13 +1479,17 @@ function update(){
 }
 
 
-/* ================================
+/* =====================================================
    PARTICLES
-================================ */
+===================================================== */
 
 function createParticles(x,y,n){
 
-    for(let i=0;i<n;i++){
+    for(
+        let i=0;
+        i<n;
+        i++
+    ){
 
         particles.push({
 
@@ -1137,9 +1497,11 @@ function createParticles(x,y,n){
 
             y:y,
 
-            vx:(Math.random()-.5)*5,
+            vx:
+                (Math.random()-.5)*5,
 
-            vy:(Math.random()-.5)*5,
+            vy:
+                (Math.random()-.5)*5,
 
             life:30
 
@@ -1150,25 +1512,33 @@ function createParticles(x,y,n){
 }
 
 
-/* ================================
-   DRAW
-================================ */
+/* =====================================================
+   DRAW WORLD
+===================================================== */
 
 function draw(){
 
     requestAnimationFrame(draw);
 
+
     ctx.clearRect(
-        0,0,W,H
+        0,
+        0,
+        W,
+        H
     );
 
 
     if(!playing){
 
-        ctx.fillStyle="#07100a";
+        ctx.fillStyle =
+            "#020604";
 
         ctx.fillRect(
-            0,0,W,H
+            0,
+            0,
+            W,
+            H
         );
 
         return;
@@ -1176,10 +1546,15 @@ function draw(){
     }
 
 
+    /*
+       Smaller number =
+       more zoomed out.
+    */
+
     const zoom =
-        W < 900
-        ? 1.15
-        : 1.45;
+        W<900
+        ? 1.05
+        : 1.25;
 
 
     ctx.save();
@@ -1201,7 +1576,9 @@ function draw(){
     );
 
 
-    /* background */
+    /* =================
+       GRASS
+    ================= */
 
     ctx.fillStyle =
         "#07150a";
@@ -1214,38 +1591,51 @@ function draw(){
     );
 
 
-    /* grid */
+    /* =================
+       LARGE REGIONS
+    ================= */
 
-    const grid = 150;
+    drawRegions();
+
+
+    /* =================
+       GRID
+    ================= */
+
+    const grid=200;
+
+    const left =
+        camera.x-W/zoom/2-700;
+
+    const right =
+        camera.x+W/zoom/2+700;
+
+    const top =
+        camera.y-H/zoom/2-700;
+
+    const bottom =
+        camera.y+H/zoom/2+700;
+
 
     ctx.strokeStyle =
-        "rgba(100,255,130,.05)";
+        "rgba(120,255,140,.035)";
 
     ctx.lineWidth=1;
 
 
-    const left =
-        camera.x-W/zoom/2-500;
-
-    const right =
-        camera.x+W/zoom/2+500;
-
-    const top =
-        camera.y-H/zoom/2-500;
-
-    const bottom =
-        camera.y+H/zoom/2+500;
-
-
     for(
-        let x=Math.floor(left/grid)*grid;
+        let x=
+        Math.floor(left/grid)*grid;
+
         x<right;
+
         x+=grid
     ){
 
         ctx.beginPath();
 
         ctx.moveTo(x,top);
+
         ctx.lineTo(x,bottom);
 
         ctx.stroke();
@@ -1254,14 +1644,18 @@ function draw(){
 
 
     for(
-        let y=Math.floor(top/grid)*grid;
+        let y=
+        Math.floor(top/grid)*grid;
+
         y<bottom;
+
         y+=grid
     ){
 
         ctx.beginPath();
 
         ctx.moveTo(left,y);
+
         ctx.lineTo(right,y);
 
         ctx.stroke();
@@ -1269,22 +1663,38 @@ function draw(){
     }
 
 
-    /* border */
+    /* =================
+       DECORATIONS
+    ================= */
 
-    ctx.strokeStyle =
-        "#3dff65";
+    for(
+        const d of decorations
+    ){
 
-    ctx.lineWidth=25;
+        if(
+            d.x<left-100 ||
+            d.x>right+100 ||
+            d.y<top-100 ||
+            d.y>bottom+100
+        )
+            continue;
 
-    ctx.strokeRect(
-        0,
-        0,
-        WORLD,
-        WORLD
-    );
+
+        if(d.type==="tree")
+            drawTree(d);
+
+        else if(d.type==="rock")
+            drawRock(d);
+
+        else
+            drawFlower(d);
+
+    }
 
 
-    /* food */
+    /* =================
+       FOOD
+    ================= */
 
     for(
         const f of foods
@@ -1301,19 +1711,20 @@ function draw(){
 
         const pulse =
             Math.sin(
-                performance.now()/200+
+                performance.now()/180+
                 f.phase
-            );
+            )*1.5;
 
 
-        ctx.fillStyle =
-            f.value>=5
+        const color =
+            f.value>=10
             ? "#ffd83d"
-            : "#ff5872";
+            : "#ff5274";
 
 
-        ctx.shadowColor =
-            ctx.fillStyle;
+        ctx.fillStyle=color;
+
+        ctx.shadowColor=color;
 
         ctx.shadowBlur=12;
 
@@ -1335,162 +1746,26 @@ function draw(){
     ctx.shadowBlur=0;
 
 
-    /* snake */
+    /* =================
+       SNAKE
+    ================= */
 
-    const color =
-        skins[selectedSkin];
-
-
-    for(
-        let i=snake.length-1;
-        i>=0;
-        i--
-    ){
-
-        const p =
-            snake[i];
-
-        const size =
-            15-
-            (i/snake.length)*7;
+    drawSnake();
 
 
-        ctx.fillStyle=color;
-
-        ctx.shadowColor=color;
-
-        ctx.shadowBlur=8;
-
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            Math.max(7,size),
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-
-    }
-
-    ctx.shadowBlur=0;
-
-
-    /* head */
-
-    ctx.fillStyle=color;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        player.x,
-        player.y,
-        18,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    /* eyes */
-
-    const ex =
-        Math.cos(player.angle);
-
-    const ey =
-        Math.sin(player.angle);
-
-    const sx =
-        -Math.sin(player.angle);
-
-    const sy =
-        Math.cos(player.angle);
-
-
-    ctx.fillStyle="#061009";
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        player.x+
-        ex*9+
-        sx*5,
-
-        player.y+
-        ey*9+
-        sy*5,
-
-        4,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        player.x+
-        ex*9-
-        sx*5,
-
-        player.y+
-        ey*9-
-        sy*5,
-
-        4,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    /* boost trail */
-
-    if(boosting){
-
-        ctx.strokeStyle =
-            "#5ecbff";
-
-        ctx.lineWidth=4;
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            player.x,
-            player.y
-        );
-
-        ctx.lineTo(
-            player.x-
-            ex*45,
-
-            player.y-
-            ey*45
-        );
-
-        ctx.stroke();
-
-    }
-
-
-    /* particles */
+    /* =================
+       PARTICLES
+    ================= */
 
     for(
         const p of particles
     ){
 
-        ctx.fillStyle=color;
-
         ctx.globalAlpha =
             p.life/30;
+
+        ctx.fillStyle =
+            SKINS[selectedSkin];
 
         ctx.beginPath();
 
@@ -1509,6 +1784,30 @@ function draw(){
     ctx.globalAlpha=1;
 
 
+    /* =================
+       WORLD BORDER
+    ================= */
+
+    ctx.strokeStyle =
+        "#45ff69";
+
+    ctx.lineWidth=35;
+
+    ctx.shadowColor =
+        "#45ff69";
+
+    ctx.shadowBlur=20;
+
+    ctx.strokeRect(
+        0,
+        0,
+        WORLD,
+        WORLD
+    );
+
+    ctx.shadowBlur=0;
+
+
     ctx.restore();
 
 
@@ -1517,14 +1816,477 @@ function draw(){
 }
 
 
-/* ================================
+/* =====================================================
+   REGIONS
+===================================================== */
+
+function drawRegions(){
+
+    /*
+       Four huge zones.
+    */
+
+    ctx.fillStyle =
+        "rgba(20,80,30,.18)";
+
+    ctx.fillRect(
+        0,
+        0,
+        WORLD/2,
+        WORLD/2
+    );
+
+
+    ctx.fillStyle =
+        "rgba(20,50,100,.16)";
+
+    ctx.fillRect(
+        WORLD/2,
+        0,
+        WORLD/2,
+        WORLD/2
+    );
+
+
+    ctx.fillStyle =
+        "rgba(100,70,20,.12)";
+
+    ctx.fillRect(
+        0,
+        WORLD/2,
+        WORLD/2,
+        WORLD/2
+    );
+
+
+    ctx.fillStyle =
+        "rgba(80,20,80,.12)";
+
+    ctx.fillRect(
+        WORLD/2,
+        WORLD/2,
+        WORLD/2,
+        WORLD/2
+    );
+
+
+    /* center */
+
+    ctx.fillStyle =
+        "rgba(100,255,120,.06)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        WORLD/2,
+        WORLD/2,
+        1600,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+}
+
+
+/* =====================================================
+   TREE
+===================================================== */
+
+function drawTree(d){
+
+    const s=d.size;
+
+
+    /* shadow */
+
+    ctx.fillStyle =
+        "rgba(0,0,0,.2)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        d.x,
+        d.y+s*.35,
+        s*.65,
+        s*.25,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* trunk */
+
+    ctx.fillStyle =
+        "#70482c";
+
+    ctx.fillRect(
+        d.x-s*.12,
+        d.y,
+        s*.24,
+        s*.6
+    );
+
+
+    /* leaves */
+
+    ctx.fillStyle =
+        "#176b2d";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        d.x,
+        d.y,
+        s*.5,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "#238b3c";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        d.x-s*.25,
+        d.y+s*.05,
+        s*.3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+}
+
+
+/* =====================================================
+   ROCK
+===================================================== */
+
+function drawRock(d){
+
+    const s=d.size*.55;
+
+
+    ctx.fillStyle =
+        "#47504a";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        d.x-s,
+        d.y+s*.3
+    );
+
+    ctx.lineTo(
+        d.x-s*.5,
+        d.y-s*.6
+    );
+
+    ctx.lineTo(
+        d.x+s*.35,
+        d.y-s*.7
+    );
+
+    ctx.lineTo(
+        d.x+s,
+        d.y+s*.25
+    );
+
+    ctx.lineTo(
+        d.x+s*.3,
+        d.y+s*.7
+    );
+
+    ctx.lineTo(
+        d.x-s*.5,
+        d.y+s*.65
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+}
+
+
+/* =====================================================
+   FLOWER
+===================================================== */
+
+function drawFlower(d){
+
+    const s =
+        Math.min(
+            d.size*.18,
+            10
+        );
+
+
+    ctx.strokeStyle =
+        "#318c43";
+
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        d.x,
+        d.y
+    );
+
+    ctx.lineTo(
+        d.x,
+        d.y+s*3
+    );
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+        "#ff72a5";
+
+    for(
+        let i=0;
+        i<5;
+        i++
+    ){
+
+        const a =
+            i*Math.PI*2/5;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            d.x+
+            Math.cos(a)*s,
+
+            d.y+
+            Math.sin(a)*s,
+
+            s*.65,
+
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    ctx.fillStyle =
+        "#ffd83d";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        d.x,
+        d.y,
+        s*.45,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+}
+
+
+/* =====================================================
+   SNAKE
+===================================================== */
+
+function drawSnake(){
+
+    const color =
+        SKINS[selectedSkin];
+
+
+    for(
+        let i=snake.length-1;
+        i>=0;
+        i--
+    ){
+
+        const p =
+            snake[i];
+
+        const ratio =
+            i/snake.length;
+
+        const size =
+            Math.max(
+                7,
+                16-ratio*8
+            );
+
+
+        ctx.fillStyle=color;
+
+        ctx.shadowColor=color;
+
+        ctx.shadowBlur=9;
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            size,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+    ctx.shadowBlur=0;
+
+
+    /* HEAD */
+
+    ctx.fillStyle=color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x,
+        player.y,
+        19,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* eyes */
+
+    const dx =
+        Math.cos(player.angle);
+
+    const dy =
+        Math.sin(player.angle);
+
+    const sx =
+        -Math.sin(player.angle);
+
+    const sy =
+        Math.cos(player.angle);
+
+
+    ctx.fillStyle =
+        "#041007";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x+
+        dx*9+
+        sx*5,
+
+        player.y+
+        dy*9+
+        sy*5,
+
+        4,
+
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x+
+        dx*9-
+        sx*5,
+
+        player.y+
+        dy*9-
+        sy*5,
+
+        4,
+
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* boost */
+
+    if(boosting){
+
+        ctx.strokeStyle =
+            "#62caff";
+
+        ctx.lineWidth=5;
+
+        ctx.shadowColor =
+            "#62caff";
+
+        ctx.shadowBlur=15;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            player.x-
+            dx*10,
+
+            player.y-
+            dy*10
+        );
+
+        ctx.lineTo(
+            player.x-
+            dx*65,
+
+            player.y-
+            dy*65
+        );
+
+        ctx.stroke();
+
+        ctx.shadowBlur=0;
+
+    }
+
+}
+
+
+/* =====================================================
    MINIMAP
-================================ */
+===================================================== */
 
 function drawMinimap(){
 
+    const size=180;
+
+
     mapCtx.clearRect(
-        0,0,145,145
+        0,
+        0,
+        size,
+        size
     );
 
 
@@ -1532,57 +2294,144 @@ function drawMinimap(){
         "#061008";
 
     mapCtx.fillRect(
-        0,0,145,145
+        0,
+        0,
+        size,
+        size
     );
 
 
-    mapCtx.strokeStyle =
-        "rgba(100,255,130,.12)";
+    /* regions */
 
-    for(let i=0;i<=10;i++){
+    mapCtx.fillStyle =
+        "rgba(30,100,40,.18)";
+
+    mapCtx.fillRect(
+        0,
+        0,
+        size/2,
+        size/2
+    );
+
+
+    mapCtx.fillStyle =
+        "rgba(30,60,120,.18)";
+
+    mapCtx.fillRect(
+        size/2,
+        0,
+        size/2,
+        size/2
+    );
+
+
+    mapCtx.fillStyle =
+        "rgba(120,80,30,.15)";
+
+    mapCtx.fillRect(
+        0,
+        size/2,
+        size/2,
+        size/2
+    );
+
+
+    mapCtx.fillStyle =
+        "rgba(100,30,100,.15)";
+
+    mapCtx.fillRect(
+        size/2,
+        size/2,
+        size/2,
+        size/2
+    );
+
+
+    /* grid */
+
+    mapCtx.strokeStyle =
+        "rgba(130,255,150,.1)";
+
+    mapCtx.lineWidth=1;
+
+
+    for(
+        let i=0;
+        i<=10;
+        i++
+    ){
 
         const p =
-            i*14.5;
+            i*size/10;
+
 
         mapCtx.beginPath();
 
         mapCtx.moveTo(p,0);
-        mapCtx.lineTo(p,145);
+
+        mapCtx.lineTo(p,size);
 
         mapCtx.stroke();
+
 
         mapCtx.beginPath();
 
         mapCtx.moveTo(0,p);
-        mapCtx.lineTo(145,p);
+
+        mapCtx.lineTo(size,p);
 
         mapCtx.stroke();
 
     }
 
 
-    /* snake */
+    /* food dots */
 
-    const x =
-        player.x/WORLD*145;
+    mapCtx.fillStyle =
+        "rgba(255,80,110,.55)";
 
-    const y =
-        player.y/WORLD*145;
+
+    for(
+        let i=0;
+        i<foods.length;
+        i+=8
+    ){
+
+        const f=foods[i];
+
+        mapCtx.fillRect(
+            f.x/WORLD*size,
+            f.y/WORLD*size,
+            2,
+            2
+        );
+
+    }
+
+
+    /* player */
+
+    const px =
+        player.x/WORLD*size;
+
+    const py =
+        player.y/WORLD*size;
 
 
     mapCtx.fillStyle =
-        skins[selectedSkin];
+        SKINS[selectedSkin];
 
     mapCtx.shadowColor =
-        skins[selectedSkin];
+        SKINS[selectedSkin];
 
-    mapCtx.shadowBlur=10;
+    mapCtx.shadowBlur=12;
 
 
     mapCtx.beginPath();
 
     mapCtx.arc(
-        x,y,
+        px,
+        py,
         6,
         0,
         Math.PI*2
@@ -1598,32 +2447,47 @@ function drawMinimap(){
 
     mapCtx.strokeStyle="white";
 
+    mapCtx.lineWidth=2;
+
     mapCtx.beginPath();
 
-    mapCtx.moveTo(x,y);
+    mapCtx.moveTo(px,py);
 
     mapCtx.lineTo(
-        x+
-        Math.cos(player.angle)*12,
+        px+
+        Math.cos(player.angle)*13,
 
-        y+
-        Math.sin(player.angle)*12
+        py+
+        Math.sin(player.angle)*13
     );
 
     mapCtx.stroke();
 
+
+    /* border */
+
+    mapCtx.strokeStyle =
+        "#4eff70";
+
+    mapCtx.strokeRect(
+        1,
+        1,
+        size-2,
+        size-2
+    );
+
 }
 
 
-/* ================================
+/* =====================================================
    BUTTONS
-================================ */
+===================================================== */
 
 document.getElementById(
     "play"
 ).onclick = ()=>{
 
-    let name =
+    const name =
         document.getElementById(
             "name"
         ).value.trim();
@@ -1652,43 +2516,96 @@ document.getElementById(
 
 
 document.getElementById(
-    "backMenu"
+    "back"
 ).onclick = ()=>{
 
     playing=false;
 
     document.getElementById(
         "death"
-    ).style.display="none";
+    ).style.display =
+        "none";
 
     document.getElementById(
         "hud"
-    ).style.display="none";
+    ).style.display =
+        "none";
 
     document.getElementById(
         "minimap"
-    ).style.display="none";
+    ).style.display =
+        "none";
 
     document.getElementById(
         "menu"
-    ).style.display="flex";
+    ).style.display =
+        "flex";
 
 };
 
 
-/* ================================
-   LOOP
-================================ */
+/* =====================================================
+   BEST SCORE
+===================================================== */
 
-function loop(){
+let best =
+    Number(
+        localStorage.getItem(
+            "snakeBest"
+        ) || 0
+    );
+
+
+document.getElementById(
+    "best"
+).textContent =
+    best;
+
+
+/* =====================================================
+   CHECK BEST
+===================================================== */
+
+setInterval(()=>{
+
+    if(
+        playing &&
+        score>best
+    ){
+
+        best =
+            Math.floor(score);
+
+        localStorage.setItem(
+            "snakeBest",
+            best
+        );
+
+        document.getElementById(
+            "best"
+        ).textContent =
+            best;
+
+    }
+
+},500);
+
+
+/* =====================================================
+   MAIN LOOP
+===================================================== */
+
+function gameLoop(){
 
     update();
 
-    requestAnimationFrame(loop);
+    requestAnimationFrame(
+        gameLoop
+    );
 
 }
 
-loop();
+gameLoop();
 
 draw();
 
