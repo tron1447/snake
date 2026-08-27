@@ -7,413 +7,363 @@
 
 <style>
 *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    user-select:none;
-    -webkit-user-select:none;
-    touch-action:none;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:none;
 }
 
 html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#030603;
-    font-family:Arial,sans-serif;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#050805;
+  font-family:Arial,sans-serif;
 }
 
-canvas{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
+#game{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
 }
 
 button,input{
-    font:inherit;
+  font-family:inherit;
 }
 
 button{
-    cursor:pointer;
+  cursor:pointer;
 }
 
 #menu{
-    position:fixed;
-    inset:0;
-    z-index:100;
-    overflow-y:auto;
-    padding:20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-        radial-gradient(circle at 50% 15%,#225b2b,#081209 45%,#020302);
+  position:fixed;
+  inset:0;
+  z-index:50;
+  overflow-y:auto;
+  padding:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at 50% 20%,#245f2d,#0a1b0d 40%,#020402 85%);
 }
 
 .panel{
-    width:min(95vw,480px);
-    padding:25px;
-    margin:auto;
-    color:white;
-    text-align:center;
-    background:rgba(5,13,6,.98);
-    border:1px solid rgba(99,255,120,.35);
-    border-radius:25px;
-    box-shadow:0 0 60px rgba(99,255,120,.14);
+  width:min(94vw,460px);
+  max-height:calc(100vh - 40px);
+  overflow-y:auto;
+  padding:25px;
+  background:rgba(4,12,5,.97);
+  border:1px solid rgba(99,255,120,.35);
+  border-radius:28px;
+  box-shadow:0 0 70px rgba(99,255,120,.15);
+  color:white;
+  text-align:center;
 }
 
 .logo{
-    font-size:65px;
+  font-size:60px;
 }
 
 h1{
-    color:#63ff78;
-    font-size:38px;
+  color:#63ff78;
+  font-size:38px;
 }
 
 .subtitle{
-    color:#829584;
-    margin:5px 0 20px;
+  color:#829384;
+  margin:5px 0 18px;
 }
 
 input{
-    width:100%;
-    height:48px;
-    margin:5px 0;
-    padding:0 12px;
-    color:white;
-    background:#071007;
-    border:1px solid #315b36;
-    border-radius:12px;
-    outline:none;
-    text-align:center;
+  width:100%;
+  height:48px;
+  margin:5px 0;
+  background:#071007;
+  border:1px solid #315c37;
+  border-radius:12px;
+  color:white;
+  text-align:center;
+  font-size:16px;
+  outline:none;
 }
 
-.main{
-    width:100%;
-    min-height:48px;
-    margin-top:8px;
-    border:0;
-    border-radius:12px;
-    font-weight:bold;
+.mainBtn{
+  width:100%;
+  min-height:48px;
+  margin-top:8px;
+  border:0;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:bold;
 }
 
 .green{
-    background:#63ff78;
-    color:#031006;
+  background:#63ff78;
+  color:#031006;
 }
 
 .dark{
-    background:#102014;
-    color:white;
-    border:1px solid #315b36;
-}
-
-.blue{
-    background:#1685ff;
-    color:white;
-}
-
-.gold{
-    background:#ffd84d;
-    color:#171000;
+  background:#102014;
+  color:white;
+  border:1px solid #315b36;
 }
 
 #skins{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:8px;
-    margin:12px 0;
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin:14px 0;
 }
 
 .skin{
-    width:58px;
-    height:58px;
-    border:3px solid transparent;
-    border-radius:50%;
-    font-size:25px;
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  border:3px solid transparent;
+  font-size:25px;
 }
 
 .skin.selected{
-    border-color:white;
-    transform:scale(1.08);
-    box-shadow:0 0 18px currentColor;
+  border-color:white;
+  transform:scale(1.1);
+  box-shadow:0 0 18px currentColor;
 }
 
 #roomBox{
-    display:none;
-    margin-top:15px;
-    padding:15px;
-    background:#071007;
-    border-radius:15px;
+  display:none;
+  margin-top:15px;
+}
+
+.roomTitle{
+  font-size:11px;
+  color:#819482;
 }
 
 #roomCode{
-    margin:5px;
-    color:#63ff78;
-    font-size:32px;
-    font-weight:bold;
-    letter-spacing:6px;
+  font-size:30px;
+  color:#63ff78;
+  font-weight:bold;
+  letter-spacing:6px;
+  margin:5px 0 10px;
 }
 
 #players{
-    max-height:120px;
-    overflow:auto;
-    margin-top:10px;
+  max-height:120px;
+  overflow-y:auto;
+  text-align:left;
 }
 
 .playerRow{
-    padding:8px;
-    margin:4px;
-    border-radius:8px;
-    background:#102014;
+  padding:8px;
+  margin:4px 0;
+  border-radius:8px;
+  background:#0b170d;
 }
 
 #error{
-    min-height:20px;
-    margin-top:8px;
-    color:#ff6576;
+  color:#ff6676;
+  min-height:20px;
+  margin-top:10px;
 }
 
 #connection{
-    margin-top:8px;
-    color:#718172;
-    font-size:11px;
+  color:#718172;
+  font-size:11px;
+  margin-top:8px;
 }
 
 #hud{
-    position:fixed;
-    z-index:20;
-    top:10px;
-    left:10px;
-    display:none;
-    gap:6px;
-    flex-wrap:wrap;
+  position:fixed;
+  z-index:10;
+  left:10px;
+  top:10px;
+  display:none;
+  gap:6px;
 }
 
 .stat{
-    padding:7px 11px;
-    border-radius:10px;
-    color:white;
-    background:rgba(0,0,0,.7);
-    border:1px solid rgba(99,255,120,.25);
+  padding:7px 10px;
+  background:rgba(0,0,0,.7);
+  border:1px solid rgba(99,255,120,.25);
+  border-radius:10px;
+  color:white;
 }
 
 .stat small{
-    display:block;
-    color:#819482;
-    font-size:9px;
+  display:block;
+  color:#78907c;
+  font-size:9px;
 }
 
 .stat b{
-    font-size:16px;
+  font-size:16px;
 }
 
 #leaderboard{
-    position:fixed;
-    z-index:25;
-    right:10px;
-    top:180px;
-    width:190px;
-    padding:12px;
-    display:none;
-    color:white;
-    background:rgba(0,0,0,.7);
-    border:1px solid rgba(99,255,120,.25);
-    border-radius:14px;
+  position:fixed;
+  z-index:15;
+  right:10px;
+  top:10px;
+  width:220px;
+  max-width:45vw;
+  padding:10px;
+  display:none;
+  background:rgba(0,0,0,.72);
+  border:1px solid rgba(99,255,120,.3);
+  border-radius:14px;
+  color:white;
 }
 
 #leaderboard h3{
-    color:#63ff78;
-    margin-bottom:7px;
+  color:#63ff78;
+  font-size:15px;
+  margin-bottom:6px;
 }
 
 .lbrow{
-    display:flex;
-    justify-content:space-between;
-    padding:4px;
-    font-size:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-size:12px;
+  padding:4px 2px;
+}
+
+.lbrow.me{
+  color:#63ff78;
+  font-weight:bold;
 }
 
 #minimap{
-    position:fixed;
-    z-index:25;
-    right:10px;
-    top:10px;
-    width:155px;
-    height:155px;
-    display:none;
-    border:2px solid #63ff78;
-    border-radius:15px;
-    background:#061007;
-}
-
-#shop{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:200;
-    overflow-y:auto;
-    padding:20px;
-    background:rgba(0,0,0,.88);
-}
-
-.shopPanel{
-    width:min(95vw,650px);
-    margin:20px auto;
-    padding:22px;
-    color:white;
-    background:#081008;
-    border:1px solid #315b36;
-    border-radius:25px;
-}
-
-.shopGrid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
-    gap:10px;
-    margin-top:15px;
-}
-
-.shopItem{
-    padding:15px;
-    text-align:center;
-    background:#102014;
-    border-radius:15px;
-    border:1px solid #315b36;
-}
-
-.shopPreview{
-    width:65px;
-    height:65px;
-    margin:auto;
-    border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:30px;
-}
-
-.shopItem button{
-    width:100%;
-    margin-top:8px;
-    padding:9px;
-    border:0;
-    border-radius:9px;
+  position:fixed;
+  z-index:12;
+  right:10px;
+  top:180px;
+  width:160px;
+  height:160px;
+  display:none;
+  border-radius:15px;
+  border:2px solid rgba(99,255,120,.7);
+  background:#061007;
 }
 
 #joystick{
-    position:fixed;
-    z-index:40;
-    left:22px;
-    bottom:22px;
-    width:145px;
-    height:145px;
-    display:none;
-    border:2px solid rgba(99,255,120,.35);
-    border-radius:50%;
-    background:rgba(99,255,120,.08);
+  position:fixed;
+  z-index:20;
+  left:24px;
+  bottom:24px;
+  width:145px;
+  height:145px;
+  display:none;
+  border-radius:50%;
+  background:rgba(99,255,120,.08);
+  border:2px solid rgba(99,255,120,.35);
 }
 
 #stick{
-    position:absolute;
-    left:50%;
-    top:50%;
-    width:62px;
-    height:62px;
-    transform:translate(-50%,-50%);
-    border:3px solid white;
-    border-radius:50%;
-    background:#63ff78;
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:62px;
+  height:62px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:#63ff78;
+  border:3px solid white;
 }
 
 #boost{
-    position:fixed;
-    z-index:40;
-    right:25px;
-    bottom:30px;
-    width:90px;
-    height:90px;
-    display:none;
-    border:3px solid #b7eaff;
-    border-radius:50%;
-    background:#087bb0;
-    color:white;
-    font-size:28px;
-}
-
-#boost.on{
-    background:#19a8e8;
-    transform:scale(1.08);
+  position:fixed;
+  z-index:20;
+  right:25px;
+  bottom:30px;
+  width:90px;
+  height:90px;
+  display:none;
+  border-radius:50%;
+  background:#087bb0;
+  color:white;
+  border:3px solid #a5e3ff;
+  font-size:27px;
 }
 
 #killText{
-    position:fixed;
-    z-index:50;
-    left:50%;
-    top:25%;
-    transform:translate(-50%,-50%) scale(.7);
-    opacity:0;
-    color:#63ff78;
-    font-size:38px;
-    font-weight:900;
-    text-shadow:0 0 20px #63ff78;
-    transition:.2s;
+  position:fixed;
+  z-index:30;
+  left:50%;
+  top:25%;
+  transform:translateX(-50%) scale(.7);
+  opacity:0;
+  color:#63ff78;
+  font-size:38px;
+  font-weight:900;
+  text-shadow:0 0 20px #63ff78;
+  pointer-events:none;
+  transition:.25s;
 }
 
 #killText.show{
-    opacity:1;
-    transform:translate(-50%,-50%) scale(1);
+  opacity:1;
+  transform:translateX(-50%) scale(1);
 }
 
 #gameOver{
-    position:fixed;
-    inset:0;
-    z-index:300;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,.82);
+  position:fixed;
+  inset:0;
+  z-index:60;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.8);
 }
 
-.over{
-    width:min(90vw,390px);
-    padding:30px;
-    color:white;
-    text-align:center;
-    background:#081008;
-    border-radius:25px;
-    border:1px solid #315b36;
+.overPanel{
+  width:min(90vw,390px);
+  padding:30px;
+  background:#081008;
+  border:1px solid #315b36;
+  border-radius:25px;
+  text-align:center;
+  color:white;
 }
 
-.over h2{
-    color:#ff596c;
-    font-size:38px;
+.overPanel h2{
+  color:#ff596c;
+  font-size:38px;
 }
 
 @media(max-width:800px){
-    #joystick,
-    #boost{
-        display:block;
-    }
 
-    #leaderboard{
-        top:145px;
-        width:160px;
-        font-size:11px;
-    }
+  #menu{
+    align-items:flex-start;
+  }
 
-    #minimap{
-        width:120px;
-        height:120px;
-    }
+  #joystick,
+  #boost{
+    display:block;
+  }
 
-    #hud{
-        transform:scale(.9);
-        transform-origin:top left;
-    }
+  #minimap{
+    width:125px;
+    height:125px;
+    top:145px;
+  }
+
+  #leaderboard{
+    top:10px;
+    right:8px;
+    width:185px;
+    max-width:50vw;
+  }
+
+  #hud{
+    transform:scale(.9);
+    transform-origin:top left;
+  }
 }
 </style>
 </head>
@@ -423,68 +373,114 @@ input{
 <canvas id="game"></canvas>
 
 <div id="menu">
+
 <div class="panel">
 
 <div class="logo">🐍</div>
+
 <h1>SNAKE ARENA</h1>
-<div class="subtitle">Eat • Grow • Fight • Survive</div>
+
+<div class="subtitle">
+Eat • Grow • Fight
+</div>
 
 <input id="name" maxlength="16" placeholder="Sinu nimi">
 
-<h3 style="margin-top:10px">🎨 Sinu skin</h3>
+<h3 style="margin-top:10px">🎨 Vali skin</h3>
 
 <div id="skins">
 
-<button class="skin selected" data-color="#63ff78" data-skin="green" style="background:#63ff78">🐍</button>
-<button class="skin" data-color="#4da6ff" data-skin="blue" style="background:#4da6ff">😎</button>
-<button class="skin" data-color="#ff5570" data-skin="red" style="background:#ff5570">😈</button>
-<button class="skin" data-color="#ffd84d" data-skin="yellow" style="background:#ffd84d">😄</button>
-<button class="skin" data-color="#b86cff" data-skin="purple" style="background:#b86cff">👾</button>
-<button class="skin" data-color="#ff8a3d" data-skin="orange" style="background:#ff8a3d">🔥</button>
-<button class="skin" data-color="#ffffff" data-skin="white" style="background:white;color:black">👻</button>
-<button class="skin" data-color="#00e5d4" data-skin="cyan" style="background:#00e5d4">🤖</button>
+<button class="skin selected"
+data-color="#63ff78"
+data-skin="green"
+style="background:#63ff78">🐍</button>
+
+<button class="skin"
+data-color="#4da6ff"
+data-skin="blue"
+style="background:#4da6ff">😎</button>
+
+<button class="skin"
+data-color="#ff5570"
+data-skin="red"
+style="background:#ff5570">😈</button>
+
+<button class="skin"
+data-color="#ffd84d"
+data-skin="yellow"
+style="background:#ffd84d">😄</button>
+
+<button class="skin"
+data-color="#b86cff"
+data-skin="purple"
+style="background:#b86cff">👾</button>
+
+<button class="skin"
+data-color="#ff8a3d"
+data-skin="orange"
+style="background:#ff8a3d">🔥</button>
+
+<button class="skin"
+data-color="#ffffff"
+data-skin="white"
+style="background:white;color:black">👻</button>
+
+<button class="skin"
+data-color="#00e5d4"
+data-skin="cyan"
+style="background:#00e5d4">🤖</button>
 
 </div>
 
-<button class="main green" id="singleBtn">🤖 SINGLEPLAYER</button>
-<button class="main gold" id="shopBtn">🛒 SHOP</button>
+<button id="createBtn" class="mainBtn green">
+🏠 CREATE ROOM
+</button>
 
-<button class="main green" id="createBtn">🏠 CREATE ROOM</button>
+<input id="roomInput"
+maxlength="6"
+placeholder="ROOM CODE">
 
-<input id="roomInput" maxlength="6" placeholder="ROOM CODE">
+<button id="joinBtn" class="mainBtn dark">
+🚪 JOIN ROOM
+</button>
 
-<button class="main dark" id="joinBtn">🚪 JOIN ROOM</button>
+<button id="singleBtn" class="mainBtn dark">
+🤖 SINGLEPLAYER — BOTID
+</button>
 
 <div id="roomBox">
-<div style="font-size:11px;color:#819482">ROOM CODE</div>
+
+<div class="roomTitle">ROOM CODE</div>
+
 <div id="roomCode">------</div>
+
 <div id="players"></div>
-<button class="main green" id="startBtn">▶ START GAME</button>
+
+<button id="startBtn" class="mainBtn green">
+▶ START GAME
+</button>
+
 </div>
 
 <div id="error"></div>
-<div id="connection">Ühendamine...</div>
 
+<div id="connection">
+Ühendamine...
 </div>
-</div>
 
-<div id="shop">
-<div class="shopPanel">
-<h1>🛒 SHOP</h1>
-<p style="margin-top:5px">
-🪙 Coins: <b id="shopCoins">0</b>
-</p>
-
-<div class="shopGrid" id="shopGrid"></div>
-
-<button class="main dark" onclick="closeShop()">← TAGASI</button>
 </div>
 </div>
 
 <div id="hud">
+
 <div class="stat">
 <small>SCORE</small>
 <b id="score">0</b>
+</div>
+
+<div class="stat">
+<small>KILLS</small>
+<b id="kills">0</b>
 </div>
 
 <div class="stat">
@@ -492,25 +488,21 @@ input{
 <b id="length">20</b>
 </div>
 
-<div class="stat">
-<small>COINS</small>
-<b id="coins">0</b>
 </div>
 
-<div class="stat">
-<small>KILLS</small>
-<b id="kills">0</b>
-</div>
+<div id="leaderboard">
+
+<h3>🏆 TOP PLAYERS</h3>
+
+<div id="lb"></div>
+
 </div>
 
 <canvas id="minimap" width="160" height="160"></canvas>
 
-<div id="leaderboard">
-<h3>🏆 TOP</h3>
-<div id="lb"></div>
+<div id="killText">
+💥 ELIMINATED +10 COINS
 </div>
-
-<div id="killText">💥 ELIMINATED +10 🪙</div>
 
 <div id="joystick">
 <div id="stick"></div>
@@ -519,1963 +511,1334 @@ input{
 <button id="boost">⚡</button>
 
 <div id="gameOver">
-<div class="over">
+
+<div class="overPanel">
+
 <h2>GAME OVER</h2>
-<p id="deathReason" style="margin-top:10px">Sind tapeti!</p>
+
+<p id="deathReason">Sind tapetud!</p>
+
 <p style="margin-top:10px">
 Skoor: <b id="finalScore">0</b>
 </p>
+
 <p>
-Kille: <b id="finalKills">0</b>
+Kills: <b id="finalKills">0</b>
 </p>
 
-<button class="main green" onclick="location.reload()">
-🔄 MENÜÜ
+<button
+class="mainBtn green"
+style="margin-top:20px"
+onclick="location.reload()">
+🔄 TAGASI MENÜÜS
 </button>
+
 </div>
 </div>
 
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
 
-const minimap = document.getElementById("minimap");
-const mapCtx = minimap.getContext("2d");
+const minimap=document.getElementById("minimap");
+const mapCtx=minimap.getContext("2d");
 
-let W = innerWidth;
-let H = innerHeight;
+let W=innerWidth;
+let H=innerHeight;
 
 function resize(){
-    W = innerWidth;
-    H = innerHeight;
-
-    canvas.width = W;
-    canvas.height = H;
+  W=innerWidth;
+  H=innerHeight;
+  canvas.width=W;
+  canvas.height=H;
 }
 
-addEventListener("resize", resize);
+addEventListener("resize",resize);
 resize();
 
-const WORLD = 20000;
-const FOOD_COUNT = 1400;
+const WORLD=20000;
 
-const foods = [];
-
-const foodColors = [
-    "#63ff78",
-    "#ffd84d",
-    "#ff6075",
-    "#55c9ff",
-    "#c76cff",
-    "#ff963d"
-];
-
-function makeFood(x,y,value){
-    return {
-        x: x ?? Math.random() * WORLD,
-        y: y ?? Math.random() * WORLD,
-        radius: 3 + Math.random() * 4,
-        value: value ?? 1 + Math.floor(Math.random()*4),
-        color: foodColors[
-            Math.floor(Math.random()*foodColors.length)
-        ]
-    };
-}
-
-for(let i=0;i<FOOD_COUNT;i++){
-    foods.push(makeFood());
-}
-
-const me = {
-    id:null,
-    x:10000,
-    y:10000,
-    angle:0,
-    targetAngle:0,
-    length:20,
-    color:"#63ff78",
-    skin:"green",
-    name:"Player",
-    coins:Number(localStorage.getItem("snakeCoins") || 0),
-    kills:0,
-    score:0
+const me={
+  id:null,
+  x:10000,
+  y:10000,
+  angle:0,
+  targetAngle:0,
+  length:20,
+  color:"#63ff78",
+  skin:"green",
+  name:"Player",
+  score:0,
+  kills:0
 };
 
-let body = [];
-let others = {};
-let bots = [];
-let running = false;
-let dead = false;
-let singlePlayer = false;
-let boosting = false;
-let cameraX = me.x;
-let cameraY = me.y;
+let body=[];
+let others={};
+let foods=[];
+let bots=[];
+let running=false;
+let dead=false;
+let boosting=false;
+let singleplayer=false;
 
-const owned =
-    JSON.parse(
-        localStorage.getItem("snakeOwned") ||
-        '["green"]'
-    );
+let socket=null;
+let connected=false;
 
-const shopSkins = [
-    {id:"green",color:"#63ff78",emoji:"🐍",price:0},
-    {id:"blue",color:"#4da6ff",emoji:"😎",price:20},
-    {id:"red",color:"#ff5570",emoji:"😈",price:30},
-    {id:"yellow",color:"#ffd84d",emoji:"😄",price:40},
-    {id:"purple",color:"#b86cff",emoji:"👾",price:50},
-    {id:"orange",color:"#ff8a3d",emoji:"🔥",price:70},
-    {id:"white",color:"#ffffff",emoji:"👻",price:100},
-    {id:"cyan",color:"#00e5d4",emoji:"🤖",price:150},
-    {id:"gold",color:"#ffcc33",emoji:"👑",price:250}
+const foodColors=[
+  "#63ff78",
+  "#ffd84d",
+  "#ff6075",
+  "#55c9ff",
+  "#c76cff",
+  "#ff963d"
 ];
 
-function saveCoins(){
-    localStorage.setItem(
-        "snakeCoins",
-        String(me.coins)
-    );
-
-    localStorage.setItem(
-        "snakeOwned",
-        JSON.stringify(owned)
-    );
+for(let i=0;i<1400;i++){
+  foods.push({
+    x:Math.random()*WORLD,
+    y:Math.random()*WORLD,
+    radius:3+Math.random()*4,
+    color:foodColors[Math.floor(Math.random()*foodColors.length)],
+    value:1+Math.floor(Math.random()*4)
+  });
 }
 
-function renderShop(){
-    document.getElementById("shopCoins").textContent =
-        me.coins;
+document.querySelectorAll(".skin").forEach(button=>{
+  button.onclick=()=>{
+    document.querySelectorAll(".skin")
+      .forEach(b=>b.classList.remove("selected"));
 
-    const grid =
-        document.getElementById("shopGrid");
+    button.classList.add("selected");
 
-    grid.innerHTML = "";
-
-    for(const s of shopSkins){
-
-        const item = document.createElement("div");
-        item.className = "shopItem";
-
-        const have = owned.includes(s.id);
-
-        item.innerHTML = `
-            <div class="shopPreview"
-                 style="background:${s.color}">
-                 ${s.emoji}
-            </div>
-            <b>${s.id.toUpperCase()}</b>
-            <div style="margin-top:5px">
-                ${have ? "OWNED" : "🪙 " + s.price}
-            </div>
-            <button
-                ${have ? "" : ""}
-                onclick="buySkin('${s.id}')">
-                ${have ? "USE" : "BUY"}
-            </button>
-        `;
-
-        grid.appendChild(item);
-    }
-}
-
-function buySkin(id){
-
-    const skin =
-        shopSkins.find(x => x.id === id);
-
-    if(!skin) return;
-
-    if(owned.includes(id)){
-        selectSkin(id);
-        renderShop();
-        return;
-    }
-
-    if(me.coins < skin.price){
-        alert("Sul pole piisavalt coine!");
-        return;
-    }
-
-    me.coins -= skin.price;
-
-    owned.push(id);
-
-    saveCoins();
-
-    selectSkin(id);
-
-    renderShop();
-}
-
-function selectSkin(id){
-
-    const s =
-        shopSkins.find(x => x.id === id);
-
-    if(!s) return;
-
-    me.skin = s.id;
-    me.color = s.color;
-
-    document
-    .querySelectorAll(".skin")
-    .forEach(b => {
-        b.classList.toggle(
-            "selected",
-            b.dataset.skin === id
-        );
-    });
-}
-
-document
-.querySelectorAll(".skin")
-.forEach(button => {
-
-    button.onclick = () => {
-
-        if(!owned.includes(button.dataset.skin)){
-            alert("Osta see skin Shopist!");
-            return;
-        }
-
-        selectSkin(
-            button.dataset.skin
-        );
-    };
+    me.color=button.dataset.color;
+    me.skin=button.dataset.skin;
+  };
 });
 
-function openShop(){
-    renderShop();
-
-    document.getElementById("shop")
-        .style.display = "block";
-}
-
-function closeShop(){
-    document.getElementById("shop")
-        .style.display = "none";
-}
-
-document.getElementById("shopBtn").onclick =
-    openShop;
-
-document.getElementById("singleBtn").onclick =
-    startSinglePlayer;
-
 function playerName(){
-    return (
-        document
-        .getElementById("name")
-        .value
-        .trim() ||
-        "Player"
-    ).slice(0,16);
+  return (
+    document.getElementById("name").value.trim() ||
+    "Player"
+  ).substring(0,16);
 }
 
-/* WEBSOCKET */
+function setConnection(t){
+  document.getElementById("connection").textContent=t;
+}
 
-let socket = null;
-let connected = false;
-
-function connect(){
-
-    const protocol =
-        location.protocol === "https:"
-        ? "wss:"
-        : "ws:";
-
-    socket =
-        new WebSocket(
-            protocol +
-            "//" +
-            location.host
-        );
-
-    setConnection("🟡 Ühendamine...");
-
-    socket.onopen = () => {
-        connected = true;
-        setConnection("🟢 Server ühendatud");
-    };
-
-    socket.onclose = () => {
-        connected = false;
-        setConnection("🔴 Server katkes");
-    };
-
-    socket.onerror = () => {
-        setConnection("🔴 Serveri viga");
-    };
-
-    socket.onmessage = e => {
-
-        let data;
-
-        try {
-            data = JSON.parse(e.data);
-        } catch {
-            return;
-        }
-
-        serverMessage(data);
-    };
+function error(t){
+  document.getElementById("error").textContent=t||"";
 }
 
 function send(data){
-
-    if(
-        !socket ||
-        socket.readyState !== WebSocket.OPEN
-    ){
-        return false;
-    }
-
+  if(socket && socket.readyState===WebSocket.OPEN){
     socket.send(JSON.stringify(data));
     return true;
+  }
+  return false;
+}
+
+function connect(){
+
+  const protocol=
+    location.protocol==="https:" ? "wss:" : "ws:";
+
+  socket=new WebSocket(
+    protocol+"//"+location.host
+  );
+
+  setConnection("🟡 Ühendamine...");
+
+  socket.onopen=()=>{
+    connected=true;
+    setConnection("🟢 Server ühendatud");
+  };
+
+  socket.onclose=()=>{
+    connected=false;
+    setConnection("🔴 Ühendus katkes");
+  };
+
+  socket.onerror=()=>{
+    setConnection("🔴 Serveri viga");
+  };
+
+  socket.onmessage=e=>{
+    try{
+      serverMessage(JSON.parse(e.data));
+    }catch{}
+  };
 }
 
 function serverMessage(data){
 
-    if(data.type === "connected"){
-        me.id = data.id;
-        return;
-    }
+  if(data.type==="connected"){
+    me.id=data.id;
+  }
 
-    if(data.type === "roomCreated"){
-        me.id = data.id;
-        showRoom(data.code);
-        return;
-    }
+  if(data.type==="roomCreated" ||
+     data.type==="roomJoined"){
 
-    if(data.type === "roomJoined"){
-        me.id = data.id;
-        showRoom(data.code);
-        return;
-    }
-
-    if(data.type === "lobby"){
-        updateLobby(data.players || []);
-        return;
-    }
-
-    if(data.type === "gameStart"){
-        startMultiplayer();
-        return;
-    }
-
-    if(data.type === "players"){
-        others = data.players || {};
-        return;
-    }
-
-    if(data.type === "playerKilled"){
-
-        if(data.killerId === me.id){
-
-            me.kills++;
-
-            me.coins += 10;
-
-            saveCoins();
-
-            showKill();
-        }
-
-        if(data.victimId === me.id){
-            die("Sind tapeti!");
-        }
-
-        return;
-    }
-
-    if(data.type === "gameOver"){
-        die(data.reason || "Sind tapeti!");
-        return;
-    }
-
-    if(data.type === "error"){
-        showError(data.message || "Viga");
-    }
-}
-
-function showRoom(code){
+    me.id=data.id||me.id;
 
     document.getElementById("roomBox")
-        .style.display = "block";
+      .style.display="block";
 
     document.getElementById("roomCode")
-        .textContent = code;
+      .textContent=data.code;
+
+    error("");
+  }
+
+  if(data.type==="lobby"){
+    updateLobby(data.players||[]);
+  }
+
+  if(data.type==="gameStart"){
+    me.id=data.id||me.id;
+    startGame();
+  }
+
+  if(data.type==="players"){
+    others=data.players||{};
+    updateLeaderboard();
+  }
+
+  if(data.type==="playerKilled"){
+    showKill();
+  }
+
+  if(data.type==="gameOver"){
+    die(data.reason||"Sind tapetud!");
+  }
+
+  if(data.type==="error"){
+    error(data.message||"Viga");
+  }
 }
 
 function updateLobby(players){
 
-    const box =
-        document.getElementById("players");
+  const box=document.getElementById("players");
 
-    box.innerHTML = "";
+  box.innerHTML="";
 
-    players.forEach(p => {
+  players.forEach(p=>{
 
-        const row =
-            document.createElement("div");
+    const row=document.createElement("div");
 
-        row.className = "playerRow";
+    row.className="playerRow";
 
-        row.style.color =
-            p.color || "white";
+    row.textContent=
+      (p.host?"👑 ":"🐍 ")+
+      (p.name||"Player");
 
-        row.textContent =
-            (p.host ? "👑 " : "🐍 ") +
-            p.name;
+    row.style.color=p.color||"white";
 
-        box.appendChild(row);
-    });
+    box.appendChild(row);
+  });
 
-    if(players.length > 0){
-        document.getElementById("startBtn")
-            .style.display = "block";
-    }
+  if(players.length){
+    document.getElementById("startBtn")
+      .style.display="block";
+  }
 }
 
-function showError(text){
-    document.getElementById("error")
-        .textContent = text || "";
-}
+document.getElementById("createBtn").onclick=()=>{
 
-function setConnection(text){
-    document.getElementById("connection")
-        .textContent = text;
-}
+  if(!connected){
+    error("Server pole ühendatud.");
+    return;
+  }
 
-/* ROOM */
-
-document.getElementById("createBtn").onclick = () => {
-
-    if(!connected){
-        showError("Server pole veel ühendatud.");
-        return;
-    }
-
-    send({
-        type:"createRoom",
-        name:playerName(),
-        color:me.color,
-        skin:me.skin
-    });
+  send({
+    type:"createRoom",
+    name:playerName(),
+    color:me.color,
+    skin:me.skin
+  });
 };
 
-document.getElementById("joinBtn").onclick = () => {
+document.getElementById("joinBtn").onclick=()=>{
 
-    const code =
-        document.getElementById("roomInput")
-        .value
-        .trim()
-        .toUpperCase();
+  const code=document.getElementById("roomInput")
+    .value.trim().toUpperCase();
 
-    if(code.length !== 6){
-        showError("Sisesta 6-märgiline room code.");
-        return;
-    }
+  if(code.length!==6){
+    error("Room code peab olema 6 märki.");
+    return;
+  }
 
-    send({
-        type:"joinRoom",
-        code,
-        name:playerName(),
-        color:me.color,
-        skin:me.skin
-    });
+  if(!connected){
+    error("Server pole ühendatud.");
+    return;
+  }
+
+  send({
+    type:"joinRoom",
+    code,
+    name:playerName(),
+    color:me.color,
+    skin:me.skin
+  });
 };
 
-document.getElementById("startBtn").onclick = () => {
-
-    send({
-        type:"startGame"
-    });
+document.getElementById("startBtn").onclick=()=>{
+  send({type:"startGame"});
 };
 
-/* SINGLEPLAYER */
+document.getElementById("singleBtn").onclick=()=>{
+  startSingleplayer();
+};
 
-function startSinglePlayer(){
+const keys={};
 
-    singlePlayer = true;
+addEventListener("keydown",e=>{
+  keys[e.key.toLowerCase()]=true;
 
-    document.getElementById("menu")
-        .style.display = "none";
-
-    startGameBase();
-
-    createBots(14);
-}
-
-/* MULTIPLAYER */
-
-function startMultiplayer(){
-
-    singlePlayer = false;
-
-    document.getElementById("menu")
-        .style.display = "none";
-
-    startGameBase();
-}
-
-function startGameBase(){
-
-    running = true;
-    dead = false;
-
-    me.name = playerName();
-    me.score = 0;
-    me.kills = 0;
-    me.length = 20;
-
-    me.x =
-        3000 +
-        Math.random()*14000;
-
-    me.y =
-        3000 +
-        Math.random()*14000;
-
-    me.angle =
-        Math.random()*Math.PI*2;
-
-    me.targetAngle = me.angle;
-
-    body = [];
-
-    for(let i=0;i<me.length;i++){
-
-        body.push({
-            x:
-                me.x -
-                Math.cos(me.angle)*i*9,
-            y:
-                me.y -
-                Math.sin(me.angle)*i*9
-        });
-    }
-
-    document.getElementById("hud")
-        .style.display = "flex";
-
-    document.getElementById("minimap")
-        .style.display = "block";
-
-    document.getElementById("leaderboard")
-        .style.display = "block";
-}
-
-/* BOTS */
-
-function createBots(count){
-
-    bots = [];
-
-    const botNames = [
-        "Shadow",
-        "Speedy",
-        "Monster",
-        "Cobra",
-        "Ninja",
-        "Turbo",
-        "Venom",
-        "King",
-        "RedBot",
-        "BlueBot",
-        "Ghost",
-        "Hunter",
-        "Crusher",
-        "SnakeX",
-        "Dragon"
-    ];
-
-    for(let i=0;i<count;i++){
-
-        const colors = [
-            "#ff5570",
-            "#4da6ff",
-            "#ffd84d",
-            "#b86cff",
-            "#ff8a3d",
-            "#00e5d4"
-        ];
-
-        const b = {
-            id:"bot"+i,
-            name:
-                botNames[
-                    i % botNames.length
-                ],
-            x:
-                1000 +
-                Math.random()*18000,
-            y:
-                1000 +
-                Math.random()*18000,
-            angle:
-                Math.random()*Math.PI*2,
-            target:
-                Math.random()*Math.PI*2,
-            length:
-                15 +
-                Math.random()*50,
-            color:
-                colors[
-                    i % colors.length
-                ],
-            skin:
-                shopSkins[
-                    1 + (i % (shopSkins.length-1))
-                ].id,
-            alive:true,
-            turn:0,
-            score:0
-        };
-
-        bots.push(b);
-    }
-}
-
-function updateBots(){
-
-    if(!singlePlayer) return;
-
-    for(const bot of bots){
-
-        if(!bot.alive) continue;
-
-        bot.turn--;
-
-        if(bot.turn <= 0){
-
-            bot.turn =
-                40 +
-                Math.random()*100;
-
-            const dx =
-                me.x - bot.x;
-
-            const dy =
-                me.y - bot.y;
-
-            if(
-                Math.hypot(dx,dy) < 600 &&
-                Math.random() < .45
-            ){
-                bot.target =
-                    Math.atan2(dy,dx);
-            } else {
-                bot.target =
-                    Math.random()*Math.PI*2;
-            }
-        }
-
-        let diff =
-            bot.target -
-            bot.angle;
-
-        while(diff > Math.PI)
-            diff -= Math.PI*2;
-
-        while(diff < -Math.PI)
-            diff += Math.PI*2;
-
-        bot.angle += diff*.035;
-
-        const speed =
-            3.1 +
-            Math.min(
-                2,
-                bot.length/100
-            );
-
-        bot.x +=
-            Math.cos(bot.angle)*speed;
-
-        bot.y +=
-            Math.sin(bot.angle)*speed;
-
-        if(bot.x < 300 || bot.x > WORLD-300){
-            bot.target = Math.PI-bot.angle;
-        }
-
-        if(bot.y < 300 || bot.y > WORLD-300){
-            bot.target = -bot.angle;
-        }
-
-        bot.x =
-            Math.max(100,
-                Math.min(WORLD-100,bot.x));
-
-        bot.y =
-            Math.max(100,
-                Math.min(WORLD-100,bot.y));
-
-        /* bot sööb */
-
-        for(let i=foods.length-1;i>=0;i--){
-
-            const f = foods[i];
-
-            if(
-                Math.hypot(
-                    f.x-bot.x,
-                    f.y-bot.y
-                ) < 25
-            ){
-
-                bot.length += f.value*.4;
-                bot.score += f.value;
-
-                foods[i] = makeFood();
-            }
-        }
-
-        /* bot vs player */
-
-        if(
-            Math.hypot(
-                bot.x-me.x,
-                bot.y-me.y
-            ) < 30
-        ){
-
-            if(me.length > bot.length){
-
-                killBot(bot);
-
-            } else if(bot.length > me.length){
-
-                die(
-                    bot.name +
-                    " sõitis sulle otsa!"
-                );
-            }
-        }
-    }
-}
-
-function killBot(bot){
-
-    if(!bot.alive) return;
-
-    bot.alive = false;
-
-    me.kills++;
-    me.coins += 10;
-
-    me.length +=
-        Math.max(
-            3,
-            bot.length*.25
-        );
-
-    me.score += 10;
-
-    saveCoins();
-
-    showKill();
-
-    for(let i=0;i<Math.min(25,Math.floor(bot.length));i++){
-
-        foods.push(
-            makeFood(
-                bot.x -
-                Math.cos(bot.angle)*i*12,
-                bot.y -
-                Math.sin(bot.angle)*i*12,
-                2
-            )
-        );
-    }
-
-    setTimeout(() => {
-
-        bot.x =
-            1000 +
-            Math.random()*18000;
-
-        bot.y =
-            1000 +
-            Math.random()*18000;
-
-        bot.length =
-            15 +
-            Math.random()*45;
-
-        bot.angle =
-            Math.random()*Math.PI*2;
-
-        bot.target =
-            Math.random()*Math.PI*2;
-
-        bot.alive = true;
-
-    },1200);
-}
-
-/* INPUT */
-
-const keys = {};
-
-addEventListener("keydown", e => {
-
-    keys[e.key.toLowerCase()] = true;
-
-    if(e.key === "Shift"){
-        boosting = true;
-        document.getElementById("boost")
-            .classList.add("on");
-    }
+  if(e.key==="Shift"){
+    boosting=true;
+  }
 });
 
-addEventListener("keyup", e => {
+addEventListener("keyup",e=>{
+  keys[e.key.toLowerCase()]=false;
 
-    keys[e.key.toLowerCase()] = false;
-
-    if(e.key === "Shift"){
-        boosting = false;
-        document.getElementById("boost")
-            .classList.remove("on");
-    }
+  if(e.key==="Shift"){
+    boosting=false;
+  }
 });
 
 function keyboardDirection(){
 
-    let dx = 0;
-    let dy = 0;
+  let dx=0;
+  let dy=0;
 
-    if(keys.w || keys.arrowup)
-        dy--;
+  if(keys.w||keys.arrowup)dy=-1;
+  if(keys.s||keys.arrowdown)dy=1;
+  if(keys.a||keys.arrowleft)dx=-1;
+  if(keys.d||keys.arrowright)dx=1;
 
-    if(keys.s || keys.arrowdown)
-        dy++;
-
-    if(keys.a || keys.arrowleft)
-        dx--;
-
-    if(keys.d || keys.arrowright)
-        dx++;
-
-    if(dx || dy){
-
-        me.targetAngle =
-            Math.atan2(dy,dx);
-    }
+  if(dx||dy){
+    me.targetAngle=Math.atan2(dy,dx);
+  }
 }
 
-addEventListener("mousemove", e => {
+addEventListener("mousemove",e=>{
 
-    if(!running) return;
+  if(!running)return;
+  if(innerWidth<=800)return;
 
-    if(innerWidth <= 800) return;
+  const dx=e.clientX-W/2;
+  const dy=e.clientY-H/2;
 
-    const dx =
-        e.clientX - W/2;
-
-    const dy =
-        e.clientY - H/2;
-
-    if(Math.hypot(dx,dy) > 15){
-
-        me.targetAngle =
-            Math.atan2(dy,dx);
-    }
+  if(Math.hypot(dx,dy)>15){
+    me.targetAngle=Math.atan2(dy,dx);
+  }
 });
 
-/* JOYSTICK */
+const joystick=document.getElementById("joystick");
+const stick=document.getElementById("stick");
 
-const joystick =
-    document.getElementById("joystick");
-
-const stick =
-    document.getElementById("stick");
-
-let joyId = null;
+let joyId=null;
 
 function moveJoystick(x,y){
 
-    const r =
-        joystick.getBoundingClientRect();
+  const r=joystick.getBoundingClientRect();
 
-    const cx =
-        r.left+r.width/2;
+  const cx=r.left+r.width/2;
+  const cy=r.top+r.height/2;
 
-    const cy =
-        r.top+r.height/2;
+  let dx=x-cx;
+  let dy=y-cy;
 
-    let dx = x-cx;
-    let dy = y-cy;
+  const max=55;
+  const d=Math.hypot(dx,dy);
 
-    const max = 55;
-    const dist = Math.hypot(dx,dy);
+  if(d>max){
+    dx=dx/d*max;
+    dy=dy/d*max;
+  }
 
-    if(dist > max){
-        dx = dx/dist*max;
-        dy = dy/dist*max;
-    }
+  stick.style.left=`calc(50% + ${dx}px)`;
+  stick.style.top=`calc(50% + ${dy}px)`;
 
-    stick.style.left =
-        `calc(50% + ${dx}px)`;
-
-    stick.style.top =
-        `calc(50% + ${dy}px)`;
-
-    if(dist > 7){
-
-        me.targetAngle =
-            Math.atan2(dy,dx);
-    }
+  if(d>7){
+    me.targetAngle=Math.atan2(dy,dx);
+  }
 }
 
 function resetJoystick(){
-
-    joyId = null;
-
-    stick.style.left = "50%";
-    stick.style.top = "50%";
+  joyId=null;
+  stick.style.left="50%";
+  stick.style.top="50%";
 }
 
-joystick.onpointerdown = e => {
-
-    joyId = e.pointerId;
-
-    joystick.setPointerCapture(e.pointerId);
-
-    moveJoystick(
-        e.clientX,
-        e.clientY
-    );
+joystick.onpointerdown=e=>{
+  joyId=e.pointerId;
+  joystick.setPointerCapture(e.pointerId);
+  moveJoystick(e.clientX,e.clientY);
 };
 
-joystick.onpointermove = e => {
-
-    if(e.pointerId !== joyId) return;
-
-    moveJoystick(
-        e.clientX,
-        e.clientY
-    );
+joystick.onpointermove=e=>{
+  if(e.pointerId===joyId){
+    moveJoystick(e.clientX,e.clientY);
+  }
 };
 
-joystick.onpointerup = resetJoystick;
-joystick.onpointercancel = resetJoystick;
+joystick.onpointerup=resetJoystick;
+joystick.onpointercancel=resetJoystick;
 
-/* BOOST */
+const boost=document.getElementById("boost");
 
-const boostButton =
-    document.getElementById("boost");
-
-boostButton.onpointerdown = () => {
-
-    boosting = true;
-
-    boostButton.classList.add("on");
+boost.onpointerdown=()=>{
+  boosting=true;
 };
 
-boostButton.onpointerup = () => {
-
-    boosting = false;
-
-    boostButton.classList.remove("on");
+boost.onpointerup=()=>{
+  boosting=false;
 };
 
-boostButton.onpointercancel = () => {
-
-    boosting = false;
-
-    boostButton.classList.remove("on");
+boost.onpointercancel=()=>{
+  boosting=false;
 };
 
-/* UPDATE */
+function startGame(){
 
-let lastSend = 0;
+  running=true;
+  dead=false;
+
+  singleplayer=false;
+
+  document.getElementById("menu").style.display="none";
+  document.getElementById("hud").style.display="flex";
+  document.getElementById("leaderboard").style.display="block";
+  document.getElementById("minimap").style.display="block";
+
+  me.name=playerName();
+  me.score=0;
+  me.kills=0;
+  me.length=20;
+
+  me.x=2000+Math.random()*16000;
+  me.y=2000+Math.random()*16000;
+
+  me.angle=Math.random()*Math.PI*2;
+  me.targetAngle=me.angle;
+
+  createBody();
+}
+
+function startSingleplayer(){
+
+  running=true;
+  dead=false;
+  singleplayer=true;
+
+  document.getElementById("menu").style.display="none";
+  document.getElementById("hud").style.display="flex";
+  document.getElementById("leaderboard").style.display="block";
+  document.getElementById("minimap").style.display="block";
+
+  me.name=playerName();
+  me.score=0;
+  me.kills=0;
+  me.length=20;
+
+  me.x=10000;
+  me.y=10000;
+
+  me.angle=0;
+  me.targetAngle=0;
+
+  createBody();
+
+  bots=[];
+
+  const names=[
+    "Bot Rex",
+    "Bot Speed",
+    "Bot Max",
+    "Bot Ninja",
+    "Bot Pro",
+    "Bot Shadow",
+    "Bot King",
+    "Bot Snake"
+  ];
+
+  for(let i=0;i<8;i++){
+
+    bots.push({
+      id:"bot"+i,
+      name:names[i],
+      x:1500+Math.random()*17000,
+      y:1500+Math.random()*17000,
+      angle:Math.random()*Math.PI*2,
+      length:20+Math.random()*30,
+      color:[
+        "#ff5570",
+        "#4da6ff",
+        "#ffd84d",
+        "#b86cff",
+        "#ff8a3d",
+        "#00e5d4",
+        "#ffffff",
+        "#63ff78"
+      ][i],
+      skin:[
+        "red",
+        "blue",
+        "yellow",
+        "purple",
+        "orange",
+        "cyan",
+        "white",
+        "green"
+      ][i],
+      score:0,
+      kills:0,
+      alive:true,
+      think:Math.random()*100
+    });
+  }
+}
+
+function createBody(){
+
+  body=[];
+
+  for(let i=0;i<Math.floor(me.length);i++){
+    body.push({
+      x:me.x-Math.cos(me.angle)*i*8,
+      y:me.y-Math.sin(me.angle)*i*8
+    });
+  }
+}
 
 function update(){
 
-    if(!running || dead) return;
+  if(!running||dead)return;
 
-    keyboardDirection();
-    updateBots();
+  keyboardDirection();
 
-    let diff =
-        me.targetAngle -
-        me.angle;
+  let diff=me.targetAngle-me.angle;
 
-    while(diff > Math.PI)
-        diff -= Math.PI*2;
+  while(diff>Math.PI)diff-=Math.PI*2;
+  while(diff<-Math.PI)diff+=Math.PI*2;
 
-    while(diff < -Math.PI)
-        diff += Math.PI*2;
+  me.angle+=diff*.15;
 
-    me.angle += diff*.15;
+  const speed=boosting?9:5.4;
 
-    const speed =
-        boosting ? 7.5 : 5.2;
+  me.x+=Math.cos(me.angle)*speed;
+  me.y+=Math.sin(me.angle)*speed;
 
-    me.x +=
-        Math.cos(me.angle)*speed;
+  me.x=Math.max(25,Math.min(WORLD-25,me.x));
+  me.y=Math.max(25,Math.min(WORLD-25,me.y));
 
-    me.y +=
-        Math.sin(me.angle)*speed;
+  body.unshift({
+    x:me.x,
+    y:me.y
+  });
 
-    me.x =
-        Math.max(
-            30,
-            Math.min(WORLD-30,me.x)
-        );
+  while(body.length>Math.floor(me.length)){
+    body.pop();
+  }
 
-    me.y =
-        Math.max(
-            30,
-            Math.min(WORLD-30,me.y)
-        );
-
-    body.unshift({
-        x:me.x,
-        y:me.y
+  while(body.length<Math.floor(me.length)){
+    body.push({
+      x:me.x,
+      y:me.y
     });
+  }
 
-    while(
-        body.length >
-        Math.floor(me.length)
-    ){
-        body.pop();
+  eatFood();
+
+  if(boosting&&me.length>20){
+
+    me.length-=.04;
+
+    if(Math.random()<.16){
+      foods.push({
+        x:me.x-Math.cos(me.angle)*30,
+        y:me.y-Math.sin(me.angle)*30,
+        radius:5,
+        color:me.color,
+        value:2
+      });
     }
+  }
 
-    while(
-        body.length <
-        Math.floor(me.length)
-    ){
-        body.push({
-            x:me.x,
-            y:me.y
-        });
-    }
+  if(singleplayer){
+    updateBots();
+    checkBotCombat();
+  }else{
 
-    eatFood();
+    send({
+      type:"state",
+      x:me.x,
+      y:me.y,
+      angle:me.angle,
+      length:me.length,
+      score:me.score,
+      kills:me.kills,
+      color:me.color,
+      skin:me.skin,
+      name:me.name
+    });
+  }
 
-    if(boosting && me.length > 22){
+  document.getElementById("score").textContent=Math.floor(me.score);
+  document.getElementById("kills").textContent=me.kills;
+  document.getElementById("length").textContent=Math.floor(me.length);
 
-        me.length -= .045;
-
-        if(Math.random() < .12){
-
-            const tail =
-                body[
-                    body.length-1
-                ];
-
-            foods.push(
-                makeFood(
-                    tail.x,
-                    tail.y,
-                    1
-                )
-            );
-        }
-    }
-
-    checkSnakeCollisions();
-
-    const now = performance.now();
-
-    if(
-        !singlePlayer &&
-        now-lastSend > 40
-    ){
-
-        lastSend = now;
-
-        send({
-            type:"state",
-            x:me.x,
-            y:me.y,
-            angle:me.angle,
-            length:me.length,
-            color:me.color,
-            skin:me.skin
-        });
-    }
-
-    document.getElementById("score")
-        .textContent =
-        Math.floor(me.score);
-
-    document.getElementById("length")
-        .textContent =
-        Math.floor(me.length);
-
-    document.getElementById("coins")
-        .textContent =
-        me.coins;
-
-    document.getElementById("kills")
-        .textContent =
-        me.kills;
+  updateLeaderboard();
 }
-
-/* FOOD */
 
 function eatFood(){
 
-    for(let i=foods.length-1;i>=0;i--){
+  for(let i=foods.length-1;i>=0;i--){
 
-        const f = foods[i];
+    const f=foods[i];
 
-        if(
-            Math.hypot(
-                f.x-me.x,
-                f.y-me.y
-            ) < 25
-        ){
+    if(Math.hypot(f.x-me.x,f.y-me.y)<24){
 
-            me.score += f.value;
+      me.score+=f.value;
+      me.length+=f.value*.6;
 
-            me.length +=
-                f.value*.45;
+      foods.splice(i,1);
 
-            foods[i] = makeFood();
-        }
+      foods.push({
+        x:Math.random()*WORLD,
+        y:Math.random()*WORLD,
+        radius:3+Math.random()*4,
+        color:foodColors[Math.floor(Math.random()*foodColors.length)],
+        value:1+Math.floor(Math.random()*4)
+      });
     }
+  }
 }
 
-/* COLLISIONS */
+function updateBots(){
 
-function checkSnakeCollisions(){
+  for(const b of bots){
 
-    /* bots */
+    if(!b.alive)continue;
 
-    if(singlePlayer){
+    b.think-=1;
 
-        for(const bot of bots){
+    if(b.think<=0){
 
-            if(!bot.alive) continue;
+      b.think=30+Math.random()*70;
 
-            const segments =
-                Math.min(
-                    Math.floor(bot.length),
-                    100
-                );
+      const dx=me.x-b.x;
+      const dy=me.y-b.y;
+      const d=Math.hypot(dx,dy);
 
-            for(
-                let i=8;
-                i<segments;
-                i++
-            ){
+      if(d<700){
+        b.angle=Math.atan2(dy,dx);
+      }else{
+        b.angle+=(-.5+Math.random())*.8;
+      }
+    }
 
-                const x =
-                    bot.x -
-                    Math.cos(bot.angle)*i*9;
+    const speed=4.0;
 
-                const y =
-                    bot.y -
-                    Math.sin(bot.angle)*i*9;
+    b.x+=Math.cos(b.angle)*speed;
+    b.y+=Math.sin(b.angle)*speed;
 
-                if(
-                    Math.hypot(
-                        me.x-x,
-                        me.y-y
-                    ) < 22
-                ){
+    if(b.x<100||b.x>WORLD-100){
+      b.angle=Math.PI-b.angle;
+    }
 
-                    if(me.length > bot.length){
+    if(b.y<100||b.y>WORLD-100){
+      b.angle=-b.angle;
+    }
 
-                        killBot(bot);
+    b.x=Math.max(30,Math.min(WORLD-30,b.x));
+    b.y=Math.max(30,Math.min(WORLD-30,b.y));
 
-                    } else {
+    if(Math.hypot(b.x-me.x,b.y-me.y)<30){
 
-                        die(
-                            bot.name +
-                            " võitis!"
-                        );
-                    }
+      if(me.length>=b.length){
 
-                    return;
-                }
-            }
-        }
+        killBot(b);
 
+      }else{
+
+        die("Bot "+b.name+" tappis sind!");
         return;
+      }
     }
-
-    /* multiplayer */
-
-    for(const id in others){
-
-        const p = others[id];
-
-        if(!p || !p.alive) continue;
-
-        const segments =
-            Math.min(
-                Math.floor(p.length || 20),
-                150
-            );
-
-        for(let i=8;i<segments;i++){
-
-            const x =
-                p.x -
-                Math.cos(p.angle)*i*9;
-
-            const y =
-                p.y -
-                Math.sin(p.angle)*i*9;
-
-            if(
-                Math.hypot(
-                    me.x-x,
-                    me.y-y
-                ) < 22
-            ){
-
-                if(me.length >= (p.length || 20)){
-
-                    send({
-                        type:"kill",
-                        victimId:id
-                    });
-
-                } else {
-
-                    die(
-                        (p.name || "Mängija") +
-                        " tappis sind!"
-                    );
-                }
-
-                return;
-            }
-        }
-    }
+  }
 }
 
-/* CAMERA */
+function killBot(b){
 
-function updateCamera(){
+  if(!b.alive)return;
 
-    cameraX +=
-        (me.x-cameraX)*.1;
+  b.alive=false;
 
-    cameraY +=
-        (me.y-cameraY)*.1;
+  me.kills++;
+  me.score+=100;
+  me.length+=Math.max(5,b.length*.2);
+
+  showKill();
+
+  for(let i=0;i<Math.min(30,b.length);i++){
+
+    foods.push({
+      x:b.x+(Math.random()-.5)*100,
+      y:b.y+(Math.random()-.5)*100,
+      radius:4+Math.random()*3,
+      color:b.color,
+      value:2
+    });
+  }
+
+  setTimeout(()=>{
+
+    b.x=1000+Math.random()*18000;
+    b.y=1000+Math.random()*18000;
+    b.angle=Math.random()*Math.PI*2;
+    b.length=20+Math.random()*30;
+    b.alive=true;
+    b.score=0;
+
+  },1800);
 }
 
-/* DRAW */
+function checkBotCombat(){
+
+  for(const b of bots){
+
+    if(!b.alive)continue;
+
+    if(Math.hypot(b.x-me.x,b.y-me.y)<26){
+
+      if(me.length>=b.length){
+        killBot(b);
+      }else{
+        die("Bot tappis sind!");
+      }
+    }
+  }
+}
+
+let cameraX=me.x;
+let cameraY=me.y;
 
 function draw(){
 
-    ctx.fillStyle="#061007";
+  ctx.fillStyle="#071008";
+  ctx.fillRect(0,0,W,H);
 
-    ctx.fillRect(
-        0,0,W,H
-    );
+  if(!running)return;
 
-    if(!running) return;
+  cameraX+=(me.x-cameraX)*.1;
+  cameraY+=(me.y-cameraY)*.1;
 
-    updateCamera();
+  ctx.save();
 
-    ctx.save();
+  ctx.translate(
+    W/2-cameraX,
+    H/2-cameraY
+  );
 
-    ctx.translate(
-        W/2-cameraX,
-        H/2-cameraY
-    );
+  drawGrid();
+  drawBorder();
+  drawFood();
 
-    drawGrid();
-    drawBorder();
-    drawFood();
-
-    if(singlePlayer)
-        drawBots();
-
+  if(singleplayer){
+    drawBots();
+  }else{
     drawOthers();
-    drawMe();
+  }
 
-    ctx.restore();
+  drawMe();
 
-    drawMinimap();
-    drawLeaderboard();
+  ctx.restore();
+
+  drawMinimap();
 }
 
 function drawGrid(){
 
-    const grid = 250;
+  const grid=250;
 
-    const left =
-        cameraX-W/2-500;
+  ctx.strokeStyle="rgba(99,255,120,.05)";
+  ctx.lineWidth=1;
 
-    const right =
-        cameraX+W/2+500;
+  const left=cameraX-W/2-500;
+  const right=cameraX+W/2+500;
+  const top=cameraY-H/2-500;
+  const bottom=cameraY+H/2+500;
 
-    const top =
-        cameraY-H/2-500;
+  for(let x=Math.floor(left/grid)*grid;x<right;x+=grid){
 
-    const bottom =
-        cameraY+H/2+500;
+    ctx.beginPath();
+    ctx.moveTo(x,top);
+    ctx.lineTo(x,bottom);
+    ctx.stroke();
+  }
 
-    ctx.strokeStyle =
-        "rgba(99,255,120,.045)";
+  for(let y=Math.floor(top/grid)*grid;y<bottom;y+=grid){
 
-    ctx.lineWidth=1;
-
-    for(
-        let x=Math.floor(left/grid)*grid;
-        x<right;
-        x+=grid
-    ){
-
-        ctx.beginPath();
-        ctx.moveTo(x,top);
-        ctx.lineTo(x,bottom);
-        ctx.stroke();
-    }
-
-    for(
-        let y=Math.floor(top/grid)*grid;
-        y<bottom;
-        y+=grid
-    ){
-
-        ctx.beginPath();
-        ctx.moveTo(left,y);
-        ctx.lineTo(right,y);
-        ctx.stroke();
-    }
+    ctx.beginPath();
+    ctx.moveTo(left,y);
+    ctx.lineTo(right,y);
+    ctx.stroke();
+  }
 }
 
 function drawBorder(){
 
-    ctx.strokeStyle="#63ff78";
-    ctx.lineWidth=18;
-    ctx.shadowColor="#63ff78";
-    ctx.shadowBlur=25;
+  ctx.strokeStyle="#63ff78";
+  ctx.lineWidth=18;
+  ctx.shadowColor="#63ff78";
+  ctx.shadowBlur=20;
 
-    ctx.strokeRect(
-        0,0,WORLD,WORLD
-    );
+  ctx.strokeRect(0,0,WORLD,WORLD);
 
-    ctx.shadowBlur=0;
+  ctx.shadowBlur=0;
 }
 
 function drawFood(){
 
-    for(const f of foods){
+  for(const f of foods){
 
-        if(
-            Math.abs(f.x-cameraX)>W ||
-            Math.abs(f.y-cameraY)>H
-        ) continue;
+    if(
+      Math.abs(f.x-cameraX)>W||
+      Math.abs(f.y-cameraY)>H
+    )continue;
 
-        ctx.fillStyle=f.color;
-        ctx.shadowColor=f.color;
-        ctx.shadowBlur=9;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            f.x,
-            f.y,
-            f.radius,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-    }
-
-    ctx.shadowBlur=0;
-}
-
-/* SNAKE */
-
-function drawSnakeBody(points,color,length){
-
-    for(
-        let i=points.length-1;
-        i>=0;
-        i--
-    ){
-
-        const p=points[i];
-
-        const progress =
-            i/Math.max(1,points.length);
-
-        const radius =
-            8+(1-progress)*10;
-
-        ctx.globalAlpha =
-            .75+(1-progress)*.25;
-
-        ctx.fillStyle=color;
-
-        ctx.shadowColor=color;
-        ctx.shadowBlur=i<8 ? 12 : 3;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            radius,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-    }
-
-    ctx.globalAlpha=1;
-    ctx.shadowBlur=0;
-}
-
-function drawSkinHead(
-    x,
-    y,
-    radius,
-    color,
-    skin,
-    angle
-){
-
-    ctx.save();
-
-    ctx.translate(x,y);
-    ctx.rotate(angle);
-
-    ctx.fillStyle=color;
-
-    ctx.shadowColor=color;
-    ctx.shadowBlur=20;
+    ctx.fillStyle=f.color;
+    ctx.shadowColor=f.color;
+    ctx.shadowBlur=9;
 
     ctx.beginPath();
+    ctx.arc(f.x,f.y,f.radius,0,Math.PI*2);
+    ctx.fill();
+  }
 
-    ctx.arc(
-        0,0,radius,
-        0,Math.PI*2
+  ctx.shadowBlur=0;
+}
+
+function drawMe(){
+
+  drawSnakeBody(
+    body,
+    me.color
+  );
+
+  drawHead(
+    me.x,
+    me.y,
+    22,
+    me.color,
+    me.skin,
+    me.angle
+  );
+
+  drawName(
+    me.name,
+    me.x,
+    me.y-34
+  );
+}
+
+function drawOthers(){
+
+  for(const id in others){
+
+    if(id===me.id)continue;
+
+    const p=others[id];
+
+    if(!p||p.alive===false)continue;
+
+    const len=Math.min(
+      250,
+      Math.max(20,Math.floor(p.length||20))
     );
 
+    const points=[];
+
+    for(let i=0;i<len;i++){
+
+      points.push({
+        x:p.x-Math.cos(p.angle)*i*8,
+        y:p.y-Math.sin(p.angle)*i*8
+      });
+    }
+
+    drawSnakeBody(
+      points,
+      p.color||"#4da6ff"
+    );
+
+    drawHead(
+      p.x,
+      p.y,
+      22,
+      p.color||"#4da6ff",
+      p.skin||"blue",
+      p.angle||0
+    );
+
+    drawName(
+      p.name||"Player",
+      p.x,
+      p.y-34
+    );
+  }
+}
+
+function drawBots(){
+
+  for(const b of bots){
+
+    if(!b.alive)continue;
+
+    const points=[];
+
+    const len=Math.min(
+      250,
+      Math.floor(b.length)
+    );
+
+    for(let i=0;i<len;i++){
+
+      points.push({
+        x:b.x-Math.cos(b.angle)*i*8,
+        y:b.y-Math.sin(b.angle)*i*8
+      });
+    }
+
+    drawSnakeBody(
+      points,
+      b.color
+    );
+
+    drawHead(
+      b.x,
+      b.y,
+      22,
+      b.color,
+      b.skin,
+      b.angle
+    );
+
+    drawName(
+      b.name,
+      b.x,
+      b.y-34
+    );
+  }
+}
+
+function drawSnakeBody(points,color){
+
+  for(let i=points.length-1;i>=0;i--){
+
+    const p=points[i];
+
+    const progress=i/Math.max(1,points.length);
+
+    const radius=9+(1-progress)*8;
+
+    ctx.globalAlpha=1-progress*.3;
+
+    ctx.fillStyle=color;
+    ctx.shadowColor=color;
+    ctx.shadowBlur=i<10?10:3;
+
+    ctx.beginPath();
+    ctx.arc(
+      p.x,
+      p.y,
+      radius,
+      0,
+      Math.PI*2
+    );
     ctx.fill();
+  }
 
-    ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+  ctx.shadowBlur=0;
+}
 
-    if(skin==="gold"){
+function drawHead(x,y,radius,color,skin,angle){
 
-        ctx.strokeStyle="#fff2a0";
-        ctx.lineWidth=4;
+  ctx.save();
 
-        ctx.beginPath();
+  ctx.translate(x,y);
 
-        ctx.arc(
-            0,0,radius-3,
-            0,Math.PI*2
-        );
+  ctx.rotate(angle);
 
-        ctx.stroke();
+  ctx.fillStyle=color;
+
+  ctx.shadowColor=color;
+  ctx.shadowBlur=18;
+
+  ctx.beginPath();
+  ctx.arc(0,0,radius,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.shadowBlur=0;
+
+  /* SKIN MUST COVER THE WHOLE HEAD */
+
+  if(skin==="red"){
+
+    ctx.strokeStyle="#ffd0d6";
+    ctx.lineWidth=4;
+
+    for(let i=-1;i<=1;i++){
+
+      ctx.beginPath();
+      ctx.moveTo(-15,i*8);
+      ctx.lineTo(15,i*8);
+      ctx.stroke();
     }
+  }
 
-    if(skin==="red"){
+  if(skin==="blue"){
 
-        ctx.strokeStyle="#ffd0d8";
-        ctx.lineWidth=3;
+    ctx.strokeStyle="#d5f3ff";
+    ctx.lineWidth=4;
 
-        ctx.beginPath();
+    ctx.beginPath();
+    ctx.arc(0,0,radius-3,0,Math.PI*2);
+    ctx.stroke();
+  }
 
-        ctx.moveTo(
-            -radius*.6,
-            -radius*.55
-        );
+  if(skin==="yellow"){
 
-        ctx.lineTo(
-            radius*.6,
-            radius*.55
-        );
+    ctx.fillStyle="#fff0a0";
 
-        ctx.moveTo(
-            radius*.6,
-            -radius*.55
-        );
+    ctx.beginPath();
+    ctx.arc(-4,0,10,0,Math.PI*2);
+    ctx.fill();
+  }
 
-        ctx.lineTo(
-            -radius*.6,
-            radius*.55
-        );
+  if(skin==="purple"){
 
-        ctx.stroke();
+    ctx.fillStyle="#f4d6ff";
+
+    for(let i=0;i<8;i++){
+
+      const a=i*Math.PI/4;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        Math.cos(a)*14,
+        Math.sin(a)*14,
+        3,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
     }
+  }
 
-    if(skin==="blue"){
+  if(skin==="orange"){
 
-        ctx.strokeStyle="#d8f4ff";
-        ctx.lineWidth=4;
+    ctx.strokeStyle="#ffe0bd";
+    ctx.lineWidth=4;
 
-        ctx.beginPath();
+    for(let i=-1;i<=1;i++){
 
-        ctx.arc(
-            0,0,radius-4,
-            0,Math.PI*2
-        );
-
-        ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-17,i*7);
+      ctx.lineTo(17,i*7);
+      ctx.stroke();
     }
+  }
 
-    if(skin==="purple"){
+  if(skin==="cyan"){
 
-        ctx.fillStyle="#f0c9ff";
+    ctx.strokeStyle="#d0fffa";
+    ctx.lineWidth=4;
 
-        for(let i=0;i<6;i++){
+    ctx.beginPath();
+    ctx.arc(0,0,14,0,Math.PI*2);
+    ctx.stroke();
+  }
 
-            const a =
-                i*Math.PI/3;
+  if(skin==="white"){
 
-            ctx.beginPath();
+    ctx.strokeStyle="#9c9c9c";
+    ctx.lineWidth=3;
 
-            ctx.arc(
-                Math.cos(a)*radius*.55,
-                Math.sin(a)*radius*.55,
-                4,0,Math.PI*2
-            );
+    ctx.beginPath();
+    ctx.arc(0,0,radius-2,0,Math.PI*2);
+    ctx.stroke();
+  }
 
-            ctx.fill();
-        }
-    }
+  drawFace();
 
-    if(skin==="cyan"){
+  ctx.restore();
 
-        ctx.strokeStyle="#d0fffa";
-        ctx.lineWidth=4;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            0,0,radius*.65,
-            0,Math.PI*2
-        );
-
-        ctx.stroke();
-    }
-
-    /* eyes */
+  function drawFace(){
 
     ctx.fillStyle="white";
 
     ctx.beginPath();
-    ctx.arc(
-        radius*.35,
-        -radius*.35,
-        radius*.23,
-        0,Math.PI*2
-    );
+    ctx.arc(9,-7,6,0,Math.PI*2);
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(
-        radius*.35,
-        radius*.35,
-        radius*.23,
-        0,Math.PI*2
-    );
+    ctx.arc(9,7,6,0,Math.PI*2);
     ctx.fill();
 
     ctx.fillStyle="#111";
 
     ctx.beginPath();
-    ctx.arc(
-        radius*.42,
-        -radius*.35,
-        radius*.1,
-        0,Math.PI*2
-    );
+    ctx.arc(11,-7,3,0,Math.PI*2);
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(
-        radius*.42,
-        radius*.35,
-        radius*.1,
-        0,Math.PI*2
-    );
+    ctx.arc(11,7,3,0,Math.PI*2);
     ctx.fill();
 
-    ctx.restore();
+    ctx.strokeStyle="#111";
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+    ctx.arc(14,0,5,-.7,.7);
+    ctx.stroke();
+  }
 }
 
-function drawName(name,x,y,color){
+function drawName(name,x,y){
 
-    ctx.save();
+  ctx.save();
 
-    ctx.textAlign="center";
-    ctx.font="bold 12px Arial";
+  ctx.textAlign="center";
+  ctx.font="bold 12px Arial";
+  ctx.fillStyle="white";
+  ctx.shadowColor="black";
+  ctx.shadowBlur=5;
 
-    ctx.fillStyle=color || "white";
+  ctx.fillText(name,x,y);
 
-    ctx.shadowColor="black";
-    ctx.shadowBlur=5;
-
-    ctx.fillText(
-        name,
-        x,y
-    );
-
-    ctx.restore();
+  ctx.restore();
 }
-
-function drawMe(){
-
-    drawSnakeBody(
-        body,
-        me.color,
-        me.length
-    );
-
-    drawSkinHead(
-        me.x,
-        me.y,
-        22,
-        me.color,
-        me.skin,
-        me.angle
-    );
-
-    drawName(
-        me.name,
-        me.x,
-        me.y-34
-    );
-}
-
-/* OTHER PLAYERS */
-
-function drawOthers(){
-
-    for(const id in others){
-
-        if(id===me.id) continue;
-
-        const p=others[id];
-
-        if(!p || !p.alive) continue;
-
-        const length =
-            Math.min(
-                150,
-                Math.max(
-                    20,
-                    Math.floor(p.length || 20)
-                )
-            );
-
-        const points=[];
-
-        for(let i=0;i<length;i++){
-
-            points.push({
-                x:
-                    p.x-
-                    Math.cos(p.angle)*i*9,
-                y:
-                    p.y-
-                    Math.sin(p.angle)*i*9
-            });
-        }
-
-        drawSnakeBody(
-            points,
-            p.color || "#4da6ff",
-            length
-        );
-
-        drawSkinHead(
-            p.x,
-            p.y,
-            22,
-            p.color || "#4da6ff",
-            p.skin || "blue",
-            p.angle || 0
-        );
-
-        drawName(
-            p.name || "Player",
-            p.x,
-            p.y-34,
-            "white"
-        );
-    }
-}
-
-/* BOTS DRAW */
-
-function drawBots(){
-
-    for(const b of bots){
-
-        if(!b.alive) continue;
-
-        const length =
-            Math.min(
-                150,
-                Math.floor(b.length)
-            );
-
-        const points=[];
-
-        for(let i=0;i<length;i++){
-
-            points.push({
-                x:
-                    b.x-
-                    Math.cos(b.angle)*i*9,
-                y:
-                    b.y-
-                    Math.sin(b.angle)*i*9
-            });
-        }
-
-        drawSnakeBody(
-            points,
-            b.color,
-            length
-        );
-
-        drawSkinHead(
-            b.x,
-            b.y,
-            22,
-            b.color,
-            b.skin,
-            b.angle
-        );
-
-        drawName(
-            b.name,
-            b.x,
-            b.y-34
-        );
-    }
-}
-
-/* MINIMAP */
 
 function drawMinimap(){
 
-    const size =
-        minimap.width;
+  const size=minimap.width;
 
-    mapCtx.clearRect(
-        0,0,size,size
-    );
+  mapCtx.clearRect(0,0,size,size);
 
-    mapCtx.fillStyle="#061007";
+  mapCtx.fillStyle="#061007";
+  mapCtx.fillRect(0,0,size,size);
 
-    mapCtx.fillRect(
-        0,0,size,size
-    );
+  for(const f of foods){
 
-    for(const f of foods){
+    const x=f.x/WORLD*size;
+    const y=f.y/WORLD*size;
 
-        mapCtx.fillStyle=f.color;
-        mapCtx.globalAlpha=.35;
+    mapCtx.fillStyle=f.color;
 
-        mapCtx.fillRect(
-            f.x/WORLD*size,
-            f.y/WORLD*size,
-            2,2
-        );
+    mapCtx.globalAlpha=.35;
+
+    mapCtx.beginPath();
+    mapCtx.arc(x,y,1.2,0,Math.PI*2);
+    mapCtx.fill();
+  }
+
+  mapCtx.globalAlpha=1;
+
+  if(singleplayer){
+
+    for(const b of bots){
+
+      if(!b.alive)continue;
+
+      mapCtx.fillStyle=b.color;
+
+      mapCtx.beginPath();
+      mapCtx.arc(
+        b.x/WORLD*size,
+        b.y/WORLD*size,
+        3,
+        0,
+        Math.PI*2
+      );
+      mapCtx.fill();
     }
 
-    mapCtx.globalAlpha=1;
-
-    if(singlePlayer){
-
-        for(const b of bots){
-
-            if(!b.alive) continue;
-
-            mapCtx.fillStyle=b.color;
-
-            mapCtx.beginPath();
-
-            mapCtx.arc(
-                b.x/WORLD*size,
-                b.y/WORLD*size,
-                3,
-                0,Math.PI*2
-            );
-
-            mapCtx.fill();
-        }
-    }
+  }else{
 
     for(const id in others){
 
-        const p=others[id];
+      if(id===me.id)continue;
 
-        if(!p || !p.alive) continue;
+      const p=others[id];
 
-        mapCtx.fillStyle =
-            p.color || "#ff5570";
+      if(!p)continue;
 
-        mapCtx.beginPath();
+      mapCtx.fillStyle=p.color||"#ff5268";
 
-        mapCtx.arc(
-            p.x/WORLD*size,
-            p.y/WORLD*size,
-            3,
-            0,Math.PI*2
-        );
-
-        mapCtx.fill();
+      mapCtx.beginPath();
+      mapCtx.arc(
+        p.x/WORLD*size,
+        p.y/WORLD*size,
+        4,
+        0,
+        Math.PI*2
+      );
+      mapCtx.fill();
     }
+  }
 
-    mapCtx.fillStyle=me.color;
+  mapCtx.fillStyle=me.color;
 
-    mapCtx.beginPath();
+  mapCtx.beginPath();
 
-    mapCtx.arc(
-        me.x/WORLD*size,
-        me.y/WORLD*size,
-        5,
-        0,Math.PI*2
-    );
+  mapCtx.arc(
+    me.x/WORLD*size,
+    me.y/WORLD*size,
+    5,
+    0,
+    Math.PI*2
+  );
 
-    mapCtx.fill();
+  mapCtx.fill();
 
-    mapCtx.strokeStyle="#63ff78";
-    mapCtx.lineWidth=2;
+  mapCtx.strokeStyle="#63ff78";
+  mapCtx.lineWidth=2;
 
-    mapCtx.strokeRect(
-        1,1,size-2,size-2
-    );
+  mapCtx.strokeRect(
+    1,1,size-2,size-2
+  );
 }
 
-/* LEADERBOARD */
+function updateLeaderboard(){
 
-function drawLeaderboard(){
+  const list=[];
 
-    const list = [
-        {
-            name:me.name,
-            length:me.length,
-            color:me.color
-        }
-    ];
+  list.push({
+    name:me.name,
+    score:me.score,
+    kills:me.kills,
+    length:me.length,
+    me:true
+  });
 
-    if(singlePlayer){
+  if(singleplayer){
 
-        for(const b of bots){
+    for(const b of bots){
 
-            if(b.alive){
-
-                list.push({
-                    name:b.name,
-                    length:b.length,
-                    color:b.color
-                });
-            }
-        }
-
-    } else {
-
-        for(const id in others){
-
-            const p=others[id];
-
-            if(p && p.alive){
-
-                list.push({
-                    name:p.name || "Player",
-                    length:p.length || 20,
-                    color:p.color || "white"
-                });
-            }
-        }
+      list.push({
+        name:b.name,
+        score:b.score,
+        kills:b.kills,
+        length:b.length,
+        me:false
+      });
     }
 
-    list.sort(
-        (a,b)=>b.length-a.length
-    );
+  }else{
 
-    const top=list.slice(0,8);
+    for(const id in others){
 
-    const box =
-        document.getElementById("lb");
+      const p=others[id];
 
-    box.innerHTML="";
+      if(!p)continue;
 
-    top.forEach((p,i)=>{
+      list.push({
+        name:p.name||"Player",
+        score:p.score||0,
+        kills:p.kills||0,
+        length:p.length||20,
+        me:false
+      });
+    }
+  }
 
-        const row =
-            document.createElement("div");
+  list.sort((a,b)=>{
 
-        row.className="lbrow";
+    if(b.score!==a.score){
+      return b.score-a.score;
+    }
 
-        row.innerHTML =
-            `<span style="color:${p.color}">
-            ${i+1}. ${escapeHtml(p.name)}
-            </span>
-            <b>${Math.floor(p.length)}</b>`;
+    return b.length-a.length;
+  });
 
-        box.appendChild(row);
-    });
+  const box=document.getElementById("lb");
+
+  box.innerHTML="";
+
+  list.slice(0,8).forEach((p,i)=>{
+
+    const row=document.createElement("div");
+
+    row.className="lbrow"+(p.me?" me":"");
+
+    row.innerHTML=
+      `<span>${i+1}. ${escapeHtml(p.name)}</span>`+
+      `<span>${Math.floor(p.score)} | 💀 ${p.kills}</span>`;
+
+    box.appendChild(row);
+  });
 }
 
 function escapeHtml(s){
 
-    return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;");
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
 }
 
-/* KILL */
+let killTimer;
 
 function showKill(){
 
-    const el =
-        document.getElementById("killText");
+  const el=document.getElementById("killText");
 
-    el.classList.add("show");
+  el.classList.add("show");
 
-    setTimeout(
-        ()=>el.classList.remove("show"),
-        900
-    );
+  clearTimeout(killTimer);
+
+  killTimer=setTimeout(()=>{
+    el.classList.remove("show");
+  },1000);
 }
-
-/* DEATH */
 
 function die(reason){
 
-    if(dead) return;
+  if(dead)return;
 
-    dead=true;
-    running=false;
-    boosting=false;
+  dead=true;
+  running=false;
+  boosting=false;
 
-    document.getElementById("deathReason")
-        .textContent=reason;
+  document.getElementById("deathReason")
+    .textContent=reason;
 
-    document.getElementById("finalScore")
-        .textContent=Math.floor(me.score);
+  document.getElementById("finalScore")
+    .textContent=Math.floor(me.score);
 
-    document.getElementById("finalKills")
-        .textContent=me.kills;
+  document.getElementById("finalKills")
+    .textContent=me.kills;
 
-    document.getElementById("gameOver")
-        .style.display="flex";
+  document.getElementById("gameOver")
+    .style.display="flex";
 }
-
-/* LOOP */
 
 function loop(){
 
-    update();
-    draw();
+  update();
+  draw();
 
-    requestAnimationFrame(loop);
+  requestAnimationFrame(loop);
 }
 
 connect();
