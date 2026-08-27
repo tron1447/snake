@@ -1,7 +1,7 @@
 {
   "name": "snake-arena",
   "version": "1.0.0",
-  "description": "Snake Arena multiplayer game",
+  "description": "Snake Arena",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
