@@ -1,30 +1,21 @@
 const http = require("http");
-const express = require("express");
-const WebSocket = require("ws");
+const fs = require("fs");
 const path = require("path");
-
-const app = express();
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 10000;
+const HOST = "0.0.0.0";
 
-app.use(express.static(path.join(__dirname)));
-
-app.get("/health", (req, res) => {
-    res.status(200).json({ ok: true });
-});
-
+const WORLD = 20000;
 const rooms = new Map();
+const clients = new Map();
 
-function makeCode() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
+function randomCode() {
     let code = "";
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
     do {
         code = "";
-
         for (let i = 0; i < 6; i++) {
             code += chars[Math.floor(Math.random() * chars.length)];
         }
@@ -33,152 +24,209 @@ function makeCode() {
     return code;
 }
 
+function randomId() {
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+function safeName(name) {
+    return String(name || "Player")
+        .replace(/[<>]/g, "")
+        .substring(0, 16) || "Player";
+}
+
+function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+}
+
+function distance(a, b) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
 function send(ws, data) {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(data));
     }
 }
 
-function broadcast(room, data) {
-    for (const player of room.players.values()) {
-        send(player.ws, data);
+function roomPlayers(room) {
+    const result = [];
+
+    for (const id of room.players) {
+        const p = clients.get(id);
+
+        if (!p) continue;
+
+        result.push({
+            id: p.id,
+            name: p.name,
+            color: p.color,
+            skin: p.skin,
+            length: p.length,
+            score: p.score,
+            kills: p.kills,
+            x: p.x,
+            y: p.y,
+            angle: p.angle,
+            alive: p.alive
+        });
+    }
+
+    return result;
+}
+
+function broadcastRoom(room, data) {
+    for (const id of room.players) {
+        const p = clients.get(id);
+        if (p) send(p.ws, data);
     }
 }
 
-function lobby(room) {
-    return [...room.players.values()].map(p => ({
-        id: p.id,
-        name: p.name,
-        color: p.color,
-        skin: p.skin,
-        host: p.host
-    }));
+function sendLobby(room) {
+    broadcastRoom(room, {
+        type: "lobby",
+        players: roomPlayers(room)
+    });
 }
 
-function makePlayer(ws, data) {
-    return {
-        id: Math.random().toString(36).slice(2, 10),
+function createPlayer(ws, data) {
+    const id = randomId();
+
+    const player = {
+        id,
         ws,
-        name: String(data.name || "Player").slice(0, 16),
-        color: data.color || "#63ff78",
-        skin: data.skin || "green",
-        host: false,
 
-        x: 10000,
-        y: 10000,
-        angle: 0,
-        length: 20,
+        name: safeName(data.name),
+
+        color: data.color || "#63ff78",
+
+        skin: data.skin || "green",
+
+        room: null,
+
+        x: 3000 + Math.random() * 14000,
+        y: 3000 + Math.random() * 14000,
+
+        angle: Math.random() * Math.PI * 2,
+
+        length: 25,
+
         score: 0,
-        alive: true
+
+        kills: 0,
+
+        alive: true,
+
+        started: false,
+
+        lastState: Date.now()
     };
+
+    clients.set(id, player);
+
+    return player;
 }
 
-function createRoom(ws, data) {
-    const code = makeCode();
+function createRoom(player) {
+    const code = randomCode();
 
     const room = {
         code,
-        started: false,
-        players: new Map()
+        host: player.id,
+        players: new Set(),
+        started: false
     };
 
-    const player = makePlayer(ws, data);
-
-    player.host = true;
-
-    room.players.set(player.id, player);
     rooms.set(code, room);
 
-    ws.roomCode = code;
-    ws.playerId = player.id;
+    room.players.add(player.id);
+    player.room = code;
 
-    send(ws, {
+    send(player.ws, {
         type: "roomCreated",
-        code,
-        id: player.id
+        id: player.id,
+        code
     });
 
-    broadcast(room, {
-        type: "lobby",
-        players: lobby(room)
-    });
+    sendLobby(room);
 }
 
-function joinRoom(ws, data) {
-    const code = String(data.code || "").toUpperCase();
-    const room = rooms.get(code);
+function joinRoom(player, code) {
+    const room = rooms.get(String(code).toUpperCase());
 
     if (!room) {
-        send(ws, {
+        send(player.ws, {
             type: "error",
-            message: "Seda roomi ei ole."
+            message: "Roomi ei leitud."
         });
         return;
     }
 
     if (room.started) {
-        send(ws, {
+        send(player.ws, {
             type: "error",
-            message: "Mäng on juba alanud."
+            message: "See mäng on juba alanud."
         });
         return;
     }
 
     if (room.players.size >= 12) {
-        send(ws, {
+        send(player.ws, {
             type: "error",
             message: "Room on täis."
         });
         return;
     }
 
-    const player = makePlayer(ws, data);
+    room.players.add(player.id);
+    player.room = room.code;
 
-    room.players.set(player.id, player);
-
-    ws.roomCode = code;
-    ws.playerId = player.id;
-
-    send(ws, {
+    send(player.ws, {
         type: "roomJoined",
-        code,
-        id: player.id
+        id: player.id,
+        code: room.code
     });
 
-    broadcast(room, {
-        type: "lobby",
-        players: lobby(room)
-    });
+    sendLobby(room);
 }
 
-function startRoom(ws) {
-    const code = ws.roomCode;
-    const room = rooms.get(code);
+function startRoom(player) {
+    if (!player.room) {
+        send(player.ws, {
+            type: "error",
+            message: "Sa ei ole roomis."
+        });
+        return;
+    }
+
+    const room = rooms.get(player.room);
 
     if (!room) return;
 
-    const player = room.players.get(ws.playerId);
-
-    if (!player || !player.host) {
-        send(ws, {
+    if (room.host !== player.id) {
+        send(player.ws, {
             type: "error",
-            message: "Ainult roomi looja saab alustada."
+            message: "Ainult roomi looja saab mängu alustada."
         });
         return;
     }
 
     room.started = true;
 
-    for (const p of room.players.values()) {
+    for (const id of room.players) {
+        const p = clients.get(id);
+
+        if (!p) continue;
+
+        p.started = true;
+        p.alive = true;
+
         p.x = 2500 + Math.random() * 15000;
         p.y = 2500 + Math.random() * 15000;
         p.angle = Math.random() * Math.PI * 2;
-        p.length = 20;
+        p.length = 25;
         p.score = 0;
-        p.alive = true;
-    }
+        p.kills = 0;
 
-    for (const p of room.players.values()) {
         send(p.ws, {
             type: "gameStart",
             id: p.id
@@ -186,202 +234,317 @@ function startRoom(ws) {
     }
 }
 
-function playerState(ws, data) {
-    const room = rooms.get(ws.roomCode);
+function removePlayer(player) {
+    if (!player) return;
 
-    if (!room || !room.started) return;
+    if (player.room) {
+        const room = rooms.get(player.room);
 
-    const p = room.players.get(ws.playerId);
+        if (room) {
+            room.players.delete(player.id);
 
-    if (!p || !p.alive) return;
-
-    if (Number.isFinite(data.x)) p.x = data.x;
-    if (Number.isFinite(data.y)) p.y = data.y;
-    if (Number.isFinite(data.angle)) p.angle = data.angle;
-    if (Number.isFinite(data.length)) p.length = Math.max(10, data.length);
-    if (Number.isFinite(data.score)) p.score = Math.max(0, data.score);
-
-    if (typeof data.name === "string") {
-        p.name = data.name.slice(0, 16);
-    }
-
-    if (typeof data.color === "string") {
-        p.color = data.color;
-    }
-
-    if (typeof data.skin === "string") {
-        p.skin = data.skin;
-    }
-
-    checkCollisions(room, p);
-}
-
-function distanceToSegment(px, py, ax, ay, bx, by) {
-    const abx = bx - ax;
-    const aby = by - ay;
-
-    const ab2 = abx * abx + aby * aby;
-
-    if (ab2 === 0) {
-        return Math.hypot(px - ax, py - ay);
-    }
-
-    let t =
-        ((px - ax) * abx + (py - ay) * aby) /
-        ab2;
-
-    t = Math.max(0, Math.min(1, t));
-
-    const x = ax + abx * t;
-    const y = ay + aby * t;
-
-    return Math.hypot(px - x, py - y);
-}
-
-function checkCollisions(room, current) {
-    for (const other of room.players.values()) {
-        if (other.id === current.id) continue;
-        if (!other.alive) continue;
-
-        const headDistance =
-            Math.hypot(
-                current.x - other.x,
-                current.y - other.y
-            );
-
-        if (headDistance < 38) {
-            if (current.length >= other.length) {
-                killPlayer(room, other, current);
+            if (room.players.size === 0) {
+                rooms.delete(room.code);
             } else {
-                killPlayer(room, current, other);
-            }
+                if (room.host === player.id) {
+                    room.host = [...room.players][0];
+                }
 
-            continue;
-        }
-
-        const otherTailLength =
-            Math.min(
-                100,
-                Math.floor(other.length)
-            );
-
-        for (let i = 8; i < otherTailLength; i += 4) {
-            const tx =
-                other.x -
-                Math.cos(other.angle) * i * 8;
-
-            const ty =
-                other.y -
-                Math.sin(other.angle) * i * 8;
-
-            const d =
-                Math.hypot(
-                    current.x - tx,
-                    current.y - ty
-                );
-
-            if (d < 25) {
-                killPlayer(room, current, other);
-                break;
+                sendLobby(room);
             }
         }
     }
+
+    clients.delete(player.id);
 }
 
-function killPlayer(room, victim, killer) {
-    if (!victim.alive) return;
+const server = http.createServer((req, res) => {
+    let filePath;
 
-    victim.alive = false;
+    if (req.url === "/" || req.url === "/index.html") {
+        filePath = path.join(__dirname, "index.html");
+    } else {
+        res.writeHead(404);
+        res.end("Not found");
+        return;
+    }
 
-    send(victim.ws, {
-        type: "gameOver",
-        reason:
-            killer.name +
-            " võitis sinu vastu!"
-    });
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            res.writeHead(500, {
+                "Content-Type": "text/plain"
+            });
 
-    broadcast(room, {
-        type: "playerKilled",
-        id: victim.id,
-        killer: killer.id
-    });
+            res.end("index.html not found");
+            return;
+        }
 
-    if (killer && killer.ws) {
-        send(killer.ws, {
-            type: "killReward",
-            coins: 10
+        res.writeHead(200, {
+            "Content-Type": "text/html; charset=utf-8"
         });
-    }
-}
+
+        res.end(data);
+    });
+});
+
+const wss = new WebSocket.Server({
+    server
+});
 
 wss.on("connection", ws => {
+    let player = null;
+
     ws.on("message", raw => {
-        let data;
-
         try {
-            data = JSON.parse(raw.toString());
-        } catch {
-            send(ws, {
-                type: "error",
-                message: "Vigane sõnum."
-            });
-            return;
-        }
+            const data = JSON.parse(raw.toString());
 
-        if (data.type === "createRoom") {
-            createRoom(ws, data);
-            return;
-        }
+            if (!player) {
+                if (data.type === "hello" || data.type === "createRoom" || data.type === "joinRoom") {
+                    player = createPlayer(ws, data);
+                } else {
+                    return;
+                }
+            }
 
-        if (data.type === "joinRoom") {
-            joinRoom(ws, data);
-            return;
-        }
+            if (data.type === "createRoom") {
+                if (!player.room) {
+                    createRoom(player);
+                }
+                return;
+            }
 
-        if (data.type === "startGame") {
-            startRoom(ws);
-            return;
-        }
+            if (data.type === "joinRoom") {
+                if (!player.room) {
+                    joinRoom(player, data.code);
+                }
+                return;
+            }
 
-        if (data.type === "state") {
-            playerState(ws, data);
-            return;
+            if (data.type === "startGame") {
+                startRoom(player);
+                return;
+            }
+
+            if (data.type === "state") {
+                updatePlayer(player, data);
+                return;
+            }
+
+        } catch (err) {
+            console.log("Message error:", err.message);
         }
     });
 
     ws.on("close", () => {
-        const code = ws.roomCode;
+        removePlayer(player);
+    });
 
-        if (!code) return;
-
-        const room = rooms.get(code);
-
-        if (!room) return;
-
-        room.players.delete(ws.playerId);
-
-        if (room.players.size === 0) {
-            rooms.delete(code);
-            return;
-        }
-
-        const first = room.players.values().next().value;
-
-        if (first) {
-            for (const p of room.players.values()) {
-                p.host = false;
-            }
-
-            first.host = true;
-        }
-
-        broadcast(room, {
-            type: "lobby",
-            players: lobby(room)
-        });
+    ws.on("error", () => {
+        removePlayer(player);
     });
 });
 
-server.listen(PORT, "0.0.0.0", () => {
-    console.log(`Snake Arena running on 0.0.0.0:${PORT}`);
+function updatePlayer(player, data) {
+    if (!player || !player.started || !player.alive) return;
+
+    player.x = clamp(Number(data.x) || player.x, 20, WORLD - 20);
+    player.y = clamp(Number(data.y) || player.y, 20, WORLD - 20);
+
+    player.angle = Number(data.angle) || player.angle;
+
+    player.length = clamp(
+        Number(data.length) || player.length,
+        10,
+        500
+    );
+
+    player.name = safeName(data.name);
+    player.color = data.color || player.color;
+    player.skin = data.skin || player.skin;
+
+    player.lastState = Date.now();
+}
+
+function makeBody(player) {
+    const body = [];
+
+    const count = Math.floor(
+        clamp(player.length, 10, 500)
+    );
+
+    const spacing = 8;
+
+    for (let i = 0; i < count; i++) {
+        body.push({
+            x: player.x - Math.cos(player.angle) * i * spacing,
+            y: player.y - Math.sin(player.angle) * i * spacing
+        });
+    }
+
+    return body;
+}
+
+/*
+    SERVER-SIDE SNAKE COLLISION
+
+    Kui A pea läheb B keha sisse:
+    B EI tapa A.
+    A sureb.
+
+    Kui A pea läheb B keha sisse,
+    siis B saab kill'i.
+
+    See on Snake.io tüüpi loogika.
+*/
+
+function collisionLoop() {
+    for (const room of rooms.values()) {
+        if (!room.started) continue;
+
+        const alive = [];
+
+        for (const id of room.players) {
+            const p = clients.get(id);
+
+            if (p && p.alive && p.started) {
+                alive.push(p);
+            }
+        }
+
+        for (const attacker of alive) {
+            if (!attacker.alive) continue;
+
+            for (const victim of alive) {
+                if (attacker.id === victim.id) continue;
+                if (!victim.alive) continue;
+
+                const body = makeBody(victim);
+
+                /*
+                    Esimesed kehaosad jäetakse vahele,
+                    et pea ja kael ei põhjustaks valet kokkupõrget.
+                */
+
+                for (let i = 7; i < body.length; i++) {
+                    const part = body[i];
+
+                    const d = Math.hypot(
+                        attacker.x - part.x,
+                        attacker.y - part.y
+                    );
+
+                    if (d < 25) {
+                        killPlayer(attacker, victim);
+                        break;
+                    }
+                }
+
+                if (!attacker.alive) break;
+            }
+        }
+    }
+}
+
+function killPlayer(deadPlayer, killer) {
+    if (!deadPlayer.alive) return;
+
+    deadPlayer.alive = false;
+
+    if (killer && killer.alive) {
+        killer.kills += 1;
+
+        /*
+            IGA KILL = 10 COINI.
+            Coins saadetakse kliendile.
+        */
+
+        killer.score += 10;
+    }
+
+    send(deadPlayer.ws, {
+        type: "gameOver",
+        reason: killer
+            ? killer.name + " tappis su!"
+            : "Sa surid!"
+    });
+
+    if (killer) {
+        send(killer.ws, {
+            type: "kill",
+            coins: 10,
+            score: killer.score,
+            kills: killer.kills
+        });
+    }
+
+    if (killer) {
+        broadcastRoom(
+            rooms.get(deadPlayer.room),
+            {
+                type: "playerKilled",
+                deadId: deadPlayer.id,
+                killerId: killer.id
+            }
+        );
+    }
+
+    setTimeout(() => {
+        if (!clients.has(deadPlayer.id)) return;
+
+        deadPlayer.alive = true;
+
+        deadPlayer.x =
+            2500 + Math.random() * 15000;
+
+        deadPlayer.y =
+            2500 + Math.random() * 15000;
+
+        deadPlayer.angle =
+            Math.random() * Math.PI * 2;
+
+        deadPlayer.length = 25;
+        deadPlayer.score = 0;
+        deadPlayer.kills = 0;
+
+    }, 3000);
+}
+
+function broadcastPlayers() {
+    for (const room of rooms.values()) {
+        if (!room.started) continue;
+
+        const players = {};
+
+        for (const id of room.players) {
+            const p = clients.get(id);
+
+            if (!p) continue;
+
+            players[id] = {
+                id: p.id,
+                name: p.name,
+                x: p.x,
+                y: p.y,
+                angle: p.angle,
+                length: p.length,
+                score: p.score,
+                kills: p.kills,
+                color: p.color,
+                skin: p.skin,
+                alive: p.alive
+            };
+        }
+
+        broadcastRoom(room, {
+            type: "players",
+            players
+        });
+    }
+}
+
+setInterval(collisionLoop, 50);
+setInterval(broadcastPlayers, 50);
+
+server.listen(PORT, HOST, () => {
+    console.log(`Snake Arena server running on ${HOST}:${PORT}`);
 });
