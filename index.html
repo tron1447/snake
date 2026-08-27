@@ -23,10 +23,6 @@ html,body{
     font-family:Arial,sans-serif;
 }
 
-body{
-    position:fixed;
-}
-
 #game{
     position:fixed;
     inset:0;
@@ -38,32 +34,22 @@ body{
     position:fixed;
     inset:0;
     z-index:50;
-
     display:flex;
     justify-content:center;
     align-items:center;
-
     background:
-        radial-gradient(circle at 50% 20%,
-        #245f2d,
-        #0a1b0d 40%,
-        #020402 85%);
+        radial-gradient(circle at 50% 20%,#245f2d,#0a1b0d 40%,#020402 85%);
 }
 
 .panel{
-    width:min(94vw,440px);
+    width:min(94vw,450px);
     max-height:94vh;
     overflow:auto;
-
-    padding:26px;
-
+    padding:28px;
     background:rgba(4,12,5,.97);
-
     border:1px solid rgba(99,255,120,.35);
     border-radius:28px;
-
     box-shadow:0 0 70px rgba(99,255,120,.15);
-
     color:white;
     text-align:center;
 }
@@ -86,22 +72,14 @@ h1{
 input{
     width:100%;
     height:48px;
-
     margin:5px 0;
-
     background:#071007;
     border:1px solid #315c37;
     border-radius:12px;
-
     color:white;
     text-align:center;
-
     font-size:16px;
     outline:none;
-}
-
-input:focus{
-    border-color:#63ff78;
 }
 
 button{
@@ -113,10 +91,8 @@ button{
     width:100%;
     height:48px;
     margin-top:7px;
-
     border:0;
     border-radius:12px;
-
     font-size:15px;
 }
 
@@ -136,24 +112,21 @@ button{
     gap:8px;
     justify-content:center;
     flex-wrap:wrap;
-    margin:12px 0;
+    margin:14px 0;
 }
 
 .skin{
-    width:48px;
-    height:48px;
-
+    width:55px;
+    height:55px;
     border-radius:50%;
-
     border:3px solid transparent;
-
-    font-size:21px;
+    font-size:25px;
 }
 
 .skin.selected{
     border-color:white;
     transform:scale(1.12);
-    box-shadow:0 0 15px currentColor;
+    box-shadow:0 0 18px currentColor;
 }
 
 #roomBox{
@@ -183,18 +156,15 @@ button{
 .playerRow{
     padding:8px;
     margin:4px 0;
-
     border-radius:8px;
     background:#0b170d;
 }
 
 #startBtn{
     display:none;
-
     width:100%;
     height:48px;
     margin-top:10px;
-
     border:0;
     border-radius:12px;
 }
@@ -211,25 +181,20 @@ button{
     margin-top:8px;
 }
 
-/* HUD */
-
 #hud{
     position:fixed;
     z-index:10;
     left:10px;
     top:10px;
-
     display:none;
     gap:6px;
 }
 
 .stat{
     padding:7px 10px;
-
     background:rgba(0,0,0,.65);
     border:1px solid rgba(99,255,120,.25);
     border-radius:10px;
-
     color:white;
 }
 
@@ -243,114 +208,96 @@ button{
     font-size:16px;
 }
 
-/* MINIMAP */
-
 #minimap{
     position:fixed;
     z-index:12;
-
     right:10px;
     top:10px;
-
     width:160px;
     height:160px;
-
     display:none;
-
     border-radius:15px;
-
     border:2px solid rgba(99,255,120,.7);
-
     background:#061007;
 }
-
-/* MOBILE */
 
 #joystick{
     position:fixed;
     z-index:20;
-
     left:24px;
     bottom:24px;
-
     width:145px;
     height:145px;
-
     display:none;
-
     border-radius:50%;
-
     background:rgba(99,255,120,.08);
     border:2px solid rgba(99,255,120,.35);
 }
 
 #stick{
     position:absolute;
-
     left:50%;
     top:50%;
-
     width:62px;
     height:62px;
-
     transform:translate(-50%,-50%);
-
     border-radius:50%;
-
     background:#63ff78;
     border:3px solid white;
-
     box-shadow:0 0 20px rgba(99,255,120,.5);
 }
 
 #boost{
     position:fixed;
     z-index:20;
-
     right:25px;
     bottom:30px;
-
     width:90px;
     height:90px;
-
     display:none;
-
     border-radius:50%;
-
     background:#087bb0;
     color:white;
-
     border:3px solid #a5e3ff;
-
     font-size:27px;
 }
 
-#boost:active{
-    transform:scale(.92);
+#killText{
+    position:fixed;
+    z-index:30;
+    left:50%;
+    top:25%;
+    transform:translateX(-50%) scale(.7);
+    opacity:0;
+    color:#63ff78;
+    font-size:38px;
+    font-weight:900;
+    text-shadow:0 0 20px #63ff78;
+    pointer-events:none;
+    transition:.25s;
+}
+
+#killText.show{
+    opacity:1;
+    transform:translateX(-50%) scale(1);
 }
 
 #gameOver{
     position:fixed;
     inset:0;
     z-index:60;
-
     display:none;
-
     justify-content:center;
     align-items:center;
-
-    background:rgba(0,0,0,.75);
+    background:rgba(0,0,0,.78);
 }
 
 .overPanel{
     width:min(90vw,390px);
     padding:30px;
-
     background:#081008;
-
     border:1px solid #315b36;
     border-radius:25px;
-
     text-align:center;
     color:white;
 }
@@ -371,6 +318,11 @@ button{
         width:125px;
         height:125px;
     }
+
+    #hud{
+        transform:scale(.9);
+        transform-origin:top left;
+    }
 }
 </style>
 </head>
@@ -390,14 +342,14 @@ button{
 <h1>SNAKE ARENA</h1>
 
 <div class="subtitle">
-Multiplayer Snake
+Eat • Grow • Attack
 </div>
 
 <input
-id="name"
-maxlength="16"
-placeholder="Sinu nimi"
-autocomplete="off"
+    id="name"
+    maxlength="16"
+    placeholder="Sinu nimi"
+    autocomplete="off"
 >
 
 <h3 style="margin-top:10px">
@@ -408,70 +360,73 @@ autocomplete="off"
 
 <button class="skin selected"
 data-color="#63ff78"
+data-skin="green"
 style="background:#63ff78">
 🐍
 </button>
 
 <button class="skin"
 data-color="#4da6ff"
+data-skin="blue"
 style="background:#4da6ff">
 😎
 </button>
 
 <button class="skin"
 data-color="#ff5570"
+data-skin="red"
 style="background:#ff5570">
 😈
 </button>
 
 <button class="skin"
 data-color="#ffd84d"
+data-skin="yellow"
 style="background:#ffd84d">
 😄
 </button>
 
 <button class="skin"
 data-color="#b86cff"
+data-skin="purple"
 style="background:#b86cff">
 👾
 </button>
 
 <button class="skin"
 data-color="#ff8a3d"
+data-skin="orange"
 style="background:#ff8a3d">
 🔥
 </button>
 
 <button class="skin"
 data-color="#ffffff"
+data-skin="white"
 style="background:white;color:black">
 👻
 </button>
 
 <button class="skin"
 data-color="#00e5d4"
+data-skin="cyan"
 style="background:#00e5d4">
 🤖
 </button>
 
 </div>
 
-<button
-id="createBtn"
-class="mainBtn green">
+<button id="createBtn" class="mainBtn green">
 🏠 CREATE ROOM
 </button>
 
 <input
-id="roomInput"
-maxlength="6"
-placeholder="ROOM CODE"
-style="text-transform:uppercase"
+    id="roomInput"
+    maxlength="6"
+    placeholder="ROOM CODE"
 >
 
-<button
-id="joinBtn"
-class="mainBtn dark">
+<button id="joinBtn" class="mainBtn dark">
 🚪 JOIN ROOM
 </button>
 
@@ -487,9 +442,7 @@ ROOM CODE
 
 <div id="players"></div>
 
-<button
-id="startBtn"
-class="green">
+<button id="startBtn" class="green">
 ▶ START GAME
 </button>
 
@@ -503,6 +456,7 @@ class="green">
 
 </div>
 </div>
+
 
 <!-- HUD -->
 
@@ -525,13 +479,22 @@ class="green">
 
 </div>
 
+
+<!-- MINIMAP -->
+
 <canvas
 id="minimap"
 width="160"
 height="160">
 </canvas>
 
-<!-- PHONE -->
+
+<div id="killText">
+💥 ELIMINATED!
+</div>
+
+
+<!-- MOBILE -->
 
 <div id="joystick">
 <div id="stick"></div>
@@ -541,6 +504,7 @@ height="160">
 ⚡
 </button>
 
+
 <!-- GAME OVER -->
 
 <div id="gameOver">
@@ -549,28 +513,31 @@ height="160">
 
 <h2>GAME OVER</h2>
 
-<p>
+<p id="deathReason">
+Sind tapeti!
+</p>
+
+<p style="margin-top:10px">
 Skoor:
 <b id="finalScore">0</b>
 </p>
 
-<br>
-
 <button
 class="mainBtn green"
+style="margin-top:20px"
 onclick="location.reload()">
-🔄 UUesti
+🔄 TAGASI MENÜÜS
 </button>
 
 </div>
-
 </div>
+
 
 <script>
 
-/* =====================================================
+/* =========================================
    CANVAS
-===================================================== */
+========================================= */
 
 const canvas =
 document.getElementById("game");
@@ -584,120 +551,102 @@ document.getElementById("minimap");
 const mapCtx =
 minimap.getContext("2d");
 
-let W =
-innerWidth;
-
-let H =
-innerHeight;
+let W = innerWidth;
+let H = innerHeight;
 
 function resize(){
 
-W =
-innerWidth;
+    W = innerWidth;
+    H = innerHeight;
 
-H =
-innerHeight;
-
-canvas.width =
-W;
-
-canvas.height =
-H;
+    canvas.width = W;
+    canvas.height = H;
 }
 
-addEventListener(
-"resize",
-resize
-);
+addEventListener("resize",resize);
 
 resize();
 
 
-/* =====================================================
+/* =========================================
    WORLD
-===================================================== */
+========================================= */
 
-const WORLD =
-20000;
+const WORLD = 20000;
 
 
-/* =====================================================
+/* =========================================
    FOOD
-===================================================== */
+========================================= */
 
 const foods = [];
 
-const FOOD_COUNT =
-500;
+const FOOD_COUNT = 600;
 
-
-/*
-    Generate food across the whole map.
-*/
-
-for(
-let i=0;
-i<FOOD_COUNT;
-i++
-){
-
-const colors=[
-"#63ff78",
-"#ffd84d",
-"#ff6075",
-"#55c9ff",
-"#c76cff",
-"#ff963d"
+const foodColors = [
+    "#63ff78",
+    "#ffd84d",
+    "#ff6075",
+    "#55c9ff",
+    "#c76cff",
+    "#ff963d"
 ];
 
-foods.push({
+function makeFood(){
 
-x:
-Math.random() *
-WORLD,
+    return {
 
-y:
-Math.random() *
-WORLD,
+        x:Math.random()*WORLD,
 
-radius:
-3 + Math.random()*4,
+        y:Math.random()*WORLD,
 
-color:
-colors[
-Math.floor(
-Math.random()*colors.length
-)
-],
+        radius:3+Math.random()*4,
 
-value:
-1 + Math.floor(
-Math.random()*5
-)
+        color:
+            foodColors[
+                Math.floor(
+                    Math.random()*
+                    foodColors.length
+                )
+            ],
 
-});
+        value:1+Math.floor(
+            Math.random()*5
+        )
+    };
+}
+
+for(let i=0;i<FOOD_COUNT;i++){
+
+    foods.push(
+        makeFood()
+    );
 }
 
 
-/* =====================================================
+/* =========================================
    PLAYER
-===================================================== */
+========================================= */
 
-const me={
+const me = {
 
-id:null,
+    id:null,
 
-x:10000,
-y:10000,
+    x:10000,
 
-angle:0,
-targetAngle:0,
+    y:10000,
 
-length:20,
+    angle:0,
 
-color:"#63ff78",
+    targetAngle:0,
 
-face:"🐍"
+    length:20,
+
+    color:"#63ff78",
+
+    skin:"green",
+
+    name:"Player"
 };
 
 let body=[];
@@ -708,2064 +657,1982 @@ let score=0;
 
 let running=false;
 
+let dead=false;
+
 let boosting=false;
 
 
-/* =====================================================
+/* =========================================
    SKINS
-===================================================== */
-
-let selectedSkin =
-document.querySelector(
-".skin.selected"
-);
+========================================= */
 
 document
 .querySelectorAll(".skin")
 .forEach(button=>{
 
-button.addEventListener(
-"click",
-()=>{
+    button.addEventListener(
+        "click",
+        ()=>{
 
-document
-.querySelectorAll(".skin")
-.forEach(
-b=>b.classList.remove(
-"selected"
-)
-);
+            document
+            .querySelectorAll(".skin")
+            .forEach(b=>{
+                b.classList.remove(
+                    "selected"
+                );
+            });
 
-button.classList.add(
-"selected"
-);
+            button.classList.add(
+                "selected"
+            );
 
-selectedSkin =
-button;
+            me.color =
+                button.dataset.color;
 
-me.color =
-button.dataset.color;
-
-me.face =
-button.textContent.trim();
-
-}
-);
+            me.skin =
+                button.dataset.skin;
+        }
+    );
 
 });
 
 
-/* =====================================================
+/* =========================================
    WEBSOCKET
-===================================================== */
+========================================= */
 
 let socket=null;
 
 let connected=false;
 
-
 function connect(){
 
-const protocol =
-location.protocol === "https:"
-? "wss:"
-: "ws:";
+    const protocol =
+        location.protocol === "https:"
+        ? "wss:"
+        : "ws:";
 
-const url =
-protocol +
-"//" +
-location.host;
+    socket =
+        new WebSocket(
+            protocol+
+            "//"+
+            location.host
+        );
 
+    setConnection(
+        "🟡 Ühendamine..."
+    );
 
-setConnection(
-"🟡 Ühendamine..."
-);
+    socket.onopen=()=>{
 
+        connected=true;
 
-try{
+        setConnection(
+            "🟢 Server ühendatud"
+        );
+    };
 
-socket =
-new WebSocket(url);
+    socket.onclose=()=>{
 
-}catch{
+        connected=false;
 
-setConnection(
-"🔴 Ühendus ebaõnnestus"
-);
+        setConnection(
+            "🔴 Ühendus katkes"
+        );
+    };
 
-return;
+    socket.onerror=()=>{
+
+        setConnection(
+            "🔴 Serveri viga"
+        );
+    };
+
+    socket.onmessage=e=>{
+
+        let data;
+
+        try{
+
+            data =
+                JSON.parse(e.data);
+
+        }catch{
+
+            return;
+        }
+
+        serverMessage(data);
+    };
 }
-
-
-socket.onopen=()=>{
-
-connected=true;
-
-setConnection(
-"🟢 Server ühendatud"
-);
-
-};
-
-
-socket.onclose=()=>{
-
-connected=false;
-
-setConnection(
-"🔴 Ühendus katkes"
-);
-
-};
-
-
-socket.onerror=()=>{
-
-connected=false;
-
-setConnection(
-"🔴 Serveri viga"
-);
-
-};
-
-
-socket.onmessage=
-event=>{
-
-let data;
-
-try{
-
-data =
-JSON.parse(
-event.data
-);
-
-}catch{
-
-return;
-}
-
-serverMessage(data);
-
-};
-
-}
-
 
 function send(data){
 
-if(
-!socket ||
-socket.readyState !==
-WebSocket.OPEN
-){
+    if(
+        !socket ||
+        socket.readyState !==
+        WebSocket.OPEN
+    ){
+        return false;
+    }
 
-return false;
+    socket.send(
+        JSON.stringify(data)
+    );
+
+    return true;
 }
 
-socket.send(
-JSON.stringify(data)
-);
 
-return true;
-}
-
-
-/* =====================================================
+/* =========================================
    SERVER MESSAGE
-===================================================== */
+========================================= */
 
 function serverMessage(data){
 
-if(
-data.type ===
-"roomCreated"
-){
+    if(data.type==="roomCreated"){
 
-me.id =
-data.id;
+        me.id =
+            data.id ||
+            me.id;
 
-showRoom(
-data.code
-);
+        showRoom(
+            data.code
+        );
 
-return;
+        return;
+    }
+
+
+    if(data.type==="roomJoined"){
+
+        me.id =
+            data.id ||
+            me.id;
+
+        showRoom(
+            data.code
+        );
+
+        return;
+    }
+
+
+    if(data.type==="lobby"){
+
+        updateLobby(
+            data.players || []
+        );
+
+        return;
+    }
+
+
+    if(data.type==="gameStart"){
+
+        me.id =
+            data.id ||
+            me.id;
+
+        startGame();
+
+        return;
+    }
+
+
+    if(data.type==="players"){
+
+        others =
+            data.players || {};
+
+        updatePlayerCount();
+
+        return;
+    }
+
+
+    /* ==============================
+       PÄRIS SURM
+    ============================== */
+
+    if(data.type==="gameOver"){
+
+        die(
+            data.reason ||
+            "Sind tapeti!"
+        );
+
+        return;
+    }
+
+
+    /* ==============================
+       KILL
+    ============================== */
+
+    if(data.type==="playerKilled"){
+
+        if(data.id !== me.id){
+
+            showKill();
+        }
+
+        return;
+    }
+
+
+    if(data.type==="error"){
+
+        showError(
+            data.message
+        );
+    }
 }
 
 
-if(
-data.type ===
-"roomJoined"
-){
-
-me.id =
-data.id;
-
-showRoom(
-data.code
-);
-
-return;
-}
-
-
-if(
-data.type ===
-"lobby"
-){
-
-updateLobby(
-data.players
-);
-
-return;
-}
-
-
-if(
-data.type ===
-"gameStart"
-){
-
-me.id =
-data.id ||
-me.id;
-
-startGame();
-
-return;
-}
-
-
-if(
-data.type ===
-"players"
-){
-
-others =
-data.players ||
-{};
-
-updatePlayerCount();
-
-return;
-}
-
-
-if(
-data.type ===
-"error"
-){
-
-showError(
-data.message
-);
-
-}
-
-}
-
-
-/* =====================================================
+/* =========================================
    UI
-===================================================== */
+========================================= */
 
 function playerName(){
 
-return (
-document
-.getElementById("name")
-.value
-.trim() ||
-"Player"
-).substring(
-0,
-16
-);
-
+    return(
+        document
+        .getElementById("name")
+        .value
+        .trim() ||
+        "Player"
+    ).substring(0,16);
 }
-
 
 function showRoom(code){
 
-document
-.getElementById("roomBox")
-.style.display =
-"block";
+    document
+    .getElementById("roomBox")
+    .style.display="block";
 
-document
-.getElementById("roomCode")
-.textContent =
-code;
-
+    document
+    .getElementById("roomCode")
+    .textContent=code;
 }
-
 
 function updateLobby(players){
 
-const box =
-document
-.getElementById("players");
+    const box =
+        document.getElementById(
+            "players"
+        );
 
-box.innerHTML="";
+    box.innerHTML="";
 
+    players.forEach(p=>{
 
-players.forEach(
-p=>{
+        const row =
+            document.createElement(
+                "div"
+            );
 
-const row =
-document
-.createElement("div");
+        row.className =
+            "playerRow";
 
-row.className =
-"playerRow";
+        row.innerHTML =
+            (p.host?"👑 ":"🐍 ")+
+            escapeHtml(
+                p.name ||
+                "Player"
+            );
 
-row.innerHTML =
-(
-p.host
-? "👑 "
-: "🐍 "
-) +
-escapeHTML(
-p.name
-);
+        row.style.color =
+            p.color ||
+            "#fff";
 
-row.style.color =
-p.color ||
-"#fff";
-
-box.appendChild(
-row
-);
-
-}
-);
+        box.appendChild(row);
+    });
 
 
-const mine =
-players.find(
-p=>p.id === me.id
-);
+    if(players.length>0){
 
-if(
-mine &&
-mine.host
-){
-
-document
-.getElementById(
-"startBtn"
-)
-.style.display =
-"block";
-
-}else{
-
-document
-.getElementById(
-"startBtn"
-)
-.style.display =
-"none";
-
+        document
+        .getElementById(
+            "startBtn"
+        )
+        .style.display="block";
+    }
 }
 
+function escapeHtml(text){
+
+    return text
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;");
 }
-
-
-function escapeHTML(text){
-
-return String(text)
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;")
-.replaceAll("'","&#039;");
-
-}
-
 
 function updatePlayerCount(){
 
-document
-.getElementById("playerCount")
-.textContent =
-Math.max(
-1,
-Object.keys(
-others
-).length
-);
-
+    document
+    .getElementById(
+        "playerCount"
+    )
+    .textContent =
+        Math.max(
+            1,
+            Object.keys(
+                others
+            ).length
+        );
 }
-
 
 function showError(text){
 
-document
-.getElementById("error")
-.textContent =
-text || "";
-
+    document
+    .getElementById(
+        "error"
+    )
+    .textContent =
+        text || "";
 }
-
 
 function setConnection(text){
 
-document
-.getElementById(
-"connection"
-)
-.textContent =
-text;
-
+    document
+    .getElementById(
+        "connection"
+    )
+    .textContent =
+        text;
 }
 
 
-/* =====================================================
-   CREATE
-===================================================== */
+/* =========================================
+   CREATE ROOM
+========================================= */
 
 document
 .getElementById("createBtn")
 .onclick=()=>{
 
-showError("");
+    showError("");
 
-if(!connected){
+    if(!connected){
 
-showError(
-"Serveriga ühendamine..."
-);
+        showError(
+            "Serveriga ühendamine..."
+        );
 
-return;
-}
+        return;
+    }
 
-send({
+    send({
 
-type:
-"createRoom",
+        type:"createRoom",
 
-name:
-playerName(),
+        name:playerName(),
 
-color:
-me.color
-
-});
-
+        color:me.color
+    });
 };
 
 
-/* =====================================================
-   JOIN
-===================================================== */
+/* =========================================
+   JOIN ROOM
+========================================= */
 
 document
 .getElementById("joinBtn")
 .onclick=()=>{
 
-showError("");
+    showError("");
 
-const code =
-document
-.getElementById(
-"roomInput"
-)
-.value
-.trim()
-.toUpperCase();
+    const code =
+        document
+        .getElementById(
+            "roomInput"
+        )
+        .value
+        .trim()
+        .toUpperCase();
 
-if(code.length !== 6){
+    if(code.length !== 6){
 
-showError(
-"Room code peab olema 6 märki."
-);
+        showError(
+            "Room code peab olema 6 märki."
+        );
 
-return;
-}
+        return;
+    }
 
-send({
+    send({
 
-type:
-"joinRoom",
+        type:"joinRoom",
 
-code:
+        code:code,
 
-code,
+        name:playerName(),
 
-name:
-playerName(),
-
-color:
-me.color
-
-});
-
+        color:me.color
+    });
 };
 
 
-/* =====================================================
+/* =========================================
    START
-===================================================== */
+========================================= */
 
 document
 .getElementById("startBtn")
 .onclick=()=>{
 
-send({
-
-type:
-"startGame"
-
-});
-
+    send({
+        type:"startGame"
+    });
 };
 
 
-/* =====================================================
+/* =========================================
    KEYBOARD
-===================================================== */
+========================================= */
 
 const keys={};
 
 addEventListener(
-"keydown",
-e=>{
+    "keydown",
+    e=>{
 
-keys[
-e.key.toLowerCase()
-]=true;
+        keys[
+            e.key.toLowerCase()
+        ]=true;
 
-if(
-e.key === "Shift"
-){
+        if(e.key==="Shift"){
 
-boosting=true;
-
-}
-
-});
-
+            boosting=true;
+        }
+    }
+);
 
 addEventListener(
-"keyup",
-e=>{
+    "keyup",
+    e=>{
 
-keys[
-e.key.toLowerCase()
-]=false;
+        keys[
+            e.key.toLowerCase()
+        ]=false;
 
-if(
-e.key === "Shift"
-){
+        if(e.key==="Shift"){
 
-boosting=false;
-
-}
-
-});
+            boosting=false;
+        }
+    }
+);
 
 
 function keyboardDirection(){
 
-let dx=0;
+    let dx=0;
+    let dy=0;
 
-let dy=0;
+    if(
+        keys.w ||
+        keys.arrowup
+    ){
+        dy=-1;
+    }
 
+    if(
+        keys.s ||
+        keys.arrowdown
+    ){
+        dy=1;
+    }
 
-if(
-keys.w ||
-keys.arrowup
-){
+    if(
+        keys.a ||
+        keys.arrowleft
+    ){
+        dx=-1;
+    }
 
-dy=-1;
+    if(
+        keys.d ||
+        keys.arrowright
+    ){
+        dx=1;
+    }
 
+    if(dx || dy){
+
+        me.targetAngle =
+            Math.atan2(
+                dy,
+                dx
+            );
+    }
 }
 
 
-if(
-keys.s ||
-keys.arrowdown
-){
-
-dy=1;
-
-}
-
-
-if(
-keys.a ||
-keys.arrowleft
-){
-
-dx=-1;
-
-}
-
-
-if(
-keys.d ||
-keys.arrowright
-){
-
-dx=1;
-
-}
-
-
-if(
-dx ||
-dy
-){
-
-me.targetAngle =
-Math.atan2(
-dy,
-dx
-);
-
-}
-
-}
-
-
-/* =====================================================
+/* =========================================
    MOUSE
-===================================================== */
+========================================= */
 
 addEventListener(
-"mousemove",
-e=>{
+    "mousemove",
+    e=>{
 
-if(!running)
-return;
+        if(!running)return;
 
-if(innerWidth<=800)
-return;
+        if(innerWidth<=800)return;
 
-const dx =
-e.clientX -
-W/2;
+        const dx =
+            e.clientX-W/2;
 
-const dy =
-e.clientY -
-H/2;
+        const dy =
+            e.clientY-H/2;
 
-if(
-Math.hypot(
-dx,
-dy
-)<20
-){
+        if(
+            Math.hypot(dx,dy)<15
+        ){
+            return;
+        }
 
-return;
-
-}
-
-me.targetAngle =
-Math.atan2(
-dy,
-dx
+        me.targetAngle =
+            Math.atan2(
+                dy,
+                dx
+            );
+    }
 );
 
-});
 
-
-/* =====================================================
-   JOYSTICK
-===================================================== */
+/* =========================================
+   MOBILE JOYSTICK
+========================================= */
 
 const joystick =
-document.getElementById(
-"joystick"
-);
+    document.getElementById(
+        "joystick"
+    );
 
 const stick =
-document.getElementById(
-"stick"
-);
+    document.getElementById(
+        "stick"
+    );
 
 let joyId=null;
 
+function moveJoystick(x,y){
 
-function moveJoystick(
-x,
-y
-){
+    const r =
+        joystick.getBoundingClientRect();
 
-const r =
-joystick.getBoundingClientRect();
+    const cx =
+        r.left+r.width/2;
 
-const cx =
-r.left +
-r.width/2;
+    const cy =
+        r.top+r.height/2;
 
-const cy =
-r.top +
-r.height/2;
+    let dx=x-cx;
+    let dy=y-cy;
 
-let dx =
-x-cx;
+    const max=55;
 
-let dy =
-y-cy;
+    const distance =
+        Math.hypot(dx,dy);
 
-const max=55;
+    if(distance>max){
 
-const distance =
-Math.hypot(
-dx,
-dy
-);
+        dx =
+            dx/distance*max;
 
-if(
-distance>max
-){
+        dy =
+            dy/distance*max;
+    }
 
-dx =
-dx/distance*
-max;
+    stick.style.left =
+        `calc(50% + ${dx}px)`;
 
-dy =
-dy/distance*
-max;
+    stick.style.top =
+        `calc(50% + ${dy}px)`;
 
+    if(distance>7){
+
+        me.targetAngle =
+            Math.atan2(
+                dy,
+                dx
+            );
+    }
 }
-
-stick.style.left =
-`calc(50% + ${dx}px)`;
-
-stick.style.top =
-`calc(50% + ${dy}px)`;
-
-
-if(
-distance>7
-){
-
-me.targetAngle =
-Math.atan2(
-dy,
-dx
-);
-
-}
-
-}
-
 
 function resetJoystick(){
 
-joyId=null;
+    joyId=null;
 
-stick.style.left =
-"50%";
-
-stick.style.top =
-"50%";
-
+    stick.style.left="50%";
+    stick.style.top="50%";
 }
-
 
 joystick.onpointerdown=e=>{
 
-joyId=e.pointerId;
+    joyId=e.pointerId;
 
-joystick.setPointerCapture(
-e.pointerId
-);
+    joystick.setPointerCapture(
+        e.pointerId
+    );
 
-moveJoystick(
-e.clientX,
-e.clientY
-);
-
+    moveJoystick(
+        e.clientX,
+        e.clientY
+    );
 };
-
 
 joystick.onpointermove=e=>{
 
-if(
-e.pointerId !==
-joyId
-)
-return;
+    if(e.pointerId!==joyId){
+        return;
+    }
 
-moveJoystick(
-e.clientX,
-e.clientY
-);
-
+    moveJoystick(
+        e.clientX,
+        e.clientY
+    );
 };
 
-
 joystick.onpointerup=
-resetJoystick;
+    resetJoystick;
 
 joystick.onpointercancel=
-resetJoystick;
+    resetJoystick;
 
 
-/* =====================================================
+/* =========================================
    BOOST
-===================================================== */
+========================================= */
 
 const boost =
-document.getElementById(
-"boost"
-);
+    document.getElementById(
+        "boost"
+    );
 
 boost.onpointerdown=()=>{
 
-boosting=true;
-
+    boosting=true;
 };
 
 boost.onpointerup=()=>{
 
-boosting=false;
-
+    boosting=false;
 };
 
 boost.onpointercancel=()=>{
 
-boosting=false;
-
+    boosting=false;
 };
 
 
-/* =====================================================
-   START
-===================================================== */
+/* =========================================
+   START GAME
+========================================= */
 
 function startGame(){
 
-running=true;
+    running=true;
 
-document
-.getElementById("menu")
-.style.display =
-"none";
+    dead=false;
 
-document
-.getElementById("hud")
-.style.display =
-"flex";
+    score=0;
 
-document
-.getElementById("minimap")
-.style.display =
-"block";
+    document
+    .getElementById("menu")
+    .style.display="none";
 
+    document
+    .getElementById("hud")
+    .style.display="flex";
 
-/*
-    Spawn player.
-*/
-
-me.x =
-5000 +
-Math.random()*10000;
-
-me.y =
-5000 +
-Math.random()*10000;
-
-me.angle =
-Math.random() *
-Math.PI*2;
-
-me.targetAngle =
-me.angle;
+    document
+    .getElementById("minimap")
+    .style.display="block";
 
 
-body=[];
+    me.x =
+        3000+
+        Math.random()*14000;
+
+    me.y =
+        3000+
+        Math.random()*14000;
+
+    me.angle =
+        Math.random()*
+        Math.PI*2;
+
+    me.targetAngle =
+        me.angle;
+
+    body=[];
 
 
-for(
-let i=0;
-i<me.length;
-i++
-){
+    for(
+        let i=0;
+        i<Math.floor(me.length);
+        i++
+    ){
 
-body.push({
+        body.push({
 
-x:
-me.x -
-Math.cos(
-me.angle
-)*i*8,
+            x:
+                me.x-
+                Math.cos(me.angle)*
+                i*8,
 
-y:
-me.y -
-Math.sin(
-me.angle
-)*i*8
-
-});
-
-}
-
+            y:
+                me.y-
+                Math.sin(me.angle)*
+                i*8
+        });
+    }
 }
 
 
-/* =====================================================
-   MOVEMENT
-===================================================== */
+/* =========================================
+   UPDATE
+========================================= */
 
 let lastSend=0;
 
 function update(){
 
-if(!running)
-return;
+    if(!running || dead){
+        return;
+    }
 
 
-keyboardDirection();
+    keyboardDirection();
 
 
-/*
-    Smooth turning.
-*/
-
-let difference =
-me.targetAngle -
-me.angle;
+    let difference =
+        me.targetAngle-
+        me.angle;
 
 
-while(
-difference > Math.PI
-)
-difference -=
-Math.PI*2;
+    while(
+        difference>Math.PI
+    ){
+
+        difference -=
+            Math.PI*2;
+    }
 
 
-while(
-difference < -Math.PI
-)
-difference +=
-Math.PI*2;
+    while(
+        difference<-Math.PI
+    ){
+
+        difference +=
+            Math.PI*2;
+    }
 
 
-me.angle +=
-difference*.13;
+    me.angle +=
+        difference*.14;
 
 
-/*
-    Speed.
-*/
-
-const speed =
-boosting
-? 8
-: 4.6;
+    let speed =
+        boosting
+        ? 8
+        : 4.7;
 
 
-me.x +=
-Math.cos(
-me.angle
-) *
-speed;
+    me.x +=
+        Math.cos(me.angle)*
+        speed;
 
-me.y +=
-Math.sin(
-me.angle
-) *
-speed;
+    me.y +=
+        Math.sin(me.angle)*
+        speed;
 
 
-/*
-    World border.
-*/
+    me.x =
+        Math.max(
+            25,
+            Math.min(
+                WORLD-25,
+                me.x
+            )
+        );
 
-me.x =
-Math.max(
-30,
-Math.min(
-WORLD-30,
-me.x
-)
-);
-
-me.y =
-Math.max(
-30,
-Math.min(
-WORLD-30,
-me.y
-)
-);
+    me.y =
+        Math.max(
+            25,
+            Math.min(
+                WORLD-25,
+                me.y
+            )
+        );
 
 
-/*
-    Body.
-*/
+    body.unshift({
 
-body.unshift({
+        x:me.x,
 
-x:me.x,
-y:me.y
-
-});
+        y:me.y
+    });
 
 
-while(
-body.length >
-Math.floor(
-me.length
-)
-){
+    while(
+        body.length >
+        Math.floor(me.length)
+    ){
 
-body.pop();
+        body.pop();
+    }
 
+
+    while(
+        body.length <
+        Math.floor(me.length)
+    ){
+
+        body.push({
+
+            x:me.x,
+
+            y:me.y
+        });
+    }
+
+
+    eatFood();
+
+
+    if(
+        boosting &&
+        me.length>20
+    ){
+
+        me.length -= .018;
+    }
+
+
+    const now =
+        performance.now();
+
+
+    if(
+        now-lastSend>40
+    ){
+
+        lastSend=now;
+
+        send({
+
+            type:"state",
+
+            x:me.x,
+
+            y:me.y,
+
+            angle:me.angle,
+
+            length:me.length,
+
+            color:me.color,
+
+            name:playerName()
+        });
+    }
+
+
+    document
+    .getElementById(
+        "score"
+    )
+    .textContent =
+        Math.floor(score);
+
+
+    document
+    .getElementById(
+        "length"
+    )
+    .textContent =
+        Math.floor(me.length);
 }
 
 
-while(
-body.length <
-Math.floor(
-me.length
-)
-){
+/* =========================================
+   FOOD
+========================================= */
 
-body.push({
+function eatFood(){
 
-x:me.x,
-y:me.y
+    for(
+        let i=foods.length-1;
+        i>=0;
+        i--
+    ){
 
-});
+        const food=foods[i];
 
+        const dx=
+            food.x-me.x;
+
+        const dy=
+            food.y-me.y;
+
+        if(
+            Math.hypot(dx,dy)<
+            22+food.radius
+        ){
+
+            score +=
+                food.value;
+
+            me.length +=
+                food.value*.45;
+
+            foods[i]=makeFood();
+        }
+    }
 }
 
 
-/*
-    Food collision.
-*/
-
-for(
-let i=foods.length-1;
-i>=0;
-i--
-){
-
-const food =
-foods[i];
-
-const dx =
-food.x-me.x;
-
-const dy =
-food.y-me.y;
-
-const distance =
-Math.hypot(
-dx,
-dy
-);
-
-
-if(
-distance <
-20+food.radius
-){
-
-score +=
-food.value;
-
-me.length +=
-food.value *
-.35;
-
-
-/*
-    Create new food somewhere else.
-*/
-
-foods[i]={
-
-x:
-Math.random()*
-WORLD,
-
-y:
-Math.random()*
-WORLD,
-
-radius:
-3+
-Math.random()*4,
-
-color:
-randomFoodColor(),
-
-value:
-1+
-Math.floor(
-Math.random()*5
-)
-
-};
-
-}
-
-}
-
-
-/*
-    Boost costs a tiny amount
-    of length.
-*/
-
-if(
-boosting &&
-me.length>20
-){
-
-me.length -=
-.018;
-
-}
-
-
-/*
-    Network.
-*/
-
-const now =
-performance.now();
-
-if(
-now-lastSend>50
-){
-
-lastSend=now;
-
-send({
-
-type:"state",
-
-x:me.x,
-
-y:me.y,
-
-angle:me.angle,
-
-length:me.length,
-
-color:me.color,
-
-name:playerName()
-
-});
-
-}
-
-
-/*
-    HUD.
-*/
-
-document
-.getElementById("score")
-.textContent =
-Math.floor(
-score
-);
-
-document
-.getElementById("length")
-.textContent =
-Math.floor(
-me.length
-);
-
-}
-
-
-/* =====================================================
-   FOOD COLOR
-===================================================== */
-
-function randomFoodColor(){
-
-const colors=[
-"#63ff78",
-"#ffd84d",
-"#ff6075",
-"#55c9ff",
-"#c76cff",
-"#ff963d"
-];
-
-return colors[
-Math.floor(
-Math.random()*
-colors.length
-)
-];
-
-}
-
-
-/* =====================================================
+/* =========================================
    CAMERA
-===================================================== */
+========================================= */
 
 let cameraX=me.x;
-
 let cameraY=me.y;
-
 
 function updateCamera(){
 
-cameraX +=
-(
-me.x-cameraX
-)*.09;
+    cameraX +=
+        (me.x-cameraX)*.1;
 
-cameraY +=
-(
-me.y-cameraY
-)*.09;
-
+    cameraY +=
+        (me.y-cameraY)*.1;
 }
 
 
-/* =====================================================
+/* =========================================
    DRAW
-===================================================== */
+========================================= */
 
 function draw(){
 
-ctx.fillStyle =
-"#071008";
+    ctx.fillStyle="#071008";
 
-ctx.fillRect(
-0,
-0,
-W,
-H
-);
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
 
-if(!running)
-return;
+    if(!running){
+        return;
+    }
 
+    updateCamera();
 
-updateCamera();
+    ctx.save();
 
+    ctx.translate(
+        W/2-cameraX,
+        H/2-cameraY
+    );
 
-ctx.save();
+    drawGrid();
 
-ctx.translate(
-W/2,
-H/2
-);
+    drawBorder();
 
-ctx.translate(
--cameraX,
--cameraY
-);
+    drawFood();
 
+    drawOthers();
 
-drawGrid();
+    drawMe();
 
-drawBorder();
+    ctx.restore();
 
-drawFood();
-
-drawOthers();
-
-drawMe();
-
-
-ctx.restore();
-
-
-drawMinimap();
-
+    drawMinimap();
 }
 
 
-/* =====================================================
+/* =========================================
    GRID
-===================================================== */
+========================================= */
 
 function drawGrid(){
 
-const grid=250;
+    const grid=250;
 
-const left =
-cameraX-
-W/2-
-500;
+    const left =
+        cameraX-W/2-500;
 
-const right =
-cameraX+
-W/2+
-500;
+    const right =
+        cameraX+W/2+500;
 
-const top =
-cameraY-
-H/2-
-500;
+    const top =
+        cameraY-H/2-500;
 
-const bottom =
-cameraY+
-H/2+
-500;
+    const bottom =
+        cameraY+H/2+500;
 
 
-ctx.strokeStyle =
-"rgba(99,255,120,.045)";
+    ctx.strokeStyle =
+        "rgba(99,255,120,.045)";
 
-ctx.lineWidth=1;
+    ctx.lineWidth=1;
 
 
-for(
-let x=
-Math.floor(
-left/grid
-)*grid;
+    for(
+        let x=
+            Math.floor(left/grid)*grid;
+        x<right;
+        x+=grid
+    ){
 
-x<right;
+        ctx.beginPath();
 
-x+=grid
-){
+        ctx.moveTo(
+            x,
+            top
+        );
 
-ctx.beginPath();
+        ctx.lineTo(
+            x,
+            bottom
+        );
 
-ctx.moveTo(
-x,
-top
-);
+        ctx.stroke();
+    }
 
-ctx.lineTo(
-x,
-bottom
-);
 
-ctx.stroke();
+    for(
+        let y=
+            Math.floor(top/grid)*grid;
+        y<bottom;
+        y+=grid
+    ){
 
+        ctx.beginPath();
+
+        ctx.moveTo(
+            left,
+            y
+        );
+
+        ctx.lineTo(
+            right,
+            y
+        );
+
+        ctx.stroke();
+    }
 }
 
 
-for(
-let y=
-Math.floor(
-top/grid
-)*grid;
-
-y<bottom;
-
-y+=grid
-){
-
-ctx.beginPath();
-
-ctx.moveTo(
-left,
-y
-);
-
-ctx.lineTo(
-right,
-y
-);
-
-ctx.stroke();
-
-}
-
-}
-
-
-/* =====================================================
+/* =========================================
    BORDER
-===================================================== */
+========================================= */
 
 function drawBorder(){
 
-ctx.strokeStyle =
-"#63ff78";
+    ctx.strokeStyle="#63ff78";
 
-ctx.lineWidth=20;
+    ctx.lineWidth=18;
 
-ctx.shadowColor =
-"#63ff78";
+    ctx.shadowColor="#63ff78";
 
-ctx.shadowBlur=20;
+    ctx.shadowBlur=20;
 
-ctx.strokeRect(
-0,
-0,
-WORLD,
-WORLD
-);
+    ctx.strokeRect(
+        0,
+        0,
+        WORLD,
+        WORLD
+    );
 
-ctx.shadowBlur=0;
-
+    ctx.shadowBlur=0;
 }
 
 
-/* =====================================================
-   FOOD
-===================================================== */
+/* =========================================
+   FOOD DRAW
+========================================= */
 
 function drawFood(){
 
-for(
-const food of foods
+    for(const food of foods){
+
+        if(
+            Math.abs(
+                food.x-cameraX
+            )>W ||
+            Math.abs(
+                food.y-cameraY
+            )>H
+        ){
+            continue;
+        }
+
+
+        ctx.fillStyle =
+            food.color;
+
+        ctx.shadowColor =
+            food.color;
+
+        ctx.shadowBlur=10;
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            food.x,
+            food.y,
+            food.radius,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+    }
+
+    ctx.shadowBlur=0;
+}
+
+
+/* =========================================
+   HEAD SKIN
+========================================= */
+
+function drawSkinHead(
+    x,
+    y,
+    radius,
+    color,
+    skin
 ){
 
-/*
-    Only draw food close to camera
-    for performance.
-*/
+    ctx.save();
 
-if(
-Math.abs(
-food.x-cameraX
-)>W
-||
-Math.abs(
-food.y-cameraY
-)>H
+    ctx.translate(
+        x,
+        y
+    );
+
+
+    ctx.fillStyle=color;
+
+    ctx.shadowColor=color;
+
+    ctx.shadowBlur=20;
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        radius,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.shadowBlur=0;
+
+
+    /* BLUE */
+
+    if(skin==="blue"){
+
+        ctx.strokeStyle="#d5f3ff";
+
+        ctx.lineWidth=4;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            0,
+            0,
+            radius-4,
+            0,
+            Math.PI*2
+        );
+
+        ctx.stroke();
+    }
+
+
+    /* RED */
+
+    if(skin==="red"){
+
+        ctx.strokeStyle="#ffb5c0";
+
+        ctx.lineWidth=3;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            -radius*.65,
+            -radius*.55
+        );
+
+        ctx.lineTo(
+            radius*.65,
+            radius*.55
+        );
+
+        ctx.moveTo(
+            radius*.65,
+            -radius*.55
+        );
+
+        ctx.lineTo(
+            -radius*.65,
+            radius*.55
+        );
+
+        ctx.stroke();
+    }
+
+
+    /* YELLOW */
+
+    if(skin==="yellow"){
+
+        ctx.fillStyle="#fff2a0";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            0,
+            0,
+            radius*.35,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+    }
+
+
+    /* PURPLE */
+
+    if(skin==="purple"){
+
+        ctx.fillStyle="#f0c9ff";
+
+        for(let i=0;i<6;i++){
+
+            const a=
+                i*Math.PI/3;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                Math.cos(a)*
+                    radius*.55,
+
+                Math.sin(a)*
+                    radius*.55,
+
+                4,
+
+                0,
+                Math.PI*2
+            );
+
+            ctx.fill();
+        }
+    }
+
+
+    /* ORANGE */
+
+    if(skin==="orange"){
+
+        ctx.strokeStyle="#ffe2c5";
+
+        ctx.lineWidth=4;
+
+        for(
+            let i=-1;
+            i<=1;
+            i++
+        ){
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                -radius*.7,
+                i*radius*.45
+            );
+
+            ctx.lineTo(
+                radius*.7,
+                i*radius*.45
+            );
+
+            ctx.stroke();
+        }
+    }
+
+
+    /* CYAN */
+
+    if(skin==="cyan"){
+
+        ctx.strokeStyle="#d0fffa";
+
+        ctx.lineWidth=4;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            0,
+            0,
+            radius*.65,
+            0,
+            Math.PI*2
+        );
+
+        ctx.stroke();
+    }
+
+
+    ctx.restore();
+}
+
+
+/* =========================================
+   FACE
+========================================= */
+
+function drawFace(
+    x,
+    y,
+    angle
 ){
 
-continue;
+    ctx.save();
 
+    ctx.translate(
+        x,
+        y
+    );
+
+    ctx.rotate(angle);
+
+
+    /* EYES */
+
+    ctx.fillStyle="white";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        9,
+        -7,
+        6,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        9,
+        7,
+        6,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* PUPILS */
+
+    ctx.fillStyle="#111";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        11,
+        -7,
+        3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        11,
+        7,
+        3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* MOUTH */
+
+    ctx.strokeStyle="#111";
+
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        14,
+        0,
+        5,
+        -.7,
+        .7
+    );
+
+    ctx.stroke();
+
+
+    ctx.restore();
 }
 
 
-ctx.fillStyle =
-food.color;
-
-ctx.shadowColor =
-food.color;
-
-ctx.shadowBlur=9;
-
-
-ctx.beginPath();
-
-ctx.arc(
-food.x,
-food.y,
-food.radius,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-}
-
-
-ctx.shadowBlur=0;
-
-}
-
-
-/* =====================================================
+/* =========================================
    MY SNAKE
-===================================================== */
+========================================= */
 
 function drawMe(){
 
-if(
-body.length===0
-)
-return;
+    if(body.length===0){
+        return;
+    }
 
 
-for(
-let i=
-body.length-1;
+    for(
+        let i=body.length-1;
+        i>=0;
+        i--
+    ){
 
-i>=0;
+        const p=body[i];
 
-i--
-){
+        const progress =
+            i/body.length;
 
-const p =
-body[i];
-
-const progress =
-i/body.length;
-
-const radius =
-8+
-(1-progress)*9;
+        const radius =
+            8+
+            (1-progress)*9;
 
 
-ctx.globalAlpha =
-1-progress*.3;
+        ctx.globalAlpha =
+            1-progress*.3;
 
-ctx.fillStyle =
-me.color;
+        ctx.fillStyle =
+            me.color;
 
-ctx.shadowColor =
-me.color;
+        ctx.shadowColor =
+            me.color;
 
-ctx.shadowBlur =
-i<8
-?14
-:4;
+        ctx.shadowBlur =
+            i<8 ? 14 : 4;
 
 
-ctx.beginPath();
+        ctx.beginPath();
 
-ctx.arc(
-p.x,
-p.y,
-radius,
-0,
-Math.PI*2
-);
+        ctx.arc(
+            p.x,
+            p.y,
+            radius,
+            0,
+            Math.PI*2
+        );
 
-ctx.fill();
+        ctx.fill();
+    }
 
+
+    ctx.globalAlpha=1;
+
+    ctx.shadowBlur=0;
+
+
+    drawSkinHead(
+        me.x,
+        me.y,
+        21,
+        me.color,
+        me.skin
+    );
+
+
+    drawFace(
+        me.x,
+        me.y,
+        me.angle
+    );
+
+
+    drawName(
+        playerName(),
+        me.x,
+        me.y-32
+    );
 }
 
 
-ctx.globalAlpha=1;
-
-ctx.shadowBlur=0;
-
-
-/*
-    Head.
-*/
-
-ctx.fillStyle =
-me.color;
-
-ctx.beginPath();
-
-ctx.arc(
-me.x,
-me.y,
-20,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-
-/*
-    Face.
-*/
-
-drawFace(
-me.x,
-me.y,
-me.angle,
-me.face
-);
-
-
-drawName(
-playerName(),
-me.x,
-me.y-30
-);
-
-}
-
-
-/* =====================================================
+/* =========================================
    OTHER SNAKES
-===================================================== */
+========================================= */
 
 function drawOthers(){
 
-for(
-const id in others
-){
-
-if(
-id===me.id
-)
-continue;
-
-
-const p =
-others[id];
-
-if(!p)
-continue;
+    const skins=[
+        "green",
+        "blue",
+        "red",
+        "yellow",
+        "purple",
+        "orange",
+        "white",
+        "cyan"
+    ];
 
 
-const count =
-Math.min(
-160,
-Math.max(
-20,
-Math.floor(
-p.length||20
-)
-)
-);
+    for(
+        const id in others
+    ){
+
+        if(id===me.id){
+            continue;
+        }
+
+        const p =
+            others[id];
+
+        if(!p){
+            continue;
+        }
 
 
-for(
-let i=count-1;
-i>=0;
-i--
-){
-
-const x =
-p.x-
-Math.cos(
-p.angle
-)*i*8;
-
-const y =
-p.y-
-Math.sin(
-p.angle
-)*i*8;
+        const length =
+            Math.min(
+                160,
+                Math.max(
+                    20,
+                    Math.floor(
+                        p.length || 20
+                    )
+                )
+            );
 
 
-const progress =
-i/count;
+        /* BODY */
 
-const radius =
-8+
-(1-progress)*8;
+        for(
+            let i=length-1;
+            i>=0;
+            i--
+        ){
+
+            const x =
+                p.x-
+                Math.cos(p.angle)*
+                i*8;
+
+            const y =
+                p.y-
+                Math.sin(p.angle)*
+                i*8;
 
 
-ctx.globalAlpha =
-1-progress*.3;
-
-ctx.fillStyle =
-p.color||
-"#4da6ff";
+            const progress =
+                i/length;
 
 
-ctx.beginPath();
+            const radius =
+                8+
+                (1-progress)*8;
 
-ctx.arc(
-x,
-y,
-radius,
-0,
-Math.PI*2
-);
 
-ctx.fill();
+            ctx.globalAlpha =
+                1-progress*.3;
 
+
+            ctx.fillStyle =
+                p.color ||
+                "#4da6ff";
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                x,
+                y,
+                radius,
+                0,
+                Math.PI*2
+            );
+
+            ctx.fill();
+        }
+
+
+        ctx.globalAlpha=1;
+
+
+        /* SKIN */
+
+        let hash=0;
+
+        const name =
+            p.name ||
+            "Player";
+
+
+        for(
+            let i=0;
+            i<name.length;
+            i++
+        ){
+
+            hash +=
+                name.charCodeAt(i);
+        }
+
+
+        const skin =
+            skins[
+                Math.abs(hash)%
+                skins.length
+            ];
+
+
+        drawSkinHead(
+            p.x,
+            p.y,
+            21,
+            p.color ||
+                "#4da6ff",
+            skin
+        );
+
+
+        drawFace(
+            p.x,
+            p.y,
+            p.angle
+        );
+
+
+        drawName(
+            name,
+            p.x,
+            p.y-32
+        );
+    }
 }
 
 
-ctx.globalAlpha=1;
-
-
-ctx.fillStyle =
-p.color||
-"#4da6ff";
-
-
-ctx.beginPath();
-
-ctx.arc(
-p.x,
-p.y,
-20,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-
-/*
-    Every player gets
-    a different face.
-
-    We choose one from
-    their name so it stays
-    consistent visually.
-*/
-
-const faces=[
-"😎",
-"😈",
-"😄",
-"🤖",
-"👻",
-"😺",
-"👾",
-"🥶"
-];
-
-let hash=0;
-
-for(
-let i=0;
-i<(p.name||"").length;
-i++
-){
-
-hash +=
-p.name.charCodeAt(i);
-
-}
-
-const face =
-faces[
-Math.abs(hash) %
-faces.length
-];
-
-
-drawFace(
-p.x,
-p.y,
-p.angle,
-face
-);
-
-
-drawName(
-p.name||
-"Player",
-p.x,
-p.y-30
-);
-
-}
-
-}
-
-
-/* =====================================================
-   FACE
-===================================================== */
-
-function drawFace(
-x,
-y,
-angle,
-face
-){
-
-ctx.save();
-
-ctx.translate(
-x,
-y
-);
-
-ctx.rotate(angle);
-
-
-/*
-    White eyes.
-*/
-
-ctx.fillStyle="white";
-
-ctx.beginPath();
-
-ctx.arc(
-9,
--6,
-6,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-ctx.beginPath();
-
-ctx.arc(
-9,
-6,
-6,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-
-/*
-    Pupils.
-*/
-
-ctx.fillStyle="#111";
-
-ctx.beginPath();
-
-ctx.arc(
-11,
--6,
-3,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-ctx.beginPath();
-
-ctx.arc(
-11,
-6,
-3,
-0,
-Math.PI*2
-);
-
-ctx.fill();
-
-
-/*
-    Small emoji above head
-    for extra character style.
-*/
-
-ctx.font="14px Arial";
-
-ctx.textAlign="center";
-
-ctx.fillText(
-face,
-0,
--24
-);
-
-
-ctx.restore();
-
-}
-
-
-/* =====================================================
+/* =========================================
    NAME
-===================================================== */
+========================================= */
 
 function drawName(
-name,
-x,
-y
+    name,
+    x,
+    y
 ){
 
-ctx.save();
+    ctx.save();
 
-ctx.textAlign =
-"center";
+    ctx.textAlign="center";
 
-ctx.font =
-"bold 12px Arial";
+    ctx.font=
+        "bold 12px Arial";
 
-ctx.fillStyle =
-"white";
+    ctx.fillStyle="white";
 
-ctx.shadowColor =
-"black";
+    ctx.shadowColor="black";
 
-ctx.shadowBlur=5;
+    ctx.shadowBlur=5;
 
-ctx.fillText(
-name,
-x,
-y
-);
+    ctx.fillText(
+        name,
+        x,
+        y
+    );
 
-ctx.restore();
-
+    ctx.restore();
 }
 
 
-/* =====================================================
+/* =========================================
    MINIMAP
-===================================================== */
+========================================= */
 
 function drawMinimap(){
 
-const size =
-minimap.width;
+    const size =
+        minimap.width;
 
 
-mapCtx.clearRect(
-0,
-0,
-size,
-size
-);
+    mapCtx.clearRect(
+        0,
+        0,
+        size,
+        size
+    );
 
 
-mapCtx.fillStyle =
-"#061007";
+    mapCtx.fillStyle="#061007";
 
-mapCtx.fillRect(
-0,
-0,
-size,
-size
-);
-
-
-/*
-    Food dots.
-*/
-
-for(
-const food of foods
-){
-
-const x =
-food.x/WORLD*
-size;
-
-const y =
-food.y/WORLD*
-size;
+    mapCtx.fillRect(
+        0,
+        0,
+        size,
+        size
+    );
 
 
-mapCtx.fillStyle =
-food.color;
+    /* FOOD */
 
-mapCtx.globalAlpha=.55;
+    for(
+        const food of foods
+    ){
 
-mapCtx.beginPath();
+        const x =
+            food.x/WORLD*size;
 
-mapCtx.arc(
-x,
-y,
-1.4,
-0,
-Math.PI*2
-);
-
-mapCtx.fill();
-
-}
-
-mapCtx.globalAlpha=1;
+        const y =
+            food.y/WORLD*size;
 
 
-/*
-    Other players.
-*/
+        mapCtx.fillStyle =
+            food.color;
 
-for(
-const id in others
-){
-
-if(
-id===me.id
-)
-continue;
-
-const p =
-others[id];
-
-const x =
-p.x/WORLD*
-size;
-
-const y =
-p.y/WORLD*
-size;
+        mapCtx.globalAlpha=.5;
 
 
-mapCtx.fillStyle =
-p.color||
-"#ff5368";
+        mapCtx.beginPath();
 
-mapCtx.beginPath();
+        mapCtx.arc(
+            x,
+            y,
+            1.4,
+            0,
+            Math.PI*2
+        );
 
-mapCtx.arc(
-x,
-y,
-4,
-0,
-Math.PI*2
-);
-
-mapCtx.fill();
-
-}
+        mapCtx.fill();
+    }
 
 
-/*
-    Me.
-*/
-
-const mx =
-me.x/WORLD*
-size;
-
-const my =
-me.y/WORLD*
-size;
+    mapCtx.globalAlpha=1;
 
 
-mapCtx.fillStyle =
-me.color;
+    /* OTHER PLAYERS */
 
-mapCtx.shadowColor =
-me.color;
+    for(
+        const id in others
+    ){
 
-mapCtx.shadowBlur=10;
+        if(id===me.id){
+            continue;
+        }
 
-mapCtx.beginPath();
-
-mapCtx.arc(
-mx,
-my,
-6,
-0,
-Math.PI*2
-);
-
-mapCtx.fill();
-
-mapCtx.shadowBlur=0;
+        const p =
+            others[id];
 
 
-/*
-    Border.
-*/
+        const x =
+            p.x/WORLD*size;
 
-mapCtx.strokeStyle =
-"#63ff78";
+        const y =
+            p.y/WORLD*size;
 
-mapCtx.lineWidth=2;
 
-mapCtx.strokeRect(
-1,
-1,
-size-2,
-size-2
-);
+        mapCtx.fillStyle =
+            p.color ||
+            "#ff5268";
 
+
+        mapCtx.beginPath();
+
+        mapCtx.arc(
+            x,
+            y,
+            4,
+            0,
+            Math.PI*2
+        );
+
+        mapCtx.fill();
+    }
+
+
+    /* ME */
+
+    const mx =
+        me.x/WORLD*size;
+
+    const my =
+        me.y/WORLD*size;
+
+
+    mapCtx.fillStyle =
+        me.color;
+
+    mapCtx.shadowColor =
+        me.color;
+
+    mapCtx.shadowBlur=10;
+
+
+    mapCtx.beginPath();
+
+    mapCtx.arc(
+        mx,
+        my,
+        6,
+        0,
+        Math.PI*2
+    );
+
+    mapCtx.fill();
+
+
+    mapCtx.shadowBlur=0;
+
+
+    mapCtx.strokeStyle =
+        "#63ff78";
+
+    mapCtx.lineWidth=2;
+
+
+    mapCtx.strokeRect(
+        1,
+        1,
+        size-2,
+        size-2
+    );
 }
 
 
-/* =====================================================
-   LOOP
-===================================================== */
+/* =========================================
+   KILL MESSAGE
+========================================= */
+
+let killTimer=null;
+
+function showKill(){
+
+    const text =
+        document.getElementById(
+            "killText"
+        );
+
+
+    text.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        killTimer
+    );
+
+
+    killTimer =
+        setTimeout(
+            ()=>{
+                text.classList.remove(
+                    "show"
+                );
+            },
+            800
+        );
+}
+
+
+/* =========================================
+   DEATH
+========================================= */
+
+function die(reason){
+
+    if(dead){
+        return;
+    }
+
+    dead=true;
+
+    running=false;
+
+    boosting=false;
+
+
+    document
+    .getElementById(
+        "deathReason"
+    )
+    .textContent =
+        reason;
+
+
+    document
+    .getElementById(
+        "finalScore"
+    )
+    .textContent =
+        Math.floor(score);
+
+
+    document
+    .getElementById(
+        "gameOver"
+    )
+    .style.display="flex";
+}
+
+
+/* =========================================
+   GAME LOOP
+========================================= */
 
 function loop(){
 
-update();
+    update();
 
-draw();
+    draw();
 
-requestAnimationFrame(
-loop
-);
-
+    requestAnimationFrame(
+        loop
+    );
 }
 
+
+/* =========================================
+   START
+========================================= */
 
 connect();
 
