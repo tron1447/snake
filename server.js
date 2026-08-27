@@ -8,10 +8,13 @@ const PORT = process.env.PORT || 3000;
 const rooms = new Map();
 
 const server = http.createServer((req, res) => {
+    let url = req.url.split("?")[0];
 
-    let file = req.url === "/"
-        ? path.join(__dirname, "index.html")
-        : path.join(__dirname, req.url);
+    if (url === "/") {
+        url = "/index.html";
+    }
+
+    const file = path.join(__dirname, url);
 
     if (!fs.existsSync(file)) {
         res.writeHead(404);
@@ -35,440 +38,354 @@ const server = http.createServer((req, res) => {
     fs.createReadStream(file).pipe(res);
 });
 
-
 const wss = new WebSocket.Server({
     server
 });
 
-
-function makeRoomCode(){
-
+function makeRoomCode() {
     let code;
 
-    do{
-
-        code =
-            Math.random()
+    do {
+        code = Math.random()
             .toString(36)
-            .substring(2,8)
+            .substring(2, 8)
             .toUpperCase();
-
-    }while(rooms.has(code));
+    } while (rooms.has(code));
 
     return code;
 }
 
-
-function send(ws, data){
-
-    if(
-        ws &&
-        ws.readyState === WebSocket.OPEN
-    ){
-
-        ws.send(
-            JSON.stringify(data)
-        );
-
+function send(ws, data) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(data));
     }
 }
 
+function sendLobby(room) {
+    const players = [...room.players.values()].map(p => ({
+        id: p.id,
+        name: p.name,
+        color: p.color,
+        host: p.host
+    }));
 
-function sendLobby(room){
-
-    const players =
-        [...room.players.values()]
-        .map(p => ({
-            name:p.name
-        }));
-
-
-    for(
-        const player of room.players.values()
-    ){
-
-        send(
-            player.ws,
-            {
-                type:"lobby",
-                players:players
-            }
-        );
-
+    for (const player of room.players.values()) {
+        send(player.ws, {
+            type: "lobby",
+            players
+        });
     }
 }
 
+function sendPlayers(room) {
+    const players = {};
 
-function sendPlayers(room){
-
-    const players={};
-
-    for(
-        const [id,p]
-        of room.players
-    ){
-
-        players[id]={
-            x:p.x,
-            y:p.y,
-            angle:p.angle,
-            length:p.length,
-            color:p.color,
-            name:p.name
+    for (const [id, p] of room.players) {
+        players[id] = {
+            x: p.x,
+            y: p.y,
+            angle: p.angle,
+            length: p.length,
+            color: p.color,
+            name: p.name
         };
-
     }
 
-
-    for(
-        const p
-        of room.players.values()
-    ){
-
-        send(
-            p.ws,
-            {
-                type:"players",
-                players:players
-            }
-        );
-
+    for (const player of room.players.values()) {
+        send(player.ws, {
+            type: "players",
+            players
+        });
     }
 }
-
 
 wss.on("connection", ws => {
 
-    const player={
-
-        ws:ws,
-
-        id:
-            Math.random()
+    const player = {
+        ws,
+        id: Math.random()
             .toString(36)
-            .substring(2,10),
+            .substring(2, 10),
 
-        name:"Player",
+        name: "Player",
+        room: null,
+        host: false,
 
-        room:null,
+        x: 10000,
+        y: 10000,
 
-        host:false,
+        angle: 0,
+        length: 20,
 
-        x:10000,
-
-        y:10000,
-
-        angle:0,
-
-        length:20,
-
-        color:"#63ff78"
-
+        color: "#63ff78"
     };
 
-
-    ws.player=player;
-
+    ws.player = player;
 
     ws.on("message", raw => {
 
         let data;
 
-        try{
-
-            data=
-                JSON.parse(
-                    raw.toString()
-                );
-
-        }catch{
-
+        try {
+            data = JSON.parse(raw.toString());
+        } catch {
             return;
-
         }
-
 
         /* CREATE ROOM */
 
-        if(data.type==="createRoom"){
+        if (data.type === "createRoom") {
 
-            if(player.room)
-                return;
+            if (player.room) return;
 
+            const code = makeRoomCode();
 
-            const code=
-                makeRoomCode();
-
-
-            const room={
-
-                code:code,
-
-                started:false,
-
-                players:new Map()
-
+            const room = {
+                code,
+                started: false,
+                players: new Map()
             };
 
+            player.name =
+                String(data.name || "Player")
+                    .substring(0, 16);
 
-            player.name=
-                String(data.name||"Player")
-                .substring(0,16);
+            player.color =
+                typeof data.color === "string"
+                    ? data.color
+                    : "#63ff78";
 
-            player.room=room;
-            player.host=true;
+            player.room = room;
+            player.host = true;
 
             room.players.set(
                 player.id,
                 player
             );
 
-            rooms.set(
-                code,
-                room
-            );
+            rooms.set(code, room);
 
-
-            send(
-                ws,
-                {
-                    type:"roomCreated",
-                    code:code
-                }
-            );
-
+            send(ws, {
+                type: "roomCreated",
+                code
+            });
 
             sendLobby(room);
 
             return;
         }
-
 
         /* JOIN ROOM */
 
-        if(data.type==="joinRoom"){
+        if (data.type === "joinRoom") {
 
-            const code=
-                String(data.code||"")
-                .toUpperCase();
+            const code =
+                String(data.code || "")
+                    .toUpperCase()
+                    .trim();
 
+            const room = rooms.get(code);
 
-            const room=
-                rooms.get(code);
+            if (!room) {
 
-
-            if(!room){
-
-                send(
-                    ws,
-                    {
-                        type:"error",
-                        message:"Seda tuba ei ole olemas."
-                    }
-                );
+                send(ws, {
+                    type: "error",
+                    message: "Seda tuba ei ole olemas."
+                });
 
                 return;
             }
 
+            if (room.started) {
 
-            if(room.started){
-
-                send(
-                    ws,
-                    {
-                        type:"error",
-                        message:"Mäng on juba alanud."
-                    }
-                );
+                send(ws, {
+                    type: "error",
+                    message: "Mäng on juba alanud."
+                });
 
                 return;
             }
 
+            if (room.players.size >= 20) {
 
-            if(room.players.size>=20){
-
-                send(
-                    ws,
-                    {
-                        type:"error",
-                        message:"Tuba on täis."
-                    }
-                );
+                send(ws, {
+                    type: "error",
+                    message: "Tuba on täis."
+                });
 
                 return;
             }
 
+            player.name =
+                String(data.name || "Player")
+                    .substring(0, 16);
 
-            player.name=
-                String(data.name||"Player")
-                .substring(0,16);
+            player.color =
+                typeof data.color === "string"
+                    ? data.color
+                    : "#4da6ff";
 
-            player.room=room;
+            player.room = room;
 
             room.players.set(
                 player.id,
                 player
             );
 
-
-            send(
-                ws,
-                {
-                    type:"roomJoined",
-                    code:code
-                }
-            );
-
+            send(ws, {
+                type: "roomJoined",
+                code
+            });
 
             sendLobby(room);
 
             return;
         }
-
 
         /* START GAME */
 
-        if(data.type==="startGame"){
+        if (data.type === "startGame") {
 
-            const room=player.room;
+            const room = player.room;
 
-            if(!room)
-                return;
+            if (!room) return;
 
-            if(!player.host)
-                return;
+            if (!player.host) return;
 
-            room.started=true;
+            if (room.players.size < 1) return;
 
+            room.started = true;
 
-            for(
-                const p
-                of room.players.values()
-            ){
+            let index = 0;
 
-                send(
-                    p.ws,
-                    {
-                        type:"gameStart"
-                    }
-                );
+            for (const p of room.players.values()) {
 
+                p.x =
+                    5000 +
+                    (index % 5) * 1200;
+
+                p.y =
+                    5000 +
+                    Math.floor(index / 5) * 1200;
+
+                p.length = 20;
+
+                p.angle =
+                    Math.random() *
+                    Math.PI *
+                    2;
+
+                index++;
+
+                send(p.ws, {
+                    type: "gameStart"
+                });
             }
 
             return;
         }
-
 
         /* PLAYER STATE */
 
-        if(data.type==="state"){
+        if (data.type === "state") {
 
-            if(!player.room)
-                return;
+            if (!player.room) return;
 
+            if (!player.room.started) return;
 
-            if(Number.isFinite(data.x))
-                player.x=data.x;
-
-            if(Number.isFinite(data.y))
-                player.y=data.y;
-
-            if(Number.isFinite(data.angle))
-                player.angle=data.angle;
-
-            if(Number.isFinite(data.length))
-                player.length=data.length;
-
-            if(typeof data.color==="string")
-                player.color=data.color;
-
-            if(typeof data.name==="string")
-                player.name=
-                    data.name.substring(0,16);
-
-        }
-
-    });
-
-
-    ws.on("close", () => {
-
-        const room=player.room;
-
-        if(!room)
-            return;
-
-
-        room.players.delete(
-            player.id
-        );
-
-
-        /* Host left */
-
-        if(player.host){
-
-            const next=
-                room.players.values().next().value;
-
-
-            if(next){
-
-                next.host=true;
-
+            if (Number.isFinite(data.x)) {
+                player.x = data.x;
             }
 
+            if (Number.isFinite(data.y)) {
+                player.y = data.y;
+            }
+
+            if (Number.isFinite(data.angle)) {
+                player.angle = data.angle;
+            }
+
+            if (Number.isFinite(data.length)) {
+                player.length = data.length;
+            }
+
+            if (typeof data.color === "string") {
+                player.color = data.color;
+            }
+
+            if (typeof data.name === "string") {
+                player.name =
+                    data.name.substring(0, 16);
+            }
+
+            return;
         }
 
+        /* LEAVE ROOM */
 
-        if(room.players.size===0){
+        if (data.type === "leaveRoom") {
 
-            rooms.delete(
-                room.code
-            );
+            leaveRoom(player);
 
-        }else{
-
-            sendLobby(room);
-
+            return;
         }
-
     });
 
+    ws.on("close", () => {
+        leaveRoom(player);
+    });
 });
 
 
-/*
-   Saadame mängijate asukohad
-   10 korda sekundis.
-*/
+function leaveRoom(player) {
+
+    const room = player.room;
+
+    if (!room) return;
+
+    room.players.delete(player.id);
+
+    player.room = null;
+
+    if (player.host) {
+
+        const next =
+            room.players.values().next().value;
+
+        if (next) {
+            next.host = true;
+        }
+    }
+
+    if (room.players.size === 0) {
+
+        rooms.delete(room.code);
+
+    } else {
+
+        sendLobby(room);
+    }
+}
+
+
+/* Send game state 10 times per second */
 
 setInterval(() => {
 
-    for(
-        const room
-        of rooms.values()
-    ){
+    for (const room of rooms.values()) {
 
-        if(room.started){
-
+        if (room.started) {
             sendPlayers(room);
-
         }
-
     }
 
-},100);
+}, 100);
 
 
-server.listen(
-    PORT,
-    () => {
+server.listen(PORT, () => {
 
-        console.log(
-            "Snake Arena server running on port "+
-            PORT
-        );
+    console.log(
+        "Snake server töötab pordil " + PORT
+    );
 
-    }
-);
+});
