@@ -2,16 +2,15 @@
 <html lang="et">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
 <title>Snake Arena</title>
 
 <style>
 *{
+    box-sizing:border-box;
     margin:0;
     padding:0;
-    box-sizing:border-box;
     user-select:none;
     -webkit-user-select:none;
     -webkit-tap-highlight-color:transparent;
@@ -22,15 +21,21 @@ html,body{
     height:100%;
     overflow:hidden;
     background:#071007;
+    font-family:Arial,sans-serif;
     touch-action:none;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+}
+
+button,input{
     font-family:Arial,sans-serif;
 }
 
-#game{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
+button{
+    cursor:pointer;
 }
 
 /* MENU */
@@ -38,90 +43,138 @@ html,body{
 #menu{
     position:fixed;
     inset:0;
-    z-index:20;
+    z-index:50;
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
     background:
-        radial-gradient(circle at center,#17371c 0%,#081008 50%,#020402 100%);
+        radial-gradient(circle,#17371c,#071007 60%,#020402);
 }
 
-.menu{
-    width:min(90%,430px);
-    padding:32px;
-    text-align:center;
+.panel{
+    width:min(92vw,430px);
+    padding:30px;
+    background:rgba(5,13,6,.96);
+    border:1px solid #3e9d4e;
     border-radius:25px;
-    background:rgba(5,13,6,.95);
-    border:1px solid rgba(100,255,120,.35);
-    box-shadow:0 0 60px rgba(70,255,90,.15);
+    text-align:center;
+    color:white;
+    box-shadow:0 0 60px rgba(60,255,90,.15);
 }
 
 .logo{
-    font-size:72px;
+    font-size:70px;
 }
 
 h1{
-    margin:5px 0;
-    font-size:43px;
-    color:#69ff7b;
+    color:#63ff78;
+    font-size:42px;
+    margin-bottom:8px;
 }
 
-.desc{
-    margin:10px 0 25px;
-    color:#94a895;
+.subtitle{
+    color:#8da38f;
+    margin-bottom:20px;
 }
 
-#name{
+input{
     width:100%;
     padding:14px;
+    margin-bottom:10px;
     border-radius:12px;
-    border:1px solid #315a37;
-    background:#0b160c;
+    border:1px solid #315d38;
+    background:#0a150b;
     color:white;
-    outline:none;
-    font-size:17px;
     text-align:center;
+    font-size:17px;
+    outline:none;
 }
 
-#play{
+.mainButton{
     width:100%;
-    margin-top:14px;
-    padding:15px;
+    padding:14px;
+    margin-top:7px;
     border:0;
     border-radius:12px;
-    background:#63ff77;
+    background:#63ff78;
     color:#061007;
-    font-size:18px;
+    font-size:17px;
     font-weight:bold;
-    cursor:pointer;
+}
+
+.secondary{
+    width:100%;
+    padding:13px;
+    margin-top:8px;
+    border:1px solid #315d38;
+    border-radius:12px;
+    background:#102014;
+    color:white;
+    font-size:16px;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* LOBBY */
+
+#lobby h2{
+    color:#63ff78;
+    margin-bottom:15px;
+}
+
+.roomCode{
+    font-size:35px;
+    letter-spacing:7px;
+    color:white;
+    padding:15px;
+    border-radius:15px;
+    background:#09160a;
+    border:1px solid #315d38;
+    margin:15px 0;
+}
+
+.players{
+    max-height:170px;
+    overflow:auto;
+    margin:10px 0;
+}
+
+.player{
+    padding:9px;
+    margin:5px 0;
+    border-radius:9px;
+    background:#102014;
+    text-align:left;
 }
 
 /* HUD */
 
 #hud{
     position:fixed;
-    z-index:10;
+    z-index:20;
     top:12px;
     left:12px;
     display:none;
     gap:8px;
 }
 
-.box{
+.stat{
+    background:rgba(0,0,0,.65);
+    color:white;
     padding:8px 13px;
     border-radius:10px;
-    background:rgba(0,0,0,.65);
-    border:1px solid rgba(100,255,120,.25);
-    color:white;
+    border:1px solid rgba(100,255,120,.3);
 }
 
-.box span{
+.stat small{
     display:block;
     color:#79917d;
     font-size:9px;
 }
 
-.box strong{
+.stat strong{
     font-size:17px;
 }
 
@@ -129,17 +182,16 @@ h1{
 
 #minimap{
     position:fixed;
-    z-index:10;
+    z-index:20;
     top:12px;
     right:12px;
     width:165px;
     height:165px;
     display:none;
+    border:2px solid #63ff78;
     border-radius:14px;
     overflow:hidden;
-    background:#071008;
-    border:2px solid rgba(100,255,120,.75);
-    box-shadow:0 0 20px rgba(70,255,100,.18);
+    background:#061008;
 }
 
 #map{
@@ -147,12 +199,12 @@ h1{
     height:100%;
 }
 
-.mapLabel{
+.mapTitle{
     position:absolute;
     top:5px;
     left:7px;
-    color:#8cff9b;
     font-size:9px;
+    color:#8dff9b;
     font-weight:bold;
 }
 
@@ -160,7 +212,7 @@ h1{
 
 #joystick{
     position:fixed;
-    z-index:15;
+    z-index:30;
     left:25px;
     bottom:25px;
     width:145px;
@@ -168,7 +220,7 @@ h1{
     display:none;
     border-radius:50%;
     background:rgba(100,255,120,.10);
-    border:2px solid rgba(120,255,140,.35);
+    border:2px solid rgba(130,255,150,.4);
 }
 
 #stick{
@@ -180,54 +232,34 @@ h1{
     transform:translate(-50%,-50%);
     border-radius:50%;
     background:#63e878;
-    border:3px solid rgba(255,255,255,.8);
+    border:3px solid white;
 }
 
 /* BOOST */
 
 #boost{
     position:fixed;
-    z-index:15;
+    z-index:30;
     right:25px;
-    bottom:35px;
-    display:none;
+    bottom:30px;
     width:95px;
     height:95px;
+    display:none;
     border-radius:50%;
     border:3px solid #8edcff;
     background:#09689d;
     color:white;
-    font-size:28px;
+    font-size:27px;
 }
 
-/* ROTATE */
+/* MOBILE ROTATE */
 
 #rotate{
-    position:fixed;
-    inset:0;
-    z-index:100;
     display:none;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    background:#020502;
-    color:white;
-}
-
-#rotate div{
-    padding:30px;
-}
-
-#rotate .icon{
-    font-size:70px;
-}
-
-#rotate h2{
-    color:#63ff77;
-    margin:15px 0;
 }
 
 @media(max-width:800px){
+
     #joystick{
         display:block;
     }
@@ -243,12 +275,30 @@ h1{
 }
 
 @media(max-width:800px) and (orientation:portrait){
+
     #menu{
         display:none;
     }
 
     #rotate{
+        position:fixed;
+        inset:0;
+        z-index:100;
         display:flex;
+        align-items:center;
+        justify-content:center;
+        background:#020502;
+        color:white;
+        text-align:center;
+    }
+
+    #rotate h2{
+        color:#63ff78;
+        margin:15px;
+    }
+
+    .rotateIcon{
+        font-size:70px;
     }
 }
 </style>
@@ -260,61 +310,137 @@ h1{
 
 <div id="rotate">
     <div>
-        <div class="icon">📱</div>
+        <div class="rotateIcon">📱</div>
         <h2>PÖÖRA TELEFON KÜLILI</h2>
-        <p>Snake Arena töötab kõige paremini horisontaalselt.</p>
+        <p>Snake Arena töötab horisontaalselt.</p>
     </div>
 </div>
+
+<!-- MENU -->
 
 <div id="menu">
-    <div class="menu">
+
+    <div class="panel" id="mainMenu">
+
         <div class="logo">🐍</div>
+
         <h1>SNAKE ARENA</h1>
 
-        <div class="desc">
-            Kasvata oma madu ja saa kõige suuremaks!
+        <div class="subtitle">
+            Mängi sõpradega!
         </div>
 
-        <input
-            id="name"
-            maxlength="16"
-            placeholder="Sinu nimi">
+        <input id="name" maxlength="16" placeholder="Sinu nimi">
 
-        <button id="play">
-            MÄNGI
+        <button class="mainButton" id="createRoom">
+            🏠 CREATE ROOM
         </button>
+
+        <button class="secondary" id="showJoin">
+            🔑 JOIN ROOM
+        </button>
+
     </div>
+
+    <!-- JOIN -->
+
+    <div class="panel hidden" id="joinPanel">
+
+        <h2>JOIN ROOM</h2>
+
+        <input
+            id="joinCode"
+            maxlength="6"
+            placeholder="TOA KOOD">
+
+        <button class="mainButton" id="joinRoom">
+            LIITU
+        </button>
+
+        <button class="secondary" id="backJoin">
+            TAGASI
+        </button>
+
+    </div>
+
+    <!-- LOBBY -->
+
+    <div class="panel hidden" id="lobby">
+
+        <h2>🏠 ROOM</h2>
+
+        <p>Jaga seda koodi sõbraga:</p>
+
+        <div class="roomCode" id="roomCode">
+            ------
+        </div>
+
+        <div id="hostText"></div>
+
+        <div class="players" id="players"></div>
+
+        <button
+            class="mainButton hidden"
+            id="startGame">
+            ▶ START GAME
+        </button>
+
+        <p
+            id="waiting"
+            style="margin-top:12px;color:#819682;">
+            Ootan mängijaid...
+        </p>
+
+    </div>
+
 </div>
+
+<!-- HUD -->
 
 <div id="hud">
 
-    <div class="box">
-        <span>SCORE</span>
+    <div class="stat">
+        <small>SCORE</small>
         <strong id="score">0</strong>
     </div>
 
-    <div class="box">
-        <span>LENGTH</span>
+    <div class="stat">
+        <small>LENGTH</small>
         <strong id="length">20</strong>
     </div>
 
 </div>
 
+<!-- MINIMAP -->
+
 <div id="minimap">
+
     <canvas id="map" width="165" height="165"></canvas>
-    <div class="mapLabel">MINIMAP</div>
+
+    <div class="mapTitle">
+        MINIMAP
+    </div>
+
 </div>
+
+<!-- JOYSTICK -->
 
 <div id="joystick">
+
     <div id="stick"></div>
+
 </div>
 
-<button id="boost">⚡</button>
+<!-- BOOST -->
+
+<button id="boost">
+    ⚡
+</button>
 
 <script>
 
 /* =====================================================
-   CANVAS
+   BASIC
 ===================================================== */
 
 const canvas=document.getElementById("game");
@@ -323,21 +449,21 @@ const ctx=canvas.getContext("2d");
 const mapCanvas=document.getElementById("map");
 const mapCtx=mapCanvas.getContext("2d");
 
-let width=innerWidth;
-let height=innerHeight;
+let W=innerWidth;
+let H=innerHeight;
 
 function resize(){
 
-    width=innerWidth;
-    height=innerHeight;
+    W=innerWidth;
+    H=innerHeight;
 
     const dpr=Math.min(devicePixelRatio||1,2);
 
-    canvas.width=width*dpr;
-    canvas.height=height*dpr;
+    canvas.width=W*dpr;
+    canvas.height=H*dpr;
 
-    canvas.style.width=width+"px";
-    canvas.style.height=height+"px";
+    canvas.style.width=W+"px";
+    canvas.style.height=H+"px";
 
     ctx.setTransform(dpr,0,0,dpr,0,0);
 }
@@ -350,39 +476,419 @@ resize();
    WORLD
 ===================================================== */
 
-const WORLD_SIZE=20000;
+const WORLD=20000;
 
 
 /* =====================================================
-   GAME
+   PLAYER
 ===================================================== */
 
-let running=false;
+const player={
+
+    id:null,
+
+    x:WORLD/2,
+
+    y:WORLD/2,
+
+    angle:0,
+
+    target:0,
+
+    speed:4.5,
+
+    color:"#63ff78",
+
+    name:"Player"
+
+};
+
+let body=[];
+
+let foods=[];
 
 let score=0;
 
 let length=20;
 
-let boost=false;
+let running=false;
 
-let lastTime=0;
+let boosting=false;
 
-let foods=[];
 
-const player={
-    x:WORLD_SIZE/2,
-    y:WORLD_SIZE/2,
-    angle:0,
-    targetAngle:0,
-    speed:4.5
+/* =====================================================
+   OTHER PLAYERS
+===================================================== */
+
+let otherPlayers={};
+
+
+/* =====================================================
+   ROOM
+===================================================== */
+
+let socket=null;
+
+let roomCode="";
+
+let isHost=false;
+
+
+/* =====================================================
+   SERVER CONNECTION
+===================================================== */
+
+function connect(){
+
+    /*
+       Kui Render töötab:
+       ws:// või wss:// kasutab sama aadressi.
+    */
+
+    const protocol=
+        location.protocol==="https:"
+        ? "wss:"
+        : "ws:";
+
+    const url=
+        protocol+
+        "//"+
+        location.host;
+
+    socket=new WebSocket(url);
+
+
+    socket.onopen=()=>{
+
+        console.log("Server ühendatud");
+
+    };
+
+
+    socket.onmessage=e=>{
+
+        try{
+
+            const data=JSON.parse(e.data);
+
+            handleServer(data);
+
+        }catch(err){
+
+            console.log(err);
+
+        }
+
+    };
+
+
+    socket.onclose=()=>{
+
+        console.log("Server disconnected");
+
+    };
+
+}
+
+
+/* =====================================================
+   SERVER MESSAGES
+===================================================== */
+
+function handleServer(data){
+
+    if(data.type==="roomCreated"){
+
+        roomCode=data.code;
+
+        isHost=true;
+
+        showLobby();
+
+    }
+
+
+    if(data.type==="roomJoined"){
+
+        roomCode=data.code;
+
+        isHost=false;
+
+        showLobby();
+
+    }
+
+
+    if(data.type==="lobby"){
+
+        updateLobby(
+            data.players||[]
+        );
+
+    }
+
+
+    if(data.type==="gameStart"){
+
+        startGame();
+
+    }
+
+
+    if(data.type==="players"){
+
+        otherPlayers=data.players||{};
+
+    }
+
+}
+
+
+/* =====================================================
+   SEND
+===================================================== */
+
+function send(data){
+
+    if(
+        socket &&
+        socket.readyState===WebSocket.OPEN
+    ){
+
+        socket.send(
+            JSON.stringify(data)
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   NAME
+===================================================== */
+
+function getName(){
+
+    const input=
+        document.getElementById("name");
+
+    return(
+        input.value.trim()||
+        "Player"
+    ).substring(0,16);
+
+}
+
+
+/* =====================================================
+   CREATE ROOM
+===================================================== */
+
+document.getElementById(
+    "createRoom"
+).onclick=()=>{
+
+    player.name=getName();
+
+    connect();
+
+    const wait=setInterval(()=>{
+
+        if(
+            socket &&
+            socket.readyState===WebSocket.OPEN
+        ){
+
+            clearInterval(wait);
+
+            send({
+
+                type:"createRoom",
+
+                name:player.name
+
+            });
+
+        }
+
+    },50);
+
 };
 
-const camera={
-    x:player.x,
-    y:player.y
+
+/* =====================================================
+   JOIN MENU
+===================================================== */
+
+document.getElementById(
+    "showJoin"
+).onclick=()=>{
+
+    document.getElementById(
+        "mainMenu"
+    ).classList.add("hidden");
+
+    document.getElementById(
+        "joinPanel"
+    ).classList.remove("hidden");
+
 };
 
-let body=[];
+
+document.getElementById(
+    "backJoin"
+).onclick=()=>{
+
+    document.getElementById(
+        "joinPanel"
+    ).classList.add("hidden");
+
+    document.getElementById(
+        "mainMenu"
+    ).classList.remove("hidden");
+
+};
+
+
+/* =====================================================
+   JOIN ROOM
+===================================================== */
+
+document.getElementById(
+    "joinRoom"
+).onclick=()=>{
+
+    const code=
+        document.getElementById(
+            "joinCode"
+        ).value.trim().toUpperCase();
+
+    if(code.length<4){
+
+        alert("Sisesta toa kood.");
+
+        return;
+
+    }
+
+    player.name=getName();
+
+    connect();
+
+    const wait=setInterval(()=>{
+
+        if(
+            socket &&
+            socket.readyState===WebSocket.OPEN
+        ){
+
+            clearInterval(wait);
+
+            send({
+
+                type:"joinRoom",
+
+                code:code,
+
+                name:player.name
+
+            });
+
+        }
+
+    },50);
+
+};
+
+
+/* =====================================================
+   LOBBY
+===================================================== */
+
+function showLobby(){
+
+    document.getElementById(
+        "mainMenu"
+    ).classList.add("hidden");
+
+    document.getElementById(
+        "joinPanel"
+    ).classList.add("hidden");
+
+    document.getElementById(
+        "lobby"
+    ).classList.remove("hidden");
+
+    document.getElementById(
+        "roomCode"
+    ).textContent=roomCode;
+
+    if(isHost){
+
+        document.getElementById(
+            "startGame"
+        ).classList.remove("hidden");
+
+        document.getElementById(
+            "hostText"
+        ).textContent=
+            "👑 Sina oled host";
+
+    }else{
+
+        document.getElementById(
+            "hostText"
+        ).textContent=
+            "⏳ Ootan hosti...";
+
+    }
+
+}
+
+
+/* =====================================================
+   UPDATE LOBBY
+===================================================== */
+
+function updateLobby(list){
+
+    const box=
+        document.getElementById("players");
+
+    box.innerHTML="";
+
+    list.forEach((p,index)=>{
+
+        const div=
+            document.createElement("div");
+
+        div.className="player";
+
+        div.textContent=
+            (index===0?"👑 ":"🐍 ")+
+            p.name;
+
+        box.appendChild(div);
+
+    });
+
+}
+
+
+/* =====================================================
+   START GAME BUTTON
+===================================================== */
+
+document.getElementById(
+    "startGame"
+).onclick=()=>{
+
+    send({
+        type:"startGame"
+    });
+
+};
 
 
 /* =====================================================
@@ -393,20 +899,28 @@ function createFood(){
 
     foods=[];
 
-    for(let i=0;i<1000;i++){
+    for(let i=0;i<900;i++){
 
         foods.push({
-            x:Math.random()*WORLD_SIZE,
-            y:Math.random()*WORLD_SIZE,
+
+            x:Math.random()*WORLD,
+
+            y:Math.random()*WORLD,
+
             size:3+Math.random()*4,
-            hue:Math.random()*360
+
+            color:
+                `hsl(${Math.random()*360},90%,60%)`
+
         });
+
     }
+
 }
 
 
 /* =====================================================
-   START
+   START GAME
 ===================================================== */
 
 function startGame(){
@@ -414,37 +928,50 @@ function startGame(){
     running=true;
 
     score=0;
+
     length=20;
 
-    player.x=WORLD_SIZE/2;
-    player.y=WORLD_SIZE/2;
+    player.x=WORLD/2;
+    player.y=WORLD/2;
 
-    player.angle=Math.random()*Math.PI*2;
-    player.targetAngle=player.angle;
+    player.angle=
+        Math.random()*Math.PI*2;
 
-    camera.x=player.x;
-    camera.y=player.y;
+    player.target=
+        player.angle;
 
     body=[];
 
     for(let i=0;i<length;i++){
 
         body.push({
-            x:player.x-Math.cos(player.angle)*i*9,
-            y:player.y-Math.sin(player.angle)*i*9
+
+            x:
+                player.x-
+                Math.cos(player.angle)*i*9,
+
+            y:
+                player.y-
+                Math.sin(player.angle)*i*9
+
         });
+
     }
 
     createFood();
 
-    document.getElementById("menu").style.display="none";
-    document.getElementById("hud").style.display="flex";
-    document.getElementById("minimap").style.display="block";
+    document.getElementById(
+        "menu"
+    ).style.display="none";
 
-    if(innerWidth<=800){
-        document.getElementById("joystick").style.display="block";
-        document.getElementById("boost").style.display="block";
-    }
+    document.getElementById(
+        "hud"
+    ).style.display="flex";
+
+    document.getElementById(
+        "minimap"
+    ).style.display="block";
+
 }
 
 
@@ -458,35 +985,45 @@ addEventListener("keydown",e=>{
 
     keys[e.key.toLowerCase()]=true;
 
-    if(e.key==="Shift"){
-        boost=true;
-    }
+    if(e.key==="Shift")
+        boosting=true;
+
 });
 
 addEventListener("keyup",e=>{
 
     keys[e.key.toLowerCase()]=false;
 
-    if(e.key==="Shift"){
-        boost=false;
-    }
+    if(e.key==="Shift")
+        boosting=false;
+
 });
 
 
-function keyboardControl(){
+function keyboard(){
 
     let dx=0;
     let dy=0;
 
-    if(keys["w"]||keys["arrowup"])dy-=1;
-    if(keys["s"]||keys["arrowdown"])dy+=1;
-    if(keys["a"]||keys["arrowleft"])dx-=1;
-    if(keys["d"]||keys["arrowright"])dx+=1;
+    if(keys["w"]||keys["arrowup"])
+        dy--;
+
+    if(keys["s"]||keys["arrowdown"])
+        dy++;
+
+    if(keys["a"]||keys["arrowleft"])
+        dx--;
+
+    if(keys["d"]||keys["arrowright"])
+        dx++;
 
     if(dx!==0||dy!==0){
 
-        player.targetAngle=Math.atan2(dy,dx);
+        player.target=
+            Math.atan2(dy,dx);
+
     }
+
 }
 
 
@@ -500,10 +1037,12 @@ addEventListener("mousemove",e=>{
 
     if(innerWidth<=800)return;
 
-    player.targetAngle=Math.atan2(
-        e.clientY-height/2,
-        e.clientX-width/2
-    );
+    player.target=
+        Math.atan2(
+            e.clientY-H/2,
+            e.clientX-W/2
+        );
+
 });
 
 
@@ -511,139 +1050,160 @@ addEventListener("mousemove",e=>{
    JOYSTICK
 ===================================================== */
 
-const joystick=document.getElementById("joystick");
-const stick=document.getElementById("stick");
+const joystick=
+    document.getElementById("joystick");
 
-let joystickTouch=null;
+const stick=
+    document.getElementById("stick");
 
-function moveJoystick(x,y){
+let activeTouch=null;
 
-    const rect=joystick.getBoundingClientRect();
 
-    const centerX=rect.left+rect.width/2;
-    const centerY=rect.top+rect.height/2;
+function joystickMove(x,y){
 
-    let dx=x-centerX;
-    let dy=y-centerY;
+    const rect=
+        joystick.getBoundingClientRect();
+
+    const cx=
+        rect.left+
+        rect.width/2;
+
+    const cy=
+        rect.top+
+        rect.height/2;
+
+    let dx=x-cx;
+    let dy=y-cy;
 
     const max=55;
 
-    const distance=Math.hypot(dx,dy);
+    const dist=
+        Math.hypot(dx,dy);
 
-    if(distance>max){
+    if(dist>max){
 
-        dx=dx/distance*max;
-        dy=dy/distance*max;
+        dx=dx/dist*max;
+        dy=dy/dist*max;
+
     }
 
-    stick.style.left=`calc(50% + ${dx}px)`;
-    stick.style.top=`calc(50% + ${dy}px)`;
+    stick.style.left=
+        `calc(50% + ${dx}px)`;
 
-    if(distance>5){
+    stick.style.top=
+        `calc(50% + ${dy}px)`;
 
-        player.targetAngle=Math.atan2(dy,dx);
+    if(dist>5){
+
+        player.target=
+            Math.atan2(dy,dx);
+
     }
+
 }
 
-function resetJoystick(){
 
-    joystickTouch=null;
+function resetStick(){
+
+    activeTouch=null;
 
     stick.style.left="50%";
     stick.style.top="50%";
+
 }
 
-joystick.addEventListener("touchstart",e=>{
 
-    e.preventDefault();
+joystick.addEventListener(
+    "touchstart",
+    e=>{
 
-    const t=e.changedTouches[0];
+        e.preventDefault();
 
-    joystickTouch=t.identifier;
+        const t=e.changedTouches[0];
 
-    moveJoystick(t.clientX,t.clientY);
+        activeTouch=t.identifier;
 
-},{passive:false});
+        joystickMove(
+            t.clientX,
+            t.clientY
+        );
 
-joystick.addEventListener("touchmove",e=>{
+    },
+    {passive:false}
+);
 
-    e.preventDefault();
 
-    for(const t of e.changedTouches){
+joystick.addEventListener(
+    "touchmove",
+    e=>{
 
-        if(t.identifier===joystickTouch){
+        e.preventDefault();
 
-            moveJoystick(
-                t.clientX,
-                t.clientY
-            );
+        for(const t of e.changedTouches){
 
-            break;
+            if(
+                t.identifier===activeTouch
+            ){
+
+                joystickMove(
+                    t.clientX,
+                    t.clientY
+                );
+
+            }
+
         }
-    }
 
-},{passive:false});
-
-joystick.addEventListener("touchend",e=>{
-
-    e.preventDefault();
-
-    resetJoystick();
-
-},{passive:false});
-
-joystick.addEventListener("touchcancel",e=>{
-
-    resetJoystick();
-
-});
+    },
+    {passive:false}
+);
 
 
-/* =====================================================
-   BOOST BUTTON
-===================================================== */
+joystick.addEventListener(
+    "touchend",
+    e=>{
 
-const boostButton=document.getElementById("boost");
+        e.preventDefault();
 
-boostButton.addEventListener("touchstart",e=>{
+        resetStick();
 
-    e.preventDefault();
-    boost=true;
-
-},{passive:false});
-
-boostButton.addEventListener("touchend",e=>{
-
-    e.preventDefault();
-    boost=false;
-
-},{passive:false});
-
-boostButton.addEventListener("touchcancel",()=>{
-
-    boost=false;
-
-});
+    },
+    {passive:false}
+);
 
 
 /* =====================================================
-   ANGLE
+   BOOST
 ===================================================== */
 
-function rotateTowards(current,target,amount){
+document.getElementById(
+    "boost"
+).addEventListener(
+    "touchstart",
+    e=>{
 
-    let difference=target-current;
+        e.preventDefault();
 
-    while(difference>Math.PI){
-        difference-=Math.PI*2;
-    }
+        boosting=true;
 
-    while(difference<-Math.PI){
-        difference+=Math.PI*2;
-    }
+    },
+    {passive:false}
+);
 
-    return current+difference*amount;
-}
+
+document.getElementById(
+    "boost"
+).addEventListener(
+    "touchend",
+    e=>{
+
+        e.preventDefault();
+
+        boosting=false;
+
+    },
+    {passive:false}
+);
 
 
 /* =====================================================
@@ -654,52 +1214,58 @@ function update(dt){
 
     if(!running)return;
 
-    keyboardControl();
+    keyboard();
 
-    player.angle=rotateTowards(
-        player.angle,
-        player.targetAngle,
-        Math.min(1,dt*8)
-    );
 
-    const currentSpeed=
-        boost
-        ? player.speed*1.8
+    let difference=
+        player.target-player.angle;
+
+
+    while(difference>Math.PI)
+        difference-=Math.PI*2;
+
+    while(difference<-Math.PI)
+        difference+=Math.PI*2;
+
+
+    player.angle+=
+        difference*Math.min(1,dt*8);
+
+
+    const speed=
+        boosting
+        ? player.speed*1.7
         : player.speed;
 
 
     player.x+=
         Math.cos(player.angle)*
-        currentSpeed*
-        dt*60;
+        speed*dt*60;
 
     player.y+=
         Math.sin(player.angle)*
-        currentSpeed*
-        dt*60;
+        speed*dt*60;
 
 
-    /* WORLD BORDER */
+    /* BORDER */
 
-    if(player.x<30){
-        player.x=30;
-        player.targetAngle=0;
-    }
+    player.x=
+        Math.max(
+            20,
+            Math.min(
+                WORLD-20,
+                player.x
+            )
+        );
 
-    if(player.y<30){
-        player.y=30;
-        player.targetAngle=Math.PI/2;
-    }
-
-    if(player.x>WORLD_SIZE-30){
-        player.x=WORLD_SIZE-30;
-        player.targetAngle=Math.PI;
-    }
-
-    if(player.y>WORLD_SIZE-30){
-        player.y=WORLD_SIZE-30;
-        player.targetAngle=-Math.PI/2;
-    }
+    player.y=
+        Math.max(
+            20,
+            Math.min(
+                WORLD-20,
+                player.y
+            )
+        );
 
 
     /* BODY */
@@ -709,8 +1275,13 @@ function update(dt){
         y:player.y
     });
 
-    while(body.length>Math.floor(length)){
+    while(
+        body.length>
+        Math.floor(length)
+    ){
+
         body.pop();
+
     }
 
 
@@ -728,26 +1299,56 @@ function update(dt){
         ){
 
             score++;
-            length+=1;
+
+            length++;
 
             foods[i]={
-                x:Math.random()*WORLD_SIZE,
-                y:Math.random()*WORLD_SIZE,
+
+                x:Math.random()*WORLD,
+
+                y:Math.random()*WORLD,
+
                 size:3+Math.random()*4,
-                hue:Math.random()*360
+
+                color:
+                    `hsl(${Math.random()*360},90%,60%)`
+
             };
+
         }
+
     }
 
 
-    /* CAMERA */
+    /* SEND POSITION */
 
-    camera.x+=(player.x-camera.x)*Math.min(1,dt*7);
-    camera.y+=(player.y-camera.y)*Math.min(1,dt*7);
+    send({
+
+        type:"state",
+
+        x:player.x,
+
+        y:player.y,
+
+        angle:player.angle,
+
+        length:length,
+
+        color:player.color,
+
+        name:player.name
+
+    });
 
 
-    document.getElementById("score").textContent=score;
-    document.getElementById("length").textContent=Math.floor(length);
+    document.getElementById(
+        "score"
+    ).textContent=score;
+
+    document.getElementById(
+        "length"
+    ).textContent=Math.floor(length);
+
 }
 
 
@@ -755,27 +1356,56 @@ function update(dt){
    DRAW
 ===================================================== */
 
+const camera={
+    x:WORLD/2,
+    y:WORLD/2
+};
+
+
 function draw(){
 
-    ctx.clearRect(0,0,width,height);
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
 
     ctx.fillStyle="#071007";
-    ctx.fillRect(0,0,width,height);
 
-    if(!running)return;
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
 
-    /*
-       Sama maailma.
-       Ainult kaamera liigub.
-    */
+
+    if(!running)
+        return;
+
+
+    camera.x+=
+        (player.x-camera.x)*.10;
+
+    camera.y+=
+        (player.y-camera.y)*.10;
+
 
     const zoom=1.15;
 
+
     ctx.save();
 
-    ctx.translate(width/2,height/2);
+    ctx.translate(
+        W/2,
+        H/2
+    );
 
-    ctx.scale(zoom,zoom);
+    ctx.scale(
+        zoom,
+        zoom
+    );
 
     ctx.translate(
         -camera.x,
@@ -790,8 +1420,8 @@ function draw(){
     ctx.fillRect(
         0,
         0,
-        WORLD_SIZE,
-        WORLD_SIZE
+        WORLD,
+        WORLD
     );
 
 
@@ -799,17 +1429,24 @@ function draw(){
 
     const grid=250;
 
-    const visibleW=width/zoom;
-    const visibleH=height/zoom;
+    const visibleW=W/zoom;
+    const visibleH=H/zoom;
 
-    const left=camera.x-visibleW/2-500;
-    const right=camera.x+visibleW/2+500;
+    const left=
+        camera.x-visibleW/2-500;
 
-    const top=camera.y-visibleH/2-500;
-    const bottom=camera.y+visibleH/2+500;
+    const right=
+        camera.x+visibleW/2+500;
 
-    ctx.strokeStyle="rgba(100,255,120,.035)";
-    ctx.lineWidth=1;
+    const top=
+        camera.y-visibleH/2-500;
+
+    const bottom=
+        camera.y+visibleH/2+500;
+
+
+    ctx.strokeStyle=
+        "rgba(100,255,120,.035)";
 
     for(
         let x=Math.floor(left/grid)*grid;
@@ -818,10 +1455,14 @@ function draw(){
     ){
 
         ctx.beginPath();
+
         ctx.moveTo(x,top);
         ctx.lineTo(x,bottom);
+
         ctx.stroke();
+
     }
+
 
     for(
         let y=Math.floor(top/grid)*grid;
@@ -830,9 +1471,12 @@ function draw(){
     ){
 
         ctx.beginPath();
+
         ctx.moveTo(left,y);
         ctx.lineTo(right,y);
+
         ctx.stroke();
+
     }
 
 
@@ -845,9 +1489,10 @@ function draw(){
             f.x>right||
             f.y<top||
             f.y>bottom
-        )continue;
+        )
+            continue;
 
-        ctx.fillStyle=`hsl(${f.hue},90%,60%)`;
+        ctx.fillStyle=f.color;
 
         ctx.beginPath();
 
@@ -860,12 +1505,30 @@ function draw(){
         );
 
         ctx.fill();
+
     }
 
 
-    /* SNAKE */
+    /* OTHER PLAYERS */
 
-    drawSnake();
+    for(
+        const id in otherPlayers
+    ){
+
+        const p=
+            otherPlayers[id];
+
+        if(!p)
+            continue;
+
+        drawOther(p);
+
+    }
+
+
+    /* MY SNAKE */
+
+    drawMine();
 
 
     /* BORDER */
@@ -876,56 +1539,62 @@ function draw(){
     ctx.strokeRect(
         0,
         0,
-        WORLD_SIZE,
-        WORLD_SIZE
+        WORLD,
+        WORLD
     );
+
 
     ctx.restore();
 
 
     drawMinimap();
+
 }
 
 
 /* =====================================================
-   SNAKE
+   MY SNAKE
 ===================================================== */
 
-function drawSnake(){
+function drawMine(){
 
-    for(let i=body.length-1;i>=0;i--){
+    for(
+        let i=body.length-1;
+        i>=0;
+        i--
+    ){
 
         const p=body[i];
 
-        const progress=i/body.length;
+        const progress=
+            i/body.length;
 
         const radius=
-            17-progress*7;
+            Math.max(
+                7,
+                17-progress*8
+            );
 
-        ctx.fillStyle="#63ff78";
-
-        ctx.shadowColor="#63ff78";
-        ctx.shadowBlur=7;
+        ctx.fillStyle=player.color;
 
         ctx.beginPath();
 
         ctx.arc(
             p.x,
             p.y,
-            Math.max(7,radius),
+            radius,
             0,
             Math.PI*2
         );
 
         ctx.fill();
-    }
 
-    ctx.shadowBlur=0;
+    }
 
 
     /* HEAD */
 
-    ctx.fillStyle="#63ff78";
+    ctx.fillStyle=player.color;
 
     ctx.beginPath();
 
@@ -939,40 +1608,94 @@ function drawSnake(){
 
     ctx.fill();
 
+}
 
-    /* EYES */
 
-    const fx=Math.cos(player.angle);
-    const fy=Math.sin(player.angle);
+/* =====================================================
+   OTHER SNAKE
+===================================================== */
 
-    const sx=-fy;
-    const sy=fx;
+function drawOther(p){
 
-    ctx.fillStyle="#061006";
+    const color=
+        p.color||"#ff4055";
+
+    const count=
+        Math.min(
+            70,
+            Math.max(
+                12,
+                Math.floor(p.length||20)
+            )
+        );
+
+
+    for(let i=count;i>=0;i--){
+
+        const x=
+            p.x-
+            Math.cos(p.angle||0)*
+            i*9;
+
+        const y=
+            p.y-
+            Math.sin(p.angle||0)*
+            i*9;
+
+
+        ctx.globalAlpha=
+            1-i/(count+10);
+
+        ctx.fillStyle=color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            10,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+    ctx.globalAlpha=1;
+
+
+    ctx.fillStyle=color;
 
     ctx.beginPath();
 
     ctx.arc(
-        player.x+fx*9+sx*5,
-        player.y+fy*9+sy*5,
-        4,
+        p.x,
+        p.y,
+        18,
         0,
         Math.PI*2
     );
 
     ctx.fill();
 
-    ctx.beginPath();
 
-    ctx.arc(
-        player.x+fx*9-sx*5,
-        player.y+fy*9-sy*5,
-        4,
-        0,
-        Math.PI*2
-    );
+    if(p.name){
 
-    ctx.fill();
+        ctx.font="bold 12px Arial";
+
+        ctx.textAlign="center";
+
+        ctx.fillStyle="white";
+
+        ctx.fillText(
+            p.name,
+            p.x,
+            p.y-25
+        );
+
+    }
+
 }
 
 
@@ -991,7 +1714,7 @@ function drawMinimap(){
         size
     );
 
-    mapCtx.fillStyle="#071008";
+    mapCtx.fillStyle="#071108";
 
     mapCtx.fillRect(
         0,
@@ -1008,38 +1731,88 @@ function drawMinimap(){
 
     for(let i=1;i<10;i++){
 
-        const p=i*size/10;
+        const p=
+            i*size/10;
 
         mapCtx.beginPath();
+
         mapCtx.moveTo(p,0);
         mapCtx.lineTo(p,size);
+
         mapCtx.stroke();
 
+
         mapCtx.beginPath();
+
         mapCtx.moveTo(0,p);
         mapCtx.lineTo(size,p);
+
         mapCtx.stroke();
+
     }
 
 
-    /* PLAYER */
+    /* OTHER PLAYERS */
 
-    const x=
-        player.x/WORLD_SIZE*size;
+    for(
+        const id in otherPlayers
+    ){
 
-    const y=
-        player.y/WORLD_SIZE*size;
+        const p=
+            otherPlayers[id];
+
+        if(!p)
+            continue;
+
+
+        const x=
+            p.x/WORLD*size;
+
+        const y=
+            p.y/WORLD*size;
+
+
+        mapCtx.fillStyle="#ff4055";
+
+        mapCtx.shadowColor="#ff4055";
+        mapCtx.shadowBlur=8;
+
+
+        mapCtx.beginPath();
+
+        mapCtx.arc(
+            x,
+            y,
+            4,
+            0,
+            Math.PI*2
+        );
+
+        mapCtx.fill();
+
+    }
+
+
+    /* ME */
+
+    const meX=
+        player.x/WORLD*size;
+
+    const meY=
+        player.y/WORLD*size;
 
 
     mapCtx.fillStyle="#63ff78";
+
     mapCtx.shadowColor="#63ff78";
     mapCtx.shadowBlur=10;
+
 
     mapCtx.beginPath();
 
     mapCtx.arc(
-        x,
-        y,
+        meX,
+        meY,
         6,
         0,
         Math.PI*2
@@ -1050,28 +1823,10 @@ function drawMinimap(){
     mapCtx.shadowBlur=0;
 
 
-    /* VIEW AREA */
-
-    const viewW=
-        width/WORLD_SIZE*size*2;
-
-    const viewH=
-        height/WORLD_SIZE*size*2;
-
-    mapCtx.strokeStyle=
-        "rgba(255,255,255,.18)";
-
-    mapCtx.strokeRect(
-        x-viewW/2,
-        y-viewH/2,
-        viewW,
-        viewH
-    );
-
-
     /* BORDER */
 
     mapCtx.strokeStyle="#63ff78";
+
     mapCtx.lineWidth=2;
 
     mapCtx.strokeRect(
@@ -1080,34 +1835,28 @@ function drawMinimap(){
         size-2,
         size-2
     );
+
 }
 
 
 /* =====================================================
-   PLAY
+   LOOP
 ===================================================== */
 
-document.getElementById("play").addEventListener(
-    "click",
-    startGame
-);
+let last=performance.now();
 
-
-/* =====================================================
-   GAME LOOP
-===================================================== */
-
-function loop(time){
+function loop(now){
 
     const dt=
         Math.min(
             .033,
-            (time-lastTime)/1000 || 0
+            (now-last)/1000
         );
 
-    lastTime=time;
+    last=now;
 
     update(dt);
+
     draw();
 
     requestAnimationFrame(loop);
