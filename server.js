@@ -3,821 +3,343 @@ const fs = require("fs");
 const path = require("path");
 const WebSocket = require("ws");
 
-const PORT = Number(process.env.PORT) || 10000;
-const HOST = "0.0.0.0";
-
-const WORLD = 20000;
-const MAX_PLAYERS = 20;
+const PORT = process.env.PORT || 10000;
 
 const rooms = new Map();
 
-function randomId() {
-    return Math.random().toString(36).slice(2, 12);
+const server = http.createServer((req, res) => {
+  let urlPath = req.url.split("?")[0];
+
+  if (urlPath === "/") {
+    urlPath = "/index.html";
+  }
+
+  const filePath = path.join(__dirname, urlPath);
+
+  if (!filePath.startsWith(__dirname)) {
+    res.writeHead(403);
+    return res.end("Forbidden");
+  }
+
+  if (!fs.existsSync(filePath)) {
+    res.writeHead(404);
+    return res.end("Not found");
+  }
+
+  const ext = path.extname(filePath);
+
+  const types = {
+    ".html": "text/html; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".svg": "image/svg+xml"
+  };
+
+  res.writeHead(200, {
+    "Content-Type": types[ext] || "application/octet-stream",
+    "Cache-Control": "no-cache"
+  });
+
+  fs.createReadStream(filePath).pipe(res);
+});
+
+const wss = new WebSocket.Server({
+  server
+});
+
+function makeCode() {
+  let code;
+
+  do {
+    code = Math.random()
+      .toString(36)
+      .substring(2, 8)
+      .toUpperCase();
+  } while (rooms.has(code));
+
+  return code;
 }
 
-function makeRoomCode() {
-    let code;
-
-    do {
-        code = Math.random()
-            .toString(36)
-            .substring(2, 8)
-            .toUpperCase();
-    } while (rooms.has(code));
-
-    return code;
-}
-
-function safeName(name) {
-    return String(name || "Player")
-        .replace(/[<>]/g, "")
-        .substring(0, 16) || "Player";
-}
-
-function safeColor(color) {
-    if (typeof color !== "string") {
-        return "#63ff78";
-    }
-
-    if (!/^#[0-9a-fA-F]{6}$/.test(color)) {
-        return "#63ff78";
-    }
-
-    return color;
+function makeId() {
+  return Math.random()
+    .toString(36)
+    .substring(2, 12);
 }
 
 function send(ws, data) {
-    if (
-        ws &&
-        ws.readyState === WebSocket.OPEN
-    ) {
-        ws.send(JSON.stringify(data));
-    }
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(data));
+  }
 }
 
 function broadcast(room, data) {
-    for (const player of room.players.values()) {
-        send(player.ws, data);
-    }
+  for (const player of room.players.values()) {
+    send(player.ws, data);
+  }
 }
 
-function sendLobby(room) {
-    const players = [];
+function lobby(room) {
+  const players = [];
 
-    for (const p of room.players.values()) {
-        players.push({
-            id: p.id,
-            name: p.name,
-            color: p.color,
-            skin: p.skin,
-            host: p.host
-        });
-    }
-
-    broadcast(room, {
-        type: "lobby",
-        players
+  for (const p of room.players.values()) {
+    players.push({
+      id: p.id,
+      name: p.name,
+      color: p.color,
+      host: p.host
     });
+  }
+
+  broadcast(room, {
+    type: "lobby",
+    players
+  });
 }
 
-function playerInfo(p) {
-    return {
-        x: p.x,
-        y: p.y,
-        angle: p.angle,
-        length: p.length,
-        color: p.color,
-        skin: p.skin,
-        name: p.name,
-        alive: p.alive
+function playerData(room) {
+  const result = {};
+
+  for (const [id, p] of room.players) {
+    result[id] = {
+      id: p.id,
+      name: p.name,
+      x: p.x,
+      y: p.y,
+      angle: p.angle,
+      length: p.length,
+      color: p.color,
+      skin: p.skin,
+      alive: p.alive
     };
+  }
+
+  return result;
 }
 
-function sendPlayers(room) {
-    const players = {};
+wss.on("connection", ws => {
+  const player = {
+    ws,
+    id: makeId(),
+    name: "Player",
+    color: "#63ff78",
+    skin: "green",
+    x: 10000,
+    y: 10000,
+    angle: 0,
+    length: 25,
+    alive: true,
+    room: null,
+    host: false
+  };
 
-    for (const [id, p] of room.players) {
-        if (!p.alive) continue;
+  ws.player = player;
 
-        players[id] = playerInfo(p);
+  send(ws, {
+    type: "connected",
+    id: player.id
+  });
+
+  ws.on("message", raw => {
+    let data;
+
+    try {
+      data = JSON.parse(raw.toString());
+    } catch {
+      return;
     }
 
-    broadcast(room, {
-        type: "players",
-        players
-    });
-}
+    if (data.type === "createRoom") {
+      if (player.room) return;
 
-function createPlayer(ws) {
-    return {
-        ws,
+      const code = makeCode();
 
-        id: randomId(),
+      const room = {
+        code,
+        started: false,
+        players: new Map()
+      };
 
-        room: null,
+      player.name = String(data.name || "Player").substring(0, 16);
+      player.color = String(data.color || "#63ff78");
+      player.skin = String(data.skin || "green");
+      player.room = room;
+      player.host = true;
 
-        host: false,
+      room.players.set(player.id, player);
+      rooms.set(code, room);
 
-        name: "Player",
+      send(ws, {
+        type: "roomCreated",
+        code,
+        id: player.id
+      });
 
-        color: "#63ff78",
+      lobby(room);
+      return;
+    }
 
-        skin: "green",
+    if (data.type === "joinRoom") {
+      const code = String(data.code || "")
+        .trim()
+        .toUpperCase();
 
-        x: 10000,
+      const room = rooms.get(code);
 
-        y: 10000,
-
-        angle: 0,
-
-        length: 20,
-
-        alive: true,
-
-        trail: [],
-
-        lastState: 0,
-
-        coins: 0
-    };
-}
-
-function resetPlayer(p) {
-    p.x =
-        3000 +
-        Math.random() * 14000;
-
-    p.y =
-        3000 +
-        Math.random() * 14000;
-
-    p.angle =
-        Math.random() *
-        Math.PI *
-        2;
-
-    p.length = 20;
-
-    p.alive = true;
-
-    p.trail = [
-        {
-            x: p.x,
-            y: p.y
-        }
-    ];
-}
-
-function addTrailPoint(p) {
-    const last =
-        p.trail[p.trail.length - 1];
-
-    if (!last) {
-        p.trail.push({
-            x: p.x,
-            y: p.y
+      if (!room) {
+        return send(ws, {
+          type: "error",
+          message: "Seda roomi ei ole."
         });
+      }
 
-        return;
+      if (room.started) {
+        return send(ws, {
+          type: "error",
+          message: "Mäng on juba alanud."
+        });
+      }
+
+      if (room.players.size >= 20) {
+        return send(ws, {
+          type: "error",
+          message: "Room on täis."
+        });
+      }
+
+      player.name = String(data.name || "Player").substring(0, 16);
+      player.color = String(data.color || "#63ff78");
+      player.skin = String(data.skin || "green");
+      player.room = room;
+
+      room.players.set(player.id, player);
+
+      send(ws, {
+        type: "roomJoined",
+        code,
+        id: player.id
+      });
+
+      lobby(room);
+      return;
     }
 
-    const dx = p.x - last.x;
-    const dy = p.y - last.y;
+    if (data.type === "startGame") {
+      const room = player.room;
 
-    if (dx * dx + dy * dy < 16) {
-        return;
+      if (!room) return;
+      if (!player.host) return;
+
+      room.started = true;
+
+      for (const p of room.players.values()) {
+        p.x = 3000 + Math.random() * 14000;
+        p.y = 3000 + Math.random() * 14000;
+        p.angle = Math.random() * Math.PI * 2;
+        p.length = 25;
+        p.alive = true;
+
+        send(p.ws, {
+          type: "gameStart",
+          id: p.id,
+          x: p.x,
+          y: p.y
+        });
+      }
+
+      return;
     }
 
-    p.trail.push({
-        x: p.x,
-        y: p.y
-    });
+    if (data.type === "state") {
+      if (!player.room) return;
 
-    const maxPoints =
-        Math.min(
-            1200,
-            Math.max(
-                30,
-                Math.floor(p.length * 1.5)
-            )
-        );
+      if (Number.isFinite(data.x)) player.x = data.x;
+      if (Number.isFinite(data.y)) player.y = data.y;
+      if (Number.isFinite(data.angle)) player.angle = data.angle;
+      if (Number.isFinite(data.length)) {
+        player.length = Math.max(10, Math.min(3000, data.length));
+      }
 
-    if (p.trail.length > maxPoints) {
-        p.trail.splice(
-            0,
-            p.trail.length - maxPoints
-        );
-    }
-}
+      if (typeof data.color === "string") {
+        player.color = data.color.substring(0, 20);
+      }
 
-function distance(a, b) {
-    return Math.hypot(
-        a.x - b.x,
-        a.y - b.y
-    );
-}
+      if (typeof data.skin === "string") {
+        player.skin = data.skin.substring(0, 20);
+      }
 
-function killPlayer(killer, victim) {
-    if (!killer.alive || !victim.alive) {
-        return;
+      if (typeof data.name === "string") {
+        player.name = data.name.substring(0, 16);
+      }
+
+      return;
     }
 
-    victim.alive = false;
+    if (data.type === "kill") {
+      const room = player.room;
 
-    killer.coins += 10;
+      if (!room) return;
 
-    send(killer.ws, {
-        type: "kill",
-        victimId: victim.id,
-        coins: 10,
-        totalCoins: killer.coins
-    });
+      const victim = room.players.get(String(data.victimId || ""));
 
-    send(victim.ws, {
+      if (!victim) return;
+      if (victim.id === player.id) return;
+      if (!victim.alive) return;
+
+      victim.alive = false;
+
+      send(victim.ws, {
         type: "gameOver",
-        reason:
-            killer.name +
-            " elimineeris sind!"
+        reason: "Sind tapeti!"
+      });
+
+      broadcast(room, {
+        type: "playerKilled",
+        killerId: player.id,
+        victimId: victim.id,
+        killerName: player.name
+      });
+
+      return;
+    }
+  });
+
+  ws.on("close", () => {
+    const room = player.room;
+
+    if (!room) return;
+
+    room.players.delete(player.id);
+
+    if (player.host) {
+      const next = room.players.values().next().value;
+
+      if (next) {
+        next.host = true;
+      }
+    }
+
+    if (room.players.size === 0) {
+      rooms.delete(room.code);
+    } else {
+      lobby(room);
+    }
+  });
+});
+
+setInterval(() => {
+  for (const room of rooms.values()) {
+    if (!room.started) continue;
+
+    broadcast(room, {
+      type: "players",
+      players: playerData(room)
     });
-
-    broadcast(
-        killer.room,
-        {
-            type: "playerKilled",
-            killerId: killer.id,
-            victimId: victim.id,
-            killerName: killer.name
-        }
-    );
-}
-
-function checkCollisions(room) {
-    const players =
-        [...room.players.values()]
-            .filter(p => p.alive);
-
-    for (const victim of players) {
-        if (!victim.alive) continue;
-
-        for (const killer of players) {
-            if (
-                killer.id === victim.id ||
-                !killer.alive
-            ) {
-                continue;
-            }
-
-            const trail = killer.trail;
-
-            const skip =
-                Math.min(
-                    12,
-                    trail.length
-                );
-
-            for (
-                let i = skip;
-                i < trail.length;
-                i++
-            ) {
-                const point = trail[i];
-
-                const d =
-                    distance(
-                        victim,
-                        point
-                    );
-
-                if (d < 19) {
-                    killPlayer(
-                        killer,
-                        victim
-                    );
-
-                    break;
-                }
-            }
-
-            if (!victim.alive) {
-                break;
-            }
-        }
-    }
-}
-
-function updateRoom(room) {
-    if (!room.started) return;
-
-    checkCollisions(room);
-
-    sendPlayers(room);
-}
-
-const server = http.createServer(
-    (req, res) => {
-        let requestPath =
-            decodeURIComponent(
-                req.url.split("?")[0]
-            );
-
-        if (requestPath === "/") {
-            requestPath = "/index.html";
-        }
-
-        const filePath =
-            path.join(
-                __dirname,
-                requestPath
-            );
-
-        if (
-            !filePath.startsWith(
-                __dirname
-            )
-        ) {
-            res.writeHead(403);
-            res.end("Forbidden");
-            return;
-        }
-
-        fs.stat(
-            filePath,
-            (err, stat) => {
-                if (
-                    err ||
-                    !stat.isFile()
-                ) {
-                    res.writeHead(404);
-                    res.end("Not found");
-                    return;
-                }
-
-                const ext =
-                    path.extname(
-                        filePath
-                    ).toLowerCase();
-
-                const types = {
-                    ".html":
-                        "text/html; charset=utf-8",
-                    ".css":
-                        "text/css; charset=utf-8",
-                    ".js":
-                        "application/javascript; charset=utf-8",
-                    ".json":
-                        "application/json; charset=utf-8"
-                };
-
-                res.writeHead(
-                    200,
-                    {
-                        "Content-Type":
-                            types[ext] ||
-                            "application/octet-stream"
-                    }
-                );
-
-                fs.createReadStream(
-                    filePath
-                ).pipe(res);
-            }
-        );
-    }
-);
-
-const wss =
-    new WebSocket.Server({
-        server
-    });
-
-wss.on(
-    "connection",
-    ws => {
-        const player =
-            createPlayer(ws);
-
-        ws.player = player;
-
-        ws.on(
-            "message",
-            raw => {
-                let data;
-
-                try {
-                    data =
-                        JSON.parse(
-                            raw.toString()
-                        );
-                } catch {
-                    return;
-                }
-
-                /* CREATE ROOM */
-
-                if (
-                    data.type ===
-                    "createRoom"
-                ) {
-                    if (player.room) {
-                        return;
-                    }
-
-                    const code =
-                        makeRoomCode();
-
-                    const room = {
-                        code,
-
-                        started: false,
-
-                        players:
-                            new Map()
-                    };
-
-                    player.name =
-                        safeName(
-                            data.name
-                        );
-
-                    player.color =
-                        safeColor(
-                            data.color
-                        );
-
-                    player.skin =
-                        String(
-                            data.skin ||
-                            "green"
-                        );
-
-                    player.room = room;
-
-                    player.host = true;
-
-                    room.players.set(
-                        player.id,
-                        player
-                    );
-
-                    rooms.set(
-                        code,
-                        room
-                    );
-
-                    send(
-                        ws,
-                        {
-                            type:
-                                "roomCreated",
-                            code,
-                            id:
-                                player.id
-                        }
-                    );
-
-                    sendLobby(room);
-
-                    return;
-                }
-
-                /* JOIN ROOM */
-
-                if (
-                    data.type ===
-                    "joinRoom"
-                ) {
-                    const code =
-                        String(
-                            data.code ||
-                            ""
-                        )
-                            .trim()
-                            .toUpperCase();
-
-                    const room =
-                        rooms.get(code);
-
-                    if (!room) {
-                        send(
-                            ws,
-                            {
-                                type:
-                                    "error",
-                                message:
-                                    "Seda tuba ei ole olemas."
-                            }
-                        );
-
-                        return;
-                    }
-
-                    if (room.started) {
-                        send(
-                            ws,
-                            {
-                                type:
-                                    "error",
-                                message:
-                                    "Mäng on juba alanud."
-                            }
-                        );
-
-                        return;
-                    }
-
-                    if (
-                        room.players.size >=
-                        MAX_PLAYERS
-                    ) {
-                        send(
-                            ws,
-                            {
-                                type:
-                                    "error",
-                                message:
-                                    "Tuba on täis."
-                            }
-                        );
-
-                        return;
-                    }
-
-                    player.name =
-                        safeName(
-                            data.name
-                        );
-
-                    player.color =
-                        safeColor(
-                            data.color
-                        );
-
-                    player.skin =
-                        String(
-                            data.skin ||
-                            "green"
-                        );
-
-                    player.room = room;
-
-                    room.players.set(
-                        player.id,
-                        player
-                    );
-
-                    send(
-                        ws,
-                        {
-                            type:
-                                "roomJoined",
-                            code,
-                            id:
-                                player.id
-                        }
-                    );
-
-                    sendLobby(room);
-
-                    return;
-                }
-
-                /* START */
-
-                if (
-                    data.type ===
-                    "startGame"
-                ) {
-                    const room =
-                        player.room;
-
-                    if (!room) return;
-
-                    if (!player.host) {
-                        return;
-                    }
-
-                    room.started = true;
-
-                    for (
-                        const p of
-                        room.players.values()
-                    ) {
-                        resetPlayer(p);
-
-                        send(
-                            p.ws,
-                            {
-                                type:
-                                    "gameStart",
-                                id:
-                                    p.id
-                            }
-                        );
-                    }
-
-                    return;
-                }
-
-                /* PLAYER STATE */
-
-                if (
-                    data.type ===
-                    "state"
-                ) {
-                    if (
-                        !player.room ||
-                        !player.alive
-                    ) {
-                        return;
-                    }
-
-                    if (
-                        Number.isFinite(
-                            data.x
-                        )
-                    ) {
-                        player.x =
-                            Math.max(
-                                25,
-                                Math.min(
-                                    WORLD - 25,
-                                    data.x
-                                )
-                            );
-                    }
-
-                    if (
-                        Number.isFinite(
-                            data.y
-                        )
-                    ) {
-                        player.y =
-                            Math.max(
-                                25,
-                                Math.min(
-                                    WORLD - 25,
-                                    data.y
-                                )
-                            );
-                    }
-
-                    if (
-                        Number.isFinite(
-                            data.angle
-                        )
-                    ) {
-                        player.angle =
-                            data.angle;
-                    }
-
-                    if (
-                        Number.isFinite(
-                            data.length
-                        )
-                    ) {
-                        player.length =
-                            Math.max(
-                                20,
-                                Math.min(
-                                    1000,
-                                    data.length
-                                )
-                            );
-                    }
-
-                    if (
-                        typeof data.color ===
-                        "string"
-                    ) {
-                        player.color =
-                            safeColor(
-                                data.color
-                            );
-                    }
-
-                    if (
-                        typeof data.skin ===
-                        "string"
-                    ) {
-                        player.skin =
-                            data.skin
-                                .substring(
-                                    0,
-                                    20
-                                );
-                    }
-
-                    if (
-                        typeof data.name ===
-                        "string"
-                    ) {
-                        player.name =
-                            safeName(
-                                data.name
-                            );
-                    }
-
-                    addTrailPoint(player);
-
-                    return;
-                }
-
-                /* BOOST DROP */
-
-                if (
-                    data.type ===
-                    "boostDrop"
-                ) {
-                    if (
-                        !player.room ||
-                        !player.alive
-                    ) {
-                        return;
-                    }
-
-                    addTrailPoint(player);
-
-                    return;
-                }
-            }
-        );
-
-        ws.on(
-            "close",
-            () => {
-                const room =
-                    player.room;
-
-                if (!room) {
-                    return;
-                }
-
-                room.players.delete(
-                    player.id
-                );
-
-                if (player.host) {
-                    const next =
-                        room.players
-                            .values()
-                            .next()
-                            .value;
-
-                    if (next) {
-                        next.host = true;
-                    }
-                }
-
-                if (
-                    room.players.size ===
-                    0
-                ) {
-                    rooms.delete(
-                        room.code
-                    );
-                } else {
-                    sendLobby(room);
-                }
-            }
-        );
-    }
-);
-
-setInterval(
-    () => {
-        for (
-            const room of
-            rooms.values()
-        ) {
-            updateRoom(room);
-        }
-    },
-    80
-);
-
-setInterval(
-    () => {
-        for (
-            const ws of
-            wss.clients
-        ) {
-            if (
-                ws.readyState ===
-                WebSocket.OPEN
-            ) {
-                ws.ping();
-            }
-        }
-    },
-    25000
-);
-
-server.listen(
-    PORT,
-    HOST,
-    () => {
-        console.log(
-            `Snake Arena running on ${HOST}:${PORT}`
-        );
-    }
-);
+  }
+}, 80);
+
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Snake Arena running on port ${PORT}`);
+});
