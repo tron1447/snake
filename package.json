@@ -1,7 +1,7 @@
 {
-  "name": "snake-online",
+  "name": "snake-arena",
   "version": "1.0.0",
-  "description": "Snake Online multiplayer server",
+  "description": "Snake Arena multiplayer game",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
