@@ -7,45 +7,54 @@ const PORT = process.env.PORT || 3000;
 
 const WORLD = 14000;
 
-const server = http.createServer((req, res) => {
+const server = http.createServer((req,res)=>{
 
-    let filePath;
+    let file;
 
-    if (
+    if(
         req.url === "/" ||
         req.url === "/index.html"
-    ) {
+    ){
 
-        filePath =
-            path.join(__dirname, "index.html");
+        file =
+            path.join(
+                __dirname,
+                "index.html"
+            );
 
-    } else {
+    }else{
 
         res.writeHead(404);
         res.end("Not found");
         return;
-
     }
 
-    fs.readFile(filePath, (err, data) => {
+    fs.readFile(
+        file,
+        (err,data)=>{
 
-        if (err) {
+            if(err){
 
-            res.writeHead(500);
-            res.end("Server error");
-            return;
+                res.writeHead(500);
 
+                res.end(
+                    "Could not load index.html"
+                );
+
+                return;
+            }
+
+            res.writeHead(
+                200,
+                {
+                    "Content-Type":
+                    "text/html; charset=utf-8"
+                }
+            );
+
+            res.end(data);
         }
-
-        res.writeHead(200, {
-            "Content-Type":
-                "text/html; charset=utf-8"
-        });
-
-        res.end(data);
-
-    });
-
+    );
 });
 
 const wss =
@@ -53,704 +62,702 @@ const wss =
         server
     });
 
-const rooms = new Map();
 const clients = new Map();
 
-function randomCode() {
+const rooms = new Map();
 
-    const chars =
-        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function send(ws,data){
 
-    let code;
-
-    do {
-
-        code = "";
-
-        for (let i = 0; i < 5; i++) {
-
-            code += chars[
-                Math.floor(
-                    Math.random() * chars.length
-                )
-            ];
-
-        }
-
-    } while (rooms.has(code));
-
-    return code;
-
-}
-
-function send(ws, data) {
-
-    if (
+    if(
         ws &&
-        ws.readyState === WebSocket.OPEN
-    ) {
+        ws.readyState ===
+        WebSocket.OPEN
+    ){
 
         ws.send(
             JSON.stringify(data)
         );
-
     }
-
 }
 
-function makePlayer(id, name, color) {
+function randomCode(){
 
-    const p = {
+    const chars=
+        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    let code;
+
+    do{
+
+        code="";
+
+        for(
+            let i=0;
+            i<5;
+            i++
+        ){
+
+            code+=
+                chars[
+                    Math.floor(
+                        Math.random()*
+                        chars.length
+                    )
+                ];
+        }
+
+    }while(rooms.has(code));
+
+    return code;
+}
+
+function createPlayer(
+    id,
+    name,
+    color
+){
+
+    const p={
 
         id,
 
         name:
-            String(name || "Player")
-            .replace(/[<>]/g, "")
-            .slice(0, 16),
+            String(name||"Player")
+            .replace(/[<>]/g,"")
+            .slice(0,16),
 
         color:
-            color || "#54ff6b",
+            color||
+            "#54ff6b",
 
         x:
-            1500 +
-            Math.random() *
-            (WORLD - 3000),
+            1500+
+            Math.random()*
+            (WORLD-3000),
 
         y:
-            1500 +
-            Math.random() *
-            (WORLD - 3000),
+            1500+
+            Math.random()*
+            (WORLD-3000),
 
         angle:
-            Math.random() *
-            Math.PI *
-            2,
+            Math.random()*
+            Math.PI*2,
 
-        targetAngle: 0,
+        targetAngle:0,
 
-        speed: 7,
+        speed:7.4,
 
-        length: 75,
+        length:75,
 
-        score: 0,
+        score:0,
 
-        kills: 0,
+        kills:0,
 
-        boost: false,
+        boost:false,
 
-        alive: true,
+        alive:true,
 
-        body: []
-
+        body:[]
     };
 
-    p.targetAngle = p.angle;
+    p.targetAngle=p.angle;
 
-    setupBody(p);
-
-    return p;
-
-}
-
-function setupBody(player) {
-
-    player.body = [];
-
-    for (
-        let i = 0;
-        i < player.length;
+    for(
+        let i=0;
+        i<75;
         i++
-    ) {
+    ){
 
-        player.body.push({
+        p.body.push({
 
             x:
-                player.x -
-                Math.cos(player.angle) *
-                i *
-                7,
+                p.x-
+                Math.cos(p.angle)*
+                i*7,
 
             y:
-                player.y -
-                Math.sin(player.angle) *
-                i *
-                7
-
+                p.y-
+                Math.sin(p.angle)*
+                i*7
         });
-
     }
 
+    return p;
 }
 
-function updatePlayer(player) {
+function updatePlayer(p){
 
-    if (!player.alive)
+    if(!p.alive)
         return;
 
-    let diff =
-        player.targetAngle -
-        player.angle;
+    let diff=
+        p.targetAngle-
+        p.angle;
 
-    while (diff > Math.PI)
-        diff -= Math.PI * 2;
+    while(diff>Math.PI)
+        diff-=Math.PI*2;
 
-    while (diff < -Math.PI)
-        diff += Math.PI * 2;
+    while(diff<-Math.PI)
+        diff+=Math.PI*2;
 
-    player.angle += diff * 0.13;
+    p.angle+=diff*.13;
 
-    /*
-       Sama kiirus nagu kliendil.
-    */
+    const speed=
+        p.boost
+        ?10
+        :7.4;
 
-    const speed =
-        player.boost
-            ? 10
-            : 7.4;
+    p.speed=speed;
 
-    player.speed = speed;
-
-    player.x +=
-        Math.cos(player.angle) *
+    p.x+=
+        Math.cos(p.angle)*
         speed;
 
-    player.y +=
-        Math.sin(player.angle) *
+    p.y+=
+        Math.sin(p.angle)*
         speed;
 
-    /*
-       Boost ei võta liiga palju pikkust.
-    */
+    if(
+        p.boost&&
+        p.length>70
+    ){
 
-    if (
-        player.boost &&
-        player.length > 70
-    ) {
-
-        player.length -= 0.045;
-
+        p.length-=0.045;
     }
 
-    if (
-        player.x < 35 ||
-        player.y < 35 ||
-        player.x > WORLD - 35 ||
-        player.y > WORLD - 35
-    ) {
+    if(
+        p.x<35||
+        p.y<35||
+        p.x>WORLD-35||
+        p.y>WORLD-35
+    ){
 
-        player.alive = false;
+        p.alive=false;
 
         return;
-
     }
 
-    player.body.unshift({
+    p.body.unshift({
 
-        x: player.x,
-        y: player.y
-
+        x:p.x,
+        y:p.y
     });
 
-    const wanted =
+    const wanted=
         Math.max(
             60,
-            Math.floor(player.length)
+            Math.floor(p.length)
         );
 
-    while (
-        player.body.length <
-        wanted
-    ) {
+    while(
+        p.body.length<wanted
+    ){
 
-        const last =
-            player.body[
-                player.body.length - 1
+        const last=
+            p.body[
+                p.body.length-1
             ];
 
-        player.body.push({
+        p.body.push({
 
-            x: last.x,
-            y: last.y
-
+            x:last.x,
+            y:last.y
         });
-
     }
 
-    while (
-        player.body.length >
-        wanted
-    ) {
+    while(
+        p.body.length>wanted
+    ){
 
-        player.body.pop();
-
+        p.body.pop();
     }
-
 }
 
-function checkCollisions(room) {
+function collisionCheck(room){
 
-    const players =
+    const players=
         room.players;
 
     /*
-       TEISE MÄNGIJA PEA
-       -> SINU KEHA
-       = teine sureb
+       Mängija A pea
+       läheb mängija B keha sisse.
+       A sureb.
     */
 
-    for (const attacker of players) {
+    for(
+        const attacker of players
+    ){
 
-        if (!attacker.alive)
+        if(!attacker.alive)
             continue;
 
-        for (const victim of players) {
+        for(
+            const victim of players
+        ){
 
-            if (
-                attacker.id === victim.id ||
+            if(
+                attacker.id===
+                victim.id||
                 !victim.alive
             )
                 continue;
 
-            for (
-                let i = 12;
-                i < victim.body.length;
-                i += 2
-            ) {
+            let hit=false;
 
-                const part =
+            for(
+                let i=12;
+                i<victim.body.length;
+                i+=2
+            ){
+
+                const part=
                     victim.body[i];
 
-                const dx =
-                    attacker.x -
+                const dx=
+                    attacker.x-
                     part.x;
 
-                const dy =
-                    attacker.y -
+                const dy=
+                    attacker.y-
                     part.y;
 
-                if (
-                    Math.hypot(dx, dy) < 31
-                ) {
+                if(
+                    Math.hypot(
+                        dx,
+                        dy
+                    )<31
+                ){
 
-                    victim.alive = false;
-
-                    attacker.kills++;
-
-                    attacker.score += 100;
-
-                    attacker.length += 25;
+                    hit=true;
 
                     break;
+                }
+            }
 
+            if(hit){
+
+                victim.alive=false;
+
+                attacker.kills++;
+
+                attacker.score+=100;
+
+                attacker.length+=25;
+            }
+        }
+    }
+}
+
+function getPublicPlayer(p){
+
+    return {
+
+        id:p.id,
+
+        name:p.name,
+
+        color:p.color,
+
+        x:p.x,
+
+        y:p.y,
+
+        angle:p.angle,
+
+        length:p.length,
+
+        score:p.score,
+
+        kills:p.kills,
+
+        alive:p.alive,
+
+        /*
+           Saadame terve keha.
+           Selle tõttu näeb teine mängija
+           päriselt ussi, mitte pulka.
+        */
+
+        body:p.body
+    };
+}
+
+function broadcast(room){
+
+    const state=
+        room.players.map(
+            getPublicPlayer
+        );
+
+    for(
+        const player of
+        room.players
+    ){
+
+        const ws=
+            clients.get(player.id);
+
+        send(
+            ws,
+            {
+                type:"state",
+                players:state
+            }
+        );
+    }
+}
+
+wss.on(
+    "connection",
+    ws=>{
+
+        const id=
+            Math.random()
+            .toString(36)
+            .slice(2)+
+            Date.now()
+            .toString(36);
+
+        clients.set(
+            id,
+            ws
+        );
+
+        send(
+            ws,
+            {
+                type:"connected",
+                id:id
+            }
+        );
+
+        ws.on(
+            "message",
+            raw=>{
+
+                let data;
+
+                try{
+
+                    data=
+                        JSON.parse(
+                            raw.toString()
+                        );
+
+                }catch{
+
+                    return;
+                }
+
+                /* CREATE ROOM */
+
+                if(
+                    data.type===
+                    "createRoom"
+                ){
+
+                    const code=
+                        randomCode();
+
+                    const player=
+                        createPlayer(
+                            id,
+                            data.name,
+                            data.color
+                        );
+
+                    const room={
+
+                        code,
+
+                        started:false,
+
+                        players:[
+                            player
+                        ]
+                    };
+
+                    rooms.set(
+                        code,
+                        room
+                    );
+
+                    ws.roomCode=code;
+
+                    send(
+                        ws,
+                        {
+
+                            type:
+                                "roomCreated",
+
+                            code,
+
+                            id
+                        }
+                    );
+
+                    return;
+                }
+
+                /* JOIN */
+
+                if(
+                    data.type===
+                    "joinRoom"
+                ){
+
+                    const code=
+                        String(
+                            data.code||""
+                        )
+                        .toUpperCase();
+
+                    const room=
+                        rooms.get(code);
+
+                    if(!room){
+
+                        send(
+                            ws,
+                            {
+
+                                type:"error",
+
+                                message:
+                                    "Roomi ei leitud."
+                            }
+                        );
+
+                        return;
+                    }
+
+                    if(room.started){
+
+                        send(
+                            ws,
+                            {
+
+                                type:"error",
+
+                                message:
+                                    "Mäng on juba alanud."
+                            }
+                        );
+
+                        return;
+                    }
+
+                    if(
+                        room.players.length>=8
+                    ){
+
+                        send(
+                            ws,
+                            {
+
+                                type:"error",
+
+                                message:
+                                    "Room on täis."
+                            }
+                        );
+
+                        return;
+                    }
+
+                    const player=
+                        createPlayer(
+                            id,
+                            data.name,
+                            data.color
+                        );
+
+                    room.players.push(
+                        player
+                    );
+
+                    ws.roomCode=code;
+
+                    send(
+                        ws,
+                        {
+
+                            type:
+                                "roomJoined",
+
+                            code,
+
+                            id
+                        }
+                    );
+
+                    return;
+                }
+
+                /* START */
+
+                if(
+                    data.type===
+                    "start"
+                ){
+
+                    const code=
+                        ws.roomCode;
+
+                    if(!code)
+                        return;
+
+                    const room=
+                        rooms.get(code);
+
+                    if(!room)
+                        return;
+
+                    room.started=true;
+
+                    for(
+                        const p of
+                        room.players
+                    ){
+
+                        send(
+                            clients.get(p.id),
+                            {
+                                type:
+                                    "gameStart"
+                            }
+                        );
+                    }
+
+                    return;
+                }
+
+                /* INPUT */
+
+                if(
+                    data.type===
+                    "input"
+                ){
+
+                    const code=
+                        ws.roomCode;
+
+                    if(!code)
+                        return;
+
+                    const room=
+                        rooms.get(code);
+
+                    if(!room)
+                        return;
+
+                    const player=
+                        room.players.find(
+                            p=>
+                                p.id===id
+                        );
+
+                    if(!player)
+                        return;
+
+                    if(
+                        typeof
+                        data.targetAngle===
+                        "number"
+                    ){
+
+                        player.targetAngle=
+                            data.targetAngle;
+                    }
+
+                    player.boost=
+                        Boolean(
+                            data.boost
+                        );
                 }
 
             }
-
-        }
-
-    }
-
-    /*
-       Oma keha collisionit
-       serveris samuti EI kontrollita.
-
-       Seega saab mängija
-       oma keha ületada.
-    */
-
-}
-
-function broadcast(room) {
-
-    const players =
-        room.players.map(p => ({
-
-            id: p.id,
-
-            name: p.name,
-
-            color: p.color,
-
-            x: p.x,
-
-            y: p.y,
-
-            angle: p.angle,
-
-            length: p.length,
-
-            score: p.score,
-
-            kills: p.kills,
-
-            alive: p.alive,
-
-            body: p.body
-
-        }));
-
-    for (const player of room.players) {
-
-        send(
-            clients.get(player.id),
-            {
-                type: "state",
-                players
-            }
         );
 
+        ws.on(
+            "close",
+            ()=>{
+
+                clients.delete(id);
+
+                const code=
+                    ws.roomCode;
+
+                if(!code)
+                    return;
+
+                const room=
+                    rooms.get(code);
+
+                if(!room)
+                    return;
+
+                room.players=
+                    room.players.filter(
+                        p=>
+                            p.id!==id
+                    );
+
+                if(
+                    room.players.length===0
+                ){
+
+                    rooms.delete(code);
+
+                }else{
+
+                    broadcast(room);
+                }
+            }
+        );
     }
-
-}
-
-wss.on("connection", ws => {
-
-    const id =
-        Math.random()
-        .toString(36)
-        .slice(2) +
-        Date.now().toString(36);
-
-    clients.set(id, ws);
-
-    send(ws, {
-
-        type: "connected",
-
-        id
-
-    });
-
-    ws.on("message", raw => {
-
-        let data;
-
-        try {
-
-            data =
-                JSON.parse(
-                    raw.toString()
-                );
-
-        } catch {
-
-            return;
-
-        }
-
-        /*
-           CREATE ROOM
-        */
-
-        if (
-            data.type ===
-            "createRoom"
-        ) {
-
-            const code =
-                randomCode();
-
-            const player =
-                makePlayer(
-                    id,
-                    data.name,
-                    data.color
-                );
-
-            const room = {
-
-                code,
-
-                started: false,
-
-                players: [player]
-
-            };
-
-            rooms.set(
-                code,
-                room
-            );
-
-            ws.roomCode =
-                code;
-
-            send(ws, {
-
-                type:
-                    "roomCreated",
-
-                code,
-
-                id
-
-            });
-
-            return;
-
-        }
-
-        /*
-           JOIN ROOM
-        */
-
-        if (
-            data.type ===
-            "joinRoom"
-        ) {
-
-            const code =
-                String(
-                    data.code || ""
-                )
-                .toUpperCase();
-
-            const room =
-                rooms.get(code);
-
-            if (!room) {
-
-                send(ws, {
-
-                    type: "error",
-
-                    message:
-                        "Roomi ei leitud."
-
-                });
-
-                return;
-
-            }
-
-            if (room.started) {
-
-                send(ws, {
-
-                    type: "error",
-
-                    message:
-                        "Mäng on juba alanud."
-
-                });
-
-                return;
-
-            }
-
-            if (
-                room.players.length >= 8
-            ) {
-
-                send(ws, {
-
-                    type: "error",
-
-                    message:
-                        "Room on täis."
-
-                });
-
-                return;
-
-            }
-
-            const player =
-                makePlayer(
-                    id,
-                    data.name,
-                    data.color
-                );
-
-            room.players.push(
-                player
-            );
-
-            ws.roomCode =
-                code;
-
-            send(ws, {
-
-                type:
-                    "roomJoined",
-
-                code,
-
-                id
-
-            });
-
-            return;
-
-        }
-
-        /*
-           START
-        */
-
-        if (
-            data.type === "start"
-        ) {
-
-            const code =
-                ws.roomCode;
-
-            if (!code)
-                return;
-
-            const room =
-                rooms.get(code);
-
-            if (!room)
-                return;
-
-            room.started = true;
-
-            for (
-                const player of
-                room.players
-            ) {
-
-                send(
-                    clients.get(
-                        player.id
-                    ),
-                    {
-                        type:
-                            "gameStart"
-                    }
-                );
-
-            }
-
-            return;
-
-        }
-
-        /*
-           INPUT
-        */
-
-        if (
-            data.type === "input"
-        ) {
-
-            const code =
-                ws.roomCode;
-
-            if (!code)
-                return;
-
-            const room =
-                rooms.get(code);
-
-            if (!room)
-                return;
-
-            const player =
-                room.players.find(
-                    p =>
-                        p.id === id
-                );
-
-            if (!player)
-                return;
-
-            if (
-                typeof data.targetAngle ===
-                "number"
-            ) {
-
-                player.targetAngle =
-                    data.targetAngle;
-
-            }
-
-            player.boost =
-                Boolean(data.boost);
-
-        }
-
-    });
-
-    ws.on("close", () => {
-
-        clients.delete(id);
-
-        const code =
-            ws.roomCode;
-
-        if (!code)
-            return;
-
-        const room =
-            rooms.get(code);
-
-        if (!room)
-            return;
-
-        room.players =
-            room.players.filter(
-                p => p.id !== id
-            );
-
-        if (
-            room.players.length === 0
-        ) {
-
-            rooms.delete(code);
-
-        } else {
-
-            broadcast(room);
-
-        }
-
-    });
-
-});
+);
 
 /*
-   SERVERI MÄNGULUPP.
-
    20 korda sekundis.
 */
 
-setInterval(() => {
+setInterval(
+    ()=>{
 
-    for (
-        const room of
-        rooms.values()
-    ) {
+        for(
+            const room of
+            rooms.values()
+        ){
 
-        if (!room.started)
-            continue;
+            if(!room.started)
+                continue;
 
-        for (
-            const player of
-            room.players
-        ) {
+            for(
+                const p of
+                room.players
+            ){
 
-            updatePlayer(player);
+                updatePlayer(p);
+            }
 
+            collisionCheck(room);
+
+            broadcast(room);
         }
 
-        checkCollisions(room);
-
-        broadcast(room);
-
-    }
-
-}, 50);
+    },
+    50
+);
 
 server.listen(
     PORT,
-    () => {
-
+    ()=>{
         console.log(
-            `Snake Arena server töötab pordil ${PORT}`
+            "Snake Arena töötab pordil "+
+            PORT
         );
-
     }
 );
