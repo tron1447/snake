@@ -9,11 +9,24 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 
+const WORLD = 18000;
+const MAX_PLAYERS = 12;
+
 app.use(express.static(path.join(__dirname)));
 
 const rooms = new Map();
 
-function roomCode() {
+const COLORS = [
+    "#63ff78",
+    "#4da6ff",
+    "#ff5268",
+    "#ffd84d",
+    "#b86cff",
+    "#ff8a3d",
+    "#00e5d4"
+];
+
+function makeCode() {
     let code;
 
     do {
@@ -24,6 +37,20 @@ function roomCode() {
     } while (rooms.has(code));
 
     return code;
+}
+
+function safeName(name) {
+    return String(name || "Player")
+        .replace(/[<>]/g, "")
+        .trim()
+        .substring(0, 16) || "Player";
+}
+
+function randomSpawn() {
+    return {
+        x: 1500 + Math.random() * (WORLD - 3000),
+        y: 1500 + Math.random() * (WORLD - 3000)
+    };
 }
 
 function send(ws, data) {
@@ -38,56 +65,132 @@ function broadcast(room, data) {
     }
 }
 
-function cleanName(name) {
-    return String(name || "Player")
-        .replace(/[<>]/g, "")
-        .substring(0, 16) || "Player";
-}
-
-function getState(room) {
+function publicPlayer(p) {
     return {
-        type: "state",
-        players: [...room.players.values()].map(p => ({
-            id: p.id,
-            name: p.name,
-            x: p.x,
-            y: p.y,
-            angle: p.angle,
-            length: p.length,
-            score: p.score,
-            kills: p.kills,
-            color: p.color,
-            body: p.body
-        }))
+        id: p.id,
+        name: p.name,
+        x: p.x,
+        y: p.y,
+        angle: p.angle,
+        length: p.length,
+        score: p.score,
+        kills: p.kills,
+        color: p.color,
+        alive: p.alive,
+        boosting: p.boosting,
+
+        // ainult vajalik kehainfo
+        body: p.body.slice(0, 180)
     };
 }
 
-wss.on("connection", ws => {
+function roomState(room) {
+    return {
+        type: "state",
+        players: [...room.players.values()]
+            .map(publicPlayer)
+    };
+}
 
+function respawnPlayer(p) {
+    const s = randomSpawn();
+
+    p.x = s.x;
+    p.y = s.y;
+
+    p.angle =
+        Math.random() * Math.PI * 2;
+
+    p.targetAngle = p.angle;
+
+    p.length = 25;
+
+    p.score = 0;
+
+    p.alive = true;
+    p.boosting = false;
+
+    p.body = [];
+
+    for (let i = 0; i < 25; i++) {
+        p.body.push({
+            x:
+                p.x -
+                Math.cos(p.angle) * i * 8,
+
+            y:
+                p.y -
+                Math.sin(p.angle) * i * 8
+        });
+    }
+}
+
+function createPlayer(ws, data) {
     const p = {
-        id: Math.random()
-            .toString(36)
-            .substring(2, 10),
+        id:
+            Math.random()
+                .toString(36)
+                .substring(2, 10),
 
         ws,
+
         room: null,
 
-        name: "Player",
+        name: safeName(data.name),
 
-        x: 9000,
-        y: 9000,
+        color:
+            typeof data.color === "string"
+                ? data.color
+                : COLORS[
+                    Math.floor(
+                        Math.random() * COLORS.length
+                    )
+                ],
+
+        x: 0,
+        y: 0,
 
         angle: 0,
+        targetAngle: 0,
 
         length: 25,
 
         score: 0,
         kills: 0,
 
-        color: "#63ff78",
+        alive: true,
+        boosting: false,
 
-        body: []
+        body: [],
+
+        lastInput: Date.now()
     };
+
+    respawnPlayer(p);
+
+    return p;
+}
+
+function leaveRoom(p) {
+    if (!p.room) return;
+
+    const room = p.room;
+
+    room.players.delete(p.id);
+
+    p.room = null;
+
+    if (room.players.size === 0) {
+        rooms.delete(room.code);
+        return;
+    }
+
+    broadcast(room, roomState(room));
+}
+
+wss.on("connection", ws => {
+
+    const p = createPlayer(ws, {});
 
     send(ws, {
         type: "connected",
@@ -106,36 +209,37 @@ wss.on("connection", ws => {
             return;
         }
 
+        /*
+         CREATE ROOM
+        */
+
         if (data.type === "create") {
 
-            if (p.room) return;
+            leaveRoom(p);
 
-            const code = roomCode();
+            const code = makeCode();
 
             const room = {
                 code,
-                players: new Map()
+                players: new Map(),
+                created: Date.now()
             };
 
-            rooms.set(code, room);
-
-            p.room = room;
+            rooms.set(
+                code,
+                room
+            );
 
             p.name =
-                cleanName(data.name);
+                safeName(data.name);
 
-            p.color =
-                typeof data.color === "string"
-                    ? data.color
-                    : "#63ff78";
+            if (typeof data.color === "string") {
+                p.color = data.color;
+            }
 
-            p.x =
-                2000 +
-                Math.random() * 14000;
+            respawnPlayer(p);
 
-            p.y =
-                2000 +
-                Math.random() * 14000;
+            p.room = room;
 
             room.players.set(
                 p.id,
@@ -150,11 +254,15 @@ wss.on("connection", ws => {
 
             broadcast(
                 room,
-                getState(room)
+                roomState(room)
             );
 
             return;
         }
+
+        /*
+         JOIN ROOM
+        */
 
         if (data.type === "join") {
 
@@ -176,7 +284,10 @@ wss.on("connection", ws => {
                 return;
             }
 
-            if (room.players.size >= 12) {
+            if (
+                room.players.size >=
+                MAX_PLAYERS
+            ) {
 
                 send(ws, {
                     type: "error",
@@ -186,27 +297,18 @@ wss.on("connection", ws => {
                 return;
             }
 
-            p.room = room;
+            leaveRoom(p);
 
             p.name =
-                cleanName(data.name);
+                safeName(data.name);
 
-            p.color =
-                typeof data.color === "string"
-                    ? data.color
-                    : "#4da6ff";
+            if (typeof data.color === "string") {
+                p.color = data.color;
+            }
 
-            p.x =
-                1500 +
-                Math.random() * 15000;
+            respawnPlayer(p);
 
-            p.y =
-                1500 +
-                Math.random() * 15000;
-
-            p.angle =
-                Math.random() *
-                Math.PI * 2;
+            p.room = room;
 
             room.players.set(
                 p.id,
@@ -221,130 +323,319 @@ wss.on("connection", ws => {
 
             broadcast(
                 room,
-                getState(room)
+                roomState(room)
             );
 
             return;
         }
+
+        /*
+         START
+        */
 
         if (data.type === "start") {
 
             if (!p.room) return;
 
+            for (const player of p.room.players.values()) {
+                respawnPlayer(player);
+            }
+
             broadcast(
                 p.room,
                 {
-                    type: "startGame"
+                    type: "gameStart"
                 }
             );
 
-            return;
-        }
-
-        if (data.type === "update") {
-
-            if (!p.room) return;
-
-            if (
-                Number.isFinite(data.x)
-            )
-                p.x = data.x;
-
-            if (
-                Number.isFinite(data.y)
-            )
-                p.y = data.y;
-
-            if (
-                Number.isFinite(data.angle)
-            )
-                p.angle = data.angle;
-
-            if (
-                Number.isFinite(data.length)
-            )
-                p.length = data.length;
-
-            if (
-                Number.isFinite(data.score)
-            )
-                p.score = data.score;
-
-            if (
-                Number.isFinite(data.kills)
-            )
-                p.kills = data.kills;
-
-            if (
-                Array.isArray(data.body)
-            )
-                p.body =
-                    data.body.slice(
-                        0,
-                        220
-                    );
-
             broadcast(
                 p.room,
-                getState(p.room)
+                roomState(p.room)
             );
 
             return;
         }
+
+        /*
+         INPUT
+        */
+
+        if (data.type === "input") {
+
+            if (!p.room || !p.alive)
+                return;
+
+            if (
+                Number.isFinite(
+                    data.angle
+                )
+            ) {
+
+                p.targetAngle =
+                    data.angle;
+
+            }
+
+            p.boosting =
+                data.boosting === true;
+
+            p.lastInput =
+                Date.now();
+
+            return;
+        }
+
+        /*
+         PLAYER KILLED
+        */
 
         if (data.type === "kill") {
 
             if (!p.room) return;
 
+            const victim =
+                p.room.players.get(
+                    String(data.victim)
+                );
+
+            if (!victim) return;
+
+            if (!victim.alive)
+                return;
+
+            victim.alive = false;
+            victim.boosting = false;
+
             p.kills++;
             p.score += 10;
+            p.length += 12;
 
             broadcast(
                 p.room,
                 {
                     type: "kill",
                     killer: p.id,
-                    victim: data.victim
+                    victim: victim.id
                 }
+            );
+
+            broadcast(
+                p.room,
+                roomState(p.room)
+            );
+
+            setTimeout(() => {
+
+                if (
+                    p.room &&
+                    p.room === room
+                ) {
+                    respawnPlayer(victim);
+
+                    broadcast(
+                        p.room,
+                        {
+                            type: "respawn",
+                            id: victim.id
+                        }
+                    );
+
+                    broadcast(
+                        p.room,
+                        roomState(p.room)
+                    );
+                }
+
+            }, 1200);
+
+            return;
+        }
+
+        /*
+         RESET
+        */
+
+        if (data.type === "reset") {
+
+            if (!p.room) return;
+
+            respawnPlayer(p);
+
+            broadcast(
+                p.room,
+                roomState(p.room)
             );
         }
     });
 
     ws.on("close", () => {
+        leaveRoom(p);
+    });
 
-        if (!p.room) return;
-
-        const room = p.room;
-
-        room.players.delete(
-            p.id
-        );
-
-        if (
-            room.players.size === 0
-        ) {
-
-            rooms.delete(
-                room.code
-            );
-
-        } else {
-
-            broadcast(
-                room,
-                getState(room)
-            );
-
-        }
+    ws.on("error", () => {
+        leaveRoom(p);
     });
 });
+
+/*
+SERVER TICK
+
+Kõik multiplayeri mängijad liiguvad
+serveris pidevalt.
+Seetõttu ei jää vastane boostimise ajal
+seisma.
+*/
+
+setInterval(() => {
+
+    const now = Date.now();
+
+    for (const room of rooms.values()) {
+
+        for (const p of room.players.values()) {
+
+            if (!p.alive)
+                continue;
+
+            /*
+             sujuv pööramine
+            */
+
+            let diff =
+                p.targetAngle -
+                p.angle;
+
+            while (diff > Math.PI) {
+                diff -= Math.PI * 2;
+            }
+
+            while (diff < -Math.PI) {
+                diff += Math.PI * 2;
+            }
+
+            p.angle +=
+                diff * 0.18;
+
+            /*
+             boost
+            */
+
+            const speed =
+                p.boosting
+                    ? 10
+                    : 7;
+
+            p.x +=
+                Math.cos(p.angle) *
+                speed;
+
+            p.y +=
+                Math.sin(p.angle) *
+                speed;
+
+            /*
+             map boundary
+            */
+
+            if (p.x < 30)
+                p.x = 30;
+
+            if (p.x > WORLD - 30)
+                p.x = WORLD - 30;
+
+            if (p.y < 30)
+                p.y = 30;
+
+            if (p.y > WORLD - 30)
+                p.y = WORLD - 30;
+
+            /*
+             keha
+            */
+
+            p.body.unshift({
+                x: p.x,
+                y: p.y
+            });
+
+            /*
+             boost jätab ainult
+             väikese koguse pikkust maha
+            */
+
+            if (
+                p.boosting &&
+                p.length > 30
+            ) {
+
+                p.length -= 0.025;
+
+            }
+
+            const wanted =
+                Math.floor(
+                    p.length
+                );
+
+            while (
+                p.body.length < wanted
+            ) {
+
+                const last =
+                    p.body[
+                        p.body.length - 1
+                    ] || {
+                        x: p.x,
+                        y: p.y
+                    };
+
+                p.body.push({
+                    x: last.x,
+                    y: last.y
+                });
+            }
+
+            while (
+                p.body.length > wanted
+            ) {
+
+                p.body.pop();
+
+            }
+
+            /*
+             timeout kaitseb
+             katkise kliendi eest
+            */
+
+            if (
+                now - p.lastInput >
+                10000
+            ) {
+
+                p.boosting = false;
+
+            }
+        }
+
+        /*
+         20 FPS server update
+        */
+
+        broadcast(
+            room,
+            roomState(room)
+        );
+    }
+
+}, 50);
 
 server.listen(
     PORT,
     "0.0.0.0",
     () => {
         console.log(
-            `Snake Arena running on ${PORT}`
+            `Snake.io server running on port ${PORT}`
         );
     }
 );
