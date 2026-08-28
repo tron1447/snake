@@ -7,11 +7,39 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
-const WORLD = 12000;
+
+const WORLD = 14000;
+const TICK = 50;
 
 app.use(express.static(__dirname));
 
 const rooms = new Map();
+
+const COLORS = [
+  "#52ff6a",
+  "#36a9ff",
+  "#ff4d6d",
+  "#ffd43b",
+  "#b86cff",
+  "#ff8b3d",
+  "#24dfc0",
+  "#ff58c8",
+  "#9cff42",
+  "#54e7ff"
+];
+
+function randomColor() {
+  return COLORS[Math.floor(Math.random() * COLORS.length)];
+}
+
+function cleanName(name) {
+  name = String(name || "Player")
+    .replace(/[<>]/g, "")
+    .trim()
+    .slice(0, 16);
+
+  return name || "Player";
+}
 
 function send(ws, data) {
   if (ws.readyState === WebSocket.OPEN) {
@@ -25,40 +53,23 @@ function broadcast(room, data) {
   }
 }
 
-function makeCode() {
+function roomCode() {
   let code;
+
   do {
-    code = Math.random().toString(36).substring(2, 7).toUpperCase();
+    code = Math.random()
+      .toString(36)
+      .slice(2, 7)
+      .toUpperCase();
   } while (rooms.has(code));
+
   return code;
-}
-
-function cleanName(name) {
-  return String(name || "Player")
-    .replace(/[<>]/g, "")
-    .trim()
-    .substring(0, 16) || "Player";
-}
-
-const colors = [
-  "#53ff69",
-  "#39a9ff",
-  "#ff4f70",
-  "#ffd447",
-  "#b96cff",
-  "#ff8b42",
-  "#27e0c0",
-  "#ff5bc8"
-];
-
-function randomColor() {
-  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 function spawn() {
   return {
-    x: 700 + Math.random() * (WORLD - 1400),
-    y: 700 + Math.random() * (WORLD - 1400)
+    x: 1000 + Math.random() * (WORLD - 2000),
+    y: 1000 + Math.random() * (WORLD - 2000)
   };
 }
 
@@ -71,7 +82,7 @@ function resetPlayer(p) {
   p.angle = Math.random() * Math.PI * 2;
   p.targetAngle = p.angle;
 
-  p.length = 70;
+  p.length = 75;
   p.score = 0;
   p.kills = 0;
 
@@ -104,21 +115,22 @@ function publicPlayer(p) {
   };
 }
 
-function update(p) {
+function movePlayer(p) {
   if (!p.alive) return;
 
-  let diff = p.targetAngle - p.angle;
+  let d = p.targetAngle - p.angle;
 
-  while (diff > Math.PI) diff -= Math.PI * 2;
-  while (diff < -Math.PI) diff += Math.PI * 2;
+  while (d > Math.PI) d -= Math.PI * 2;
+  while (d < -Math.PI) d += Math.PI * 2;
 
-  p.angle += diff * 0.18;
+  p.angle += d * 0.16;
 
-  let speed = 7.2;
+  let speed = 7.1;
 
-  if (p.boost && p.length > 50) {
+  if (p.boost && p.length > 55) {
     speed = 11.5;
-    p.length -= 0.11;
+
+    p.length -= 0.14;
   }
 
   p.x += Math.cos(p.angle) * speed;
@@ -126,8 +138,8 @@ function update(p) {
 
   if (
     p.x < 35 ||
-    p.x > WORLD - 35 ||
     p.y < 35 ||
+    p.x > WORLD - 35 ||
     p.y > WORLD - 35
   ) {
     p.alive = false;
@@ -139,10 +151,14 @@ function update(p) {
     y: p.y
   });
 
-  const wanted = Math.max(50, Math.floor(p.length));
+  const wanted = Math.max(
+    55,
+    Math.floor(p.length)
+  );
 
   while (p.body.length < wanted) {
     const last = p.body[p.body.length - 1];
+
     p.body.push({
       x: last.x,
       y: last.y
@@ -154,28 +170,52 @@ function update(p) {
   }
 }
 
-function collide(room) {
+function distance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function collision(room) {
   const players = [...room.players.values()];
 
   for (const attacker of players) {
     if (!attacker.alive) continue;
 
     for (const victim of players) {
-      if (attacker === victim || !victim.alive) continue;
+      if (
+        attacker === victim ||
+        !victim.alive
+      ) {
+        continue;
+      }
 
-      for (let i = 10; i < victim.body.length; i += 2) {
-        const b = victim.body[i];
+      /*
+       * HEAD AGAINST BODY
+       *
+       * We skip the first few body pieces
+       * so a snake cannot instantly kill
+       * itself at its own neck.
+       */
 
+      for (
+        let i = 10;
+        i < victim.body.length;
+        i += 2
+      ) {
         if (
-          Math.hypot(
-            attacker.x - b.x,
-            attacker.y - b.y
-          ) < 27
+          distance(
+            {
+              x: attacker.x,
+              y: attacker.y
+            },
+            victim.body[i]
+          ) < 28
         ) {
           attacker.alive = false;
-          victim.kills++;
+
+          victim.kills += 1;
           victim.score += 100;
-          victim.length += 18;
+          victim.length += 22;
+
           break;
         }
       }
@@ -185,10 +225,23 @@ function collide(room) {
   }
 }
 
+function state(room) {
+  broadcast(room, {
+    type: "state",
+    players: [
+      ...room.players.values()
+    ].map(publicPlayer)
+  });
+}
+
 wss.on("connection", ws => {
   const p = {
-    id: Math.random().toString(36).substring(2, 10),
     ws,
+
+    id: Math.random()
+      .toString(36)
+      .slice(2, 10),
+
     room: null,
 
     name: "Player",
@@ -200,7 +253,7 @@ wss.on("connection", ws => {
     angle: 0,
     targetAngle: 0,
 
-    length: 70,
+    length: 75,
     score: 0,
     kills: 0,
 
@@ -227,7 +280,7 @@ wss.on("connection", ws => {
     }
 
     if (data.type === "createRoom") {
-      const code = makeCode();
+      const code = roomCode();
 
       const room = {
         code,
@@ -250,7 +303,8 @@ wss.on("connection", ws => {
         id: p.id
       });
 
-      broadcastState(room);
+      state(room);
+
       return;
     }
 
@@ -266,6 +320,7 @@ wss.on("connection", ws => {
           type: "error",
           message: "Roomi ei leitud."
         });
+
         return;
       }
 
@@ -274,6 +329,7 @@ wss.on("connection", ws => {
           type: "error",
           message: "Room on täis."
         });
+
         return;
       }
 
@@ -291,7 +347,8 @@ wss.on("connection", ws => {
         id: p.id
       });
 
-      broadcastState(room);
+      state(room);
+
       return;
     }
 
@@ -306,7 +363,8 @@ wss.on("connection", ws => {
         type: "gameStart"
       });
 
-      broadcastState(p.room);
+      state(p.room);
+
       return;
     }
 
@@ -331,29 +389,22 @@ wss.on("connection", ws => {
     if (room.players.size === 0) {
       rooms.delete(room.code);
     } else {
-      broadcastState(room);
+      state(room);
     }
   });
 });
 
-function broadcastState(room) {
-  broadcast(room, {
-    type: "state",
-    players: [...room.players.values()].map(publicPlayer)
-  });
-}
-
 setInterval(() => {
   for (const room of rooms.values()) {
     for (const p of room.players.values()) {
-      update(p);
+      movePlayer(p);
     }
 
-    collide(room);
-    broadcastState(room);
+    collision(room);
+    state(room);
   }
-}, 50);
+}, TICK);
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Snake Arena running on ${PORT}`);
+  console.log("Snake Arena running on port " + PORT);
 });
