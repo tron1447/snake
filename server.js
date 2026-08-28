@@ -9,36 +9,21 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 
-const WORLD = 10000;
-const TICK = 50;
-const MAX_PLAYERS = 16;
-
 app.use(express.static(path.join(__dirname)));
 
+const WORLD = 10000;
 const rooms = new Map();
 
-function randomId() {
+function id() {
   return Math.random().toString(36).slice(2, 10);
 }
 
-function roomCode() {
+function makeRoomCode() {
   let code;
-
   do {
-    code = Math.random()
-      .toString(36)
-      .slice(2, 7)
-      .toUpperCase();
+    code = Math.random().toString(36).slice(2, 7).toUpperCase();
   } while (rooms.has(code));
-
   return code;
-}
-
-function cleanName(name) {
-  return String(name || "Player")
-    .replace(/[<>]/g, "")
-    .trim()
-    .slice(0, 16) || "Player";
 }
 
 function send(ws, data) {
@@ -53,20 +38,21 @@ function broadcast(room, data) {
   }
 }
 
+function safeName(name) {
+  return String(name || "Player")
+    .replace(/[<>]/g, "")
+    .trim()
+    .slice(0, 16) || "Player";
+}
+
 function spawn() {
   return {
-    x: 1200 + Math.random() * (WORLD - 2400),
-    y: 1200 + Math.random() * (WORLD - 2400)
+    x: 1000 + Math.random() * 8000,
+    y: 1000 + Math.random() * 8000
   };
 }
 
-function normalizeAngle(a) {
-  while (a > Math.PI) a -= Math.PI * 2;
-  while (a < -Math.PI) a += Math.PI * 2;
-  return a;
-}
-
-function resetPlayer(p) {
+function reset(p) {
   const s = spawn();
 
   p.x = s.x;
@@ -75,19 +61,18 @@ function resetPlayer(p) {
   p.angle = Math.random() * Math.PI * 2;
   p.targetAngle = p.angle;
 
-  p.length = 35;
+  p.length = 55;
   p.score = 0;
   p.kills = 0;
-
   p.boost = false;
   p.alive = true;
 
   p.body = [];
 
-  for (let i = 0; i < p.length; i++) {
+  for (let i = 0; i < 55; i++) {
     p.body.push({
-      x: p.x - Math.cos(p.angle) * i * 9,
-      y: p.y - Math.sin(p.angle) * i * 9
+      x: p.x - Math.cos(p.angle) * i * 8,
+      y: p.y - Math.sin(p.angle) * i * 8
     });
   }
 }
@@ -115,15 +100,93 @@ function state(room) {
   };
 }
 
+function updatePlayer(p) {
+  if (!p.alive) return;
+
+  let difference = p.targetAngle - p.angle;
+
+  while (difference > Math.PI) difference -= Math.PI * 2;
+  while (difference < -Math.PI) difference += Math.PI * 2;
+
+  p.angle += difference * 0.20;
+
+  let speed = 7;
+
+  if (p.boost && p.length > 45) {
+    speed = 11;
+    p.length -= 0.10;
+  }
+
+  p.x += Math.cos(p.angle) * speed;
+  p.y += Math.sin(p.angle) * speed;
+
+  if (
+    p.x < 40 ||
+    p.x > WORLD - 40 ||
+    p.y < 40 ||
+    p.y > WORLD - 40
+  ) {
+    p.alive = false;
+    return;
+  }
+
+  p.body.unshift({
+    x: p.x,
+    y: p.y
+  });
+
+  const wanted = Math.floor(p.length);
+
+  while (p.body.length < wanted) {
+    const last = p.body[p.body.length - 1];
+
+    p.body.push({
+      x: last.x,
+      y: last.y
+    });
+  }
+
+  while (p.body.length > wanted) {
+    p.body.pop();
+  }
+}
+
+function distance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function collisions(room) {
+  const players = [...room.players.values()];
+
+  for (const a of players) {
+    if (!a.alive) continue;
+
+    for (const b of players) {
+      if (a === b || !b.alive) continue;
+
+      for (let i = 8; i < b.body.length; i += 2) {
+        if (distance(a, b.body[i]) < 28) {
+          a.alive = false;
+          b.kills++;
+          b.score += 100;
+          b.length += 15;
+          break;
+        }
+      }
+
+      if (!a.alive) break;
+    }
+  }
+}
+
 wss.on("connection", ws => {
   const p = {
-    id: randomId(),
+    id: id(),
     ws,
-
     room: null,
 
     name: "Player",
-    color: "#5cff72",
+    color: "#61ff73",
 
     x: 0,
     y: 0,
@@ -131,7 +194,7 @@ wss.on("connection", ws => {
     angle: 0,
     targetAngle: 0,
 
-    length: 35,
+    length: 55,
     score: 0,
     kills: 0,
 
@@ -141,24 +204,24 @@ wss.on("connection", ws => {
     body: []
   };
 
-  resetPlayer(p);
+  reset(p);
 
   send(ws, {
     type: "connected",
     id: p.id
   });
 
-  ws.on("message", raw => {
+  ws.on("message", message => {
     let data;
 
     try {
-      data = JSON.parse(raw.toString());
+      data = JSON.parse(message.toString());
     } catch {
       return;
     }
 
     if (data.type === "createRoom") {
-      const code = roomCode();
+      const code = makeRoomCode();
 
       const room = {
         code,
@@ -167,13 +230,12 @@ wss.on("connection", ws => {
 
       rooms.set(code, room);
 
-      p.name = cleanName(data.name);
+      p.name = safeName(data.name);
+      p.color = typeof data.color === "string"
+        ? data.color
+        : "#61ff73";
 
-      if (typeof data.color === "string") {
-        p.color = data.color;
-      }
-
-      resetPlayer(p);
+      reset(p);
 
       p.room = room;
       room.players.set(p.id, p);
@@ -198,12 +260,12 @@ wss.on("connection", ws => {
       if (!room) {
         send(ws, {
           type: "error",
-          message: "Roomi ei leitud."
+          message: "Seda roomi ei ole."
         });
         return;
       }
 
-      if (room.players.size >= MAX_PLAYERS) {
+      if (room.players.size >= 16) {
         send(ws, {
           type: "error",
           message: "Room on täis."
@@ -211,13 +273,12 @@ wss.on("connection", ws => {
         return;
       }
 
-      p.name = cleanName(data.name);
+      p.name = safeName(data.name);
+      p.color = typeof data.color === "string"
+        ? data.color
+        : "#61ff73";
 
-      if (typeof data.color === "string") {
-        p.color = data.color;
-      }
-
-      resetPlayer(p);
+      reset(p);
 
       p.room = room;
       room.players.set(p.id, p);
@@ -232,11 +293,11 @@ wss.on("connection", ws => {
       return;
     }
 
-    if (data.type === "startRoom") {
+    if (data.type === "start") {
       if (!p.room) return;
 
       for (const x of p.room.players.values()) {
-        resetPlayer(x);
+        reset(x);
       }
 
       broadcast(p.room, {
@@ -273,118 +334,18 @@ wss.on("connection", ws => {
   });
 });
 
-function updatePlayer(p) {
-  if (!p.alive) return;
-
-  let turn = normalizeAngle(
-    p.targetAngle - p.angle
-  );
-
-  p.angle += turn * 0.20;
-
-  let speed = 6.5;
-
-  if (p.boost && p.length > 38) {
-    speed = 10.5;
-    p.length -= 0.06;
-  }
-
-  p.x += Math.cos(p.angle) * speed;
-  p.y += Math.sin(p.angle) * speed;
-
-  if (
-    p.x < 80 ||
-    p.x > WORLD - 80 ||
-    p.y < 80 ||
-    p.y > WORLD - 80
-  ) {
-    p.alive = false;
-    return;
-  }
-
-  p.body.unshift({
-    x: p.x,
-    y: p.y
-  });
-
-  while (p.body.length < Math.floor(p.length)) {
-    const last = p.body[p.body.length - 1];
-
-    p.body.push({
-      x: last.x,
-      y: last.y
-    });
-  }
-
-  while (p.body.length > Math.floor(p.length)) {
-    p.body.pop();
-  }
-}
-
-function distance(a, b) {
-  return Math.hypot(
-    a.x - b.x,
-    a.y - b.y
-  );
-}
-
-function collisionCheck(room) {
-  const players = [...room.players.values()];
-
-  for (const a of players) {
-    if (!a.alive) continue;
-
-    // Own body
-    for (let i = 10; i < a.body.length; i += 2) {
-      if (
-        Math.hypot(
-          a.x - a.body[i].x,
-          a.y - a.body[i].y
-        ) < 22
-      ) {
-        a.alive = false;
-        break;
-      }
-    }
-
-    if (!a.alive) continue;
-
-    // Other bodies
-    for (const b of players) {
-      if (a === b || !b.alive) continue;
-
-      for (let i = 5; i < b.body.length; i += 2) {
-        if (
-          Math.hypot(
-            a.x - b.body[i].x,
-            a.y - b.body[i].y
-          ) < 25
-        ) {
-          a.alive = false;
-          b.kills++;
-          b.score += 100;
-          b.length += 12;
-          break;
-        }
-      }
-
-      if (!a.alive) break;
-    }
-  }
-}
-
 setInterval(() => {
   for (const room of rooms.values()) {
     for (const p of room.players.values()) {
       updatePlayer(p);
     }
 
-    collisionCheck(room);
+    collisions(room);
 
     broadcast(room, state(room));
   }
-}, TICK);
+}, 50);
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Worm Arena running on port ${PORT}`);
+  console.log("Worm Arena running on port " + PORT);
 });
