@@ -9,25 +9,21 @@ const WORLD = 14000;
 
 const server = http.createServer((req,res)=>{
 
-    let file;
-
     if(
-        req.url === "/" ||
-        req.url === "/index.html"
+        req.url !== "/" &&
+        req.url !== "/index.html"
     ){
-
-        file =
-            path.join(
-                __dirname,
-                "index.html"
-            );
-
-    }else{
 
         res.writeHead(404);
         res.end("Not found");
         return;
     }
+
+    const file =
+        path.join(
+            __dirname,
+            "index.html"
+        );
 
     fs.readFile(
         file,
@@ -36,9 +32,8 @@ const server = http.createServer((req,res)=>{
             if(err){
 
                 res.writeHead(500);
-
                 res.end(
-                    "Could not load index.html"
+                    "index.html puudub"
                 );
 
                 return;
@@ -62,9 +57,11 @@ const wss =
         server
     });
 
-const clients = new Map();
+const clients =
+    new Map();
 
-const rooms = new Map();
+const rooms =
+    new Map();
 
 function send(ws,data){
 
@@ -97,7 +94,7 @@ function randomCode(){
             i++
         ){
 
-            code+=
+            code +=
                 chars[
                     Math.floor(
                         Math.random()*
@@ -106,7 +103,9 @@ function randomCode(){
                 ];
         }
 
-    }while(rooms.has(code));
+    }while(
+        rooms.has(code)
+    );
 
     return code;
 }
@@ -208,8 +207,6 @@ function updatePlayer(p){
         ?10
         :7.4;
 
-    p.speed=speed;
-
     p.x+=
         Math.cos(p.angle)*
         speed;
@@ -274,16 +271,20 @@ function updatePlayer(p){
     }
 }
 
+/*
+    KÕIGE OLULISEM OSA
+
+    A pea -> B keha
+    A SUREB.
+
+    B pea -> A keha
+    B SUREB.
+*/
+
 function collisionCheck(room){
 
     const players=
         room.players;
-
-    /*
-       Mängija A pea
-       läheb mängija B keha sisse.
-       A sureb.
-    */
 
     for(
         const attacker of players
@@ -297,13 +298,17 @@ function collisionCheck(room){
         ){
 
             if(
-                attacker.id===
-                victim.id||
+                attacker.id === victim.id ||
                 !victim.alive
             )
                 continue;
 
-            let hit=false;
+            /*
+                ATTACKER HEAD
+                -> VICTIM BODY
+            */
+
+            let hitBody=false;
 
             for(
                 let i=12;
@@ -314,44 +319,103 @@ function collisionCheck(room){
                 const part=
                     victim.body[i];
 
-                const dx=
-                    attacker.x-
-                    part.x;
-
-                const dy=
-                    attacker.y-
-                    part.y;
-
-                if(
+                const distance=
                     Math.hypot(
-                        dx,
-                        dy
-                    )<31
-                ){
+                        attacker.x-part.x,
+                        attacker.y-part.y
+                    );
 
-                    hit=true;
+                if(distance<31){
 
+                    hitBody=true;
                     break;
                 }
             }
 
-            if(hit){
+            if(hitBody){
 
-                victim.alive=false;
+                /*
+                    JUST ATTACKER SUREB!
+                */
 
-                attacker.kills++;
+                attacker.alive=false;
 
-                attacker.score+=100;
+                /*
+                    Victim saab killi.
+                */
 
-                attacker.length+=25;
+                victim.kills++;
+                victim.score+=100;
+                victim.length+=25;
+
+                break;
+            }
+        }
+    }
+
+    /*
+       PEAD VASTAMISI
+       Kui kaks pead kokku lähevad,
+       väiksem sureb.
+    */
+
+    for(
+        let i=0;
+        i<players.length;
+        i++
+    ){
+
+        for(
+            let j=i+1;
+            j<players.length;
+            j++
+        ){
+
+            const a=players[i];
+            const b=players[j];
+
+            if(
+                !a.alive||
+                !b.alive
+            )
+                continue;
+
+            if(
+                Math.hypot(
+                    a.x-b.x,
+                    a.y-b.y
+                )<48
+            ){
+
+                if(a.length>b.length){
+
+                    b.alive=false;
+
+                    a.kills++;
+                    a.score+=100;
+
+                }else if(
+                    b.length>a.length
+                ){
+
+                    a.alive=false;
+
+                    b.kills++;
+                    b.score+=100;
+
+                }else{
+
+                    a.alive=false;
+                    b.alive=false;
+                }
             }
         }
     }
 }
 
-function getPublicPlayer(p){
+function publicPlayer(p){
 
-    return {
+    return{
 
         id:p.id,
 
@@ -373,12 +437,6 @@ function getPublicPlayer(p){
 
         alive:p.alive,
 
-        /*
-           Saadame terve keha.
-           Selle tõttu näeb teine mängija
-           päriselt ussi, mitte pulka.
-        */
-
         body:p.body
     };
 }
@@ -387,19 +445,15 @@ function broadcast(room){
 
     const state=
         room.players.map(
-            getPublicPlayer
+            publicPlayer
         );
 
     for(
-        const player of
-        room.players
+        const p of room.players
     ){
 
-        const ws=
-            clients.get(player.id);
-
         send(
-            ws,
+            clients.get(p.id),
             {
                 type:"state",
                 players:state
@@ -428,7 +482,7 @@ wss.on(
             ws,
             {
                 type:"connected",
-                id:id
+                id
             }
         );
 
@@ -450,7 +504,9 @@ wss.on(
                     return;
                 }
 
-                /* CREATE ROOM */
+                /*
+                    CREATE ROOM
+                */
 
                 if(
                     data.type===
@@ -467,20 +523,13 @@ wss.on(
                             data.color
                         );
 
-                    const room={
-
-                        code,
-
-                        started:false,
-
-                        players:[
-                            player
-                        ]
-                    };
-
                     rooms.set(
                         code,
-                        room
+                        {
+                            code,
+                            started:false,
+                            players:[player]
+                        }
                     );
 
                     ws.roomCode=code;
@@ -488,12 +537,9 @@ wss.on(
                     send(
                         ws,
                         {
-
                             type:
                                 "roomCreated",
-
                             code,
-
                             id
                         }
                     );
@@ -501,7 +547,9 @@ wss.on(
                     return;
                 }
 
-                /* JOIN */
+                /*
+                    JOIN ROOM
+                */
 
                 if(
                     data.type===
@@ -522,9 +570,7 @@ wss.on(
                         send(
                             ws,
                             {
-
                                 type:"error",
-
                                 message:
                                     "Roomi ei leitud."
                             }
@@ -538,9 +584,7 @@ wss.on(
                         send(
                             ws,
                             {
-
                                 type:"error",
-
                                 message:
                                     "Mäng on juba alanud."
                             }
@@ -556,9 +600,7 @@ wss.on(
                         send(
                             ws,
                             {
-
                                 type:"error",
-
                                 message:
                                     "Room on täis."
                             }
@@ -583,12 +625,9 @@ wss.on(
                     send(
                         ws,
                         {
-
                             type:
                                 "roomJoined",
-
                             code,
-
                             id
                         }
                     );
@@ -596,21 +635,19 @@ wss.on(
                     return;
                 }
 
-                /* START */
+                /*
+                    START
+                */
 
                 if(
                     data.type===
                     "start"
                 ){
 
-                    const code=
-                        ws.roomCode;
-
-                    if(!code)
-                        return;
-
                     const room=
-                        rooms.get(code);
+                        rooms.get(
+                            ws.roomCode
+                        );
 
                     if(!room)
                         return;
@@ -634,21 +671,19 @@ wss.on(
                     return;
                 }
 
-                /* INPUT */
+                /*
+                    INPUT
+                */
 
                 if(
                     data.type===
                     "input"
                 ){
 
-                    const code=
-                        ws.roomCode;
-
-                    if(!code)
-                        return;
-
                     const room=
-                        rooms.get(code);
+                        rooms.get(
+                            ws.roomCode
+                        );
 
                     if(!room)
                         return;
@@ -677,7 +712,6 @@ wss.on(
                             data.boost
                         );
                 }
-
             }
         );
 
@@ -721,7 +755,7 @@ wss.on(
 );
 
 /*
-   20 korda sekundis.
+    Multiplayer game loop
 */
 
 setInterval(
@@ -756,7 +790,7 @@ server.listen(
     PORT,
     ()=>{
         console.log(
-            "Snake Arena töötab pordil "+
+            "Snake Arena server töötab pordil "+
             PORT
         );
     }
