@@ -2,9 +2,13 @@
 <html lang="et">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1,
+      maximum-scale=1,
+      user-scalable=no">
 
-<title>Worm Arena</title>
+<title>Snake Arena</title>
 
 <style>
 *{
@@ -19,7 +23,7 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#071008;
+  background:#050b07;
   font-family:Arial,sans-serif;
   touch-action:none;
 }
@@ -36,236 +40,409 @@ canvas{
   inset:0;
   z-index:100;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   background:
-    radial-gradient(circle,#245d2c,#071008 70%);
+    radial-gradient(circle at 50% 35%,
+      #204b27 0,
+      #0a180d 40%,
+      #030704 100%);
 }
 
 .panel{
-  width:min(420px,94vw);
-  padding:26px;
-  border-radius:25px;
-  background:rgba(5,12,6,.97);
-  border:1px solid #376e3e;
+  width:min(430px,94vw);
+  padding:30px;
+  border-radius:28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(24,43,27,.97),
+      rgba(5,12,7,.98)
+    );
+
+  border:1px solid rgba(120,255,135,.3);
+
+  box-shadow:
+    0 30px 100px rgba(0,0,0,.8),
+    inset 0 1px rgba(255,255,255,.08);
+
   color:white;
   text-align:center;
-  box-shadow:0 20px 80px #000;
 }
 
 .logo{
-  font-size:65px;
+  font-size:70px;
+  filter:
+    drop-shadow(0 0 18px #53ff69);
 }
 
 h1{
-  color:#61ff73;
-  font-size:38px;
+  margin-top:4px;
+  font-size:42px;
+  letter-spacing:2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #54ff6a,
+      #c5ffc9
+    );
+
+  -webkit-background-clip:text;
+  color:transparent;
 }
 
 .sub{
-  color:#879b8a;
-  margin:7px 0 20px;
+  color:#78907d;
+  margin:7px 0 22px;
 }
 
 input{
   width:100%;
-  height:48px;
+  height:50px;
   margin:5px 0;
-  border-radius:12px;
-  border:1px solid #355e3a;
-  background:#111a12;
+
+  border-radius:14px;
+  border:1px solid #294a2e;
+
+  background:#09120b;
   color:white;
+
   text-align:center;
   font-size:16px;
+  outline:none;
+}
+
+input:focus{
+  border-color:#53ff69;
 }
 
 button{
   width:100%;
-  height:48px;
-  margin-top:8px;
+  height:50px;
+  margin-top:9px;
+
+  border-radius:14px;
   border:0;
-  border-radius:12px;
+
   font-weight:bold;
+  font-size:15px;
+
   cursor:pointer;
+
+  transition:
+    transform .12s,
+    filter .12s;
+}
+
+button:active{
+  transform:scale(.97);
 }
 
 .green{
-  background:#61ff73;
-  color:#061008;
+  background:
+    linear-gradient(
+      135deg,
+      #55ff6c,
+      #26c940
+    );
+
+  color:#031006;
+
+  box-shadow:
+    0 8px 25px rgba(50,255,80,.18);
 }
 
 .dark{
-  background:#172319;
   color:white;
-  border:1px solid #385e3d;
+  background:#111d13;
+  border:1px solid #315b37;
 }
 
 #roomBox{
   display:none;
-  margin-top:12px;
-  padding:13px;
-  background:#101a11;
-  border-radius:13px;
+  margin-top:14px;
+  padding:14px;
+
+  background:#09130b;
+  border-radius:15px;
+
+  border:1px solid #294a2e;
 }
 
 #roomCode{
-  color:#61ff73;
-  font-size:32px;
+  font-size:34px;
   font-weight:bold;
-  letter-spacing:6px;
+  letter-spacing:7px;
+  color:#55ff6c;
+  margin:5px 0;
 }
 
 #players{
-  margin-top:10px;
-  line-height:22px;
+  color:#a5b9a8;
+  font-size:13px;
+  line-height:21px;
 }
 
 #error{
-  min-height:22px;
+  min-height:20px;
+  color:#ff6475;
   margin-top:8px;
-  color:#ff6470;
+  font-size:13px;
 }
 
 #hud{
   display:none;
+
   position:fixed;
+  top:12px;
+  left:12px;
+
   z-index:20;
-  top:10px;
-  left:10px;
-  gap:7px;
+
+  gap:8px;
 }
 
 .stat{
-  background:rgba(0,0,0,.72);
-  border:1px solid #345e39;
-  border-radius:10px;
-  padding:7px 11px;
+  min-width:75px;
+  padding:8px 11px;
+
+  border-radius:12px;
+
+  background:
+    rgba(2,8,3,.78);
+
+  border:
+    1px solid rgba(125,255,140,.2);
+
   color:white;
+
+  backdrop-filter:blur(8px);
 }
 
 .stat small{
   display:block;
-  color:#829583;
+  color:#718274;
   font-size:9px;
+  margin-bottom:2px;
+}
+
+.stat b{
+  font-size:15px;
 }
 
 #leaderboard{
   display:none;
+
   position:fixed;
   z-index:20;
-  top:10px;
-  right:10px;
+
+  top:12px;
+  right:12px;
+
   width:190px;
-  padding:10px;
-  border-radius:13px;
-  background:rgba(0,0,0,.75);
-  border:1px solid #345e39;
+
+  padding:11px;
+
+  border-radius:14px;
+
+  background:
+    rgba(2,8,3,.8);
+
+  border:
+    1px solid rgba(125,255,140,.2);
+
   color:white;
+
+  backdrop-filter:blur(8px);
 }
 
 .lbtitle{
-  color:#61ff73;
+  color:#55ff6c;
   font-weight:bold;
-  margin-bottom:4px;
+  margin-bottom:5px;
 }
 
 .row{
   display:flex;
   justify-content:space-between;
-  padding:4px;
+  align-items:center;
+
+  padding:5px;
+
   font-size:12px;
 }
 
 #minimap{
   display:none;
+
   position:fixed;
+
+  right:12px;
+  bottom:12px;
+
+  width:170px;
+  height:170px;
+
   z-index:20;
-  right:10px;
-  bottom:10px;
-  width:160px;
-  height:160px;
-  border:2px solid #61ff73;
-  border-radius:14px;
-  background:#0c1b0e;
+
+  padding:3px;
+
+  border-radius:17px;
+
+  background:#071009;
+
+  border:
+    2px solid rgba(85,255,108,.65);
+
+  box-shadow:
+    0 0 30px rgba(70,255,90,.15);
 }
 
 #mini{
   width:100%;
   height:100%;
-}
-
-#stickArea{
-  display:none;
-  position:fixed;
-  z-index:30;
-  left:20px;
-  bottom:20px;
-  width:130px;
-  height:130px;
-  border-radius:50%;
-  background:rgba(97,255,115,.08);
-  border:2px solid rgba(97,255,115,.35);
-}
-
-#stick{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  background:#61ff73;
-  border:3px solid white;
-  transform:translate(-50%,-50%);
+  border-radius:13px;
 }
 
 #boost{
   display:none;
+
   position:fixed;
   z-index:30;
+
   right:25px;
   bottom:28px;
-  width:82px;
-  height:82px;
+
+  width:85px;
+  height:85px;
+
   border-radius:50%;
-  background:#087db5;
+
   color:white;
-  border:3px solid #bceeff;
-  font-size:28px;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #65d8ff,
+      #096ca4
+    );
+
+  border:
+    3px solid rgba(220,250,255,.9);
+
+  box-shadow:
+    0 0 30px rgba(50,180,255,.45);
+
+  font-size:30px;
+}
+
+#stickArea{
+  display:none;
+
+  position:fixed;
+  z-index:30;
+
+  left:20px;
+  bottom:20px;
+
+  width:135px;
+  height:135px;
+
+  border-radius:50%;
+
+  background:
+    rgba(100,255,120,.06);
+
+  border:
+    2px solid rgba(100,255,120,.25);
+}
+
+#stick{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  width:58px;
+  height:58px;
+
+  transform:
+    translate(-50%,-50%);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #b5ffbc,
+      #35e94e
+    );
+
+  border:3px solid white;
+
+  box-shadow:
+    0 0 25px rgba(80,255,100,.3);
 }
 
 #dead{
   display:none;
+
   position:fixed;
   inset:0;
+
   z-index:200;
-  align-items:center;
+
   justify-content:center;
-  background:rgba(0,0,0,.8);
+  align-items:center;
+
+  background:
+    rgba(0,0,0,.82);
 }
 
 .deadBox{
-  width:min(380px,90vw);
+  width:min(390px,90vw);
+
   padding:30px;
-  border-radius:20px;
-  background:#0b160c;
-  border:1px solid #396740;
+
+  border-radius:23px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #152016,
+      #060b07
+    );
+
+  border:1px solid #355f3b;
+
   color:white;
   text-align:center;
+
+  box-shadow:
+    0 30px 80px #000;
 }
 
 .deadBox h2{
-  color:#ff5a6c;
-  font-size:40px;
+  color:#ff566a;
+  font-size:43px;
+  margin-bottom:10px;
 }
 
 @media(max-width:800px){
-  #stickArea,#boost{
+
+  #stickArea,
+  #boost{
     display:block;
   }
 
   #leaderboard{
-    width:150px;
+    width:155px;
+  }
+
+  .stat{
+    min-width:62px;
   }
 }
 </style>
@@ -276,42 +453,61 @@ button{
 <canvas id="game"></canvas>
 
 <div id="menu">
+
   <div class="panel">
 
-    <div class="logo">🪱</div>
+    <div class="logo">🐍</div>
 
-    <h1>WORM ARENA</h1>
+    <h1>SNAKE ARENA</h1>
 
     <div class="sub">
       Grow • Eat • Boost • Survive
     </div>
 
-    <input id="name" maxlength="16" placeholder="Sinu nimi">
+    <input
+      id="name"
+      maxlength="16"
+      placeholder="Sinu nimi">
 
-    <button class="green" id="single">
+    <button
+      class="green"
+      id="single">
       🤖 SINGLEPLAYER
     </button>
 
-    <button class="dark" id="create">
+    <button
+      class="dark"
+      id="create">
       🏠 LOO ROOM
     </button>
 
-    <input id="room" maxlength="5" placeholder="ROOM CODE">
+    <input
+      id="room"
+      maxlength="5"
+      placeholder="ROOM CODE">
 
-    <button class="dark" id="join">
+    <button
+      class="dark"
+      id="join">
       🚪 LIITU ROOMI
     </button>
 
     <div id="roomBox">
+
       <div>ROOM</div>
 
-      <div id="roomCode">-----</div>
+      <div id="roomCode">
+        -----
+      </div>
 
       <div id="players"></div>
 
-      <button class="green" id="start">
-        ▶ ALUSTA
+      <button
+        class="green"
+        id="start">
+        ▶ ALUSTA MÄNGU
       </button>
+
     </div>
 
     <div id="error"></div>
@@ -333,14 +529,19 @@ button{
 
   <div class="stat">
     <small>LENGTH</small>
-    <b id="length">55</b>
+    <b id="length">70</b>
   </div>
 
 </div>
 
 <div id="leaderboard">
-  <div class="lbtitle">🏆 TOP 3</div>
+
+  <div class="lbtitle">
+    🏆 TOP 3
+  </div>
+
   <div id="lb"></div>
+
 </div>
 
 <div id="minimap">
@@ -351,7 +552,9 @@ button{
   <div id="stick"></div>
 </div>
 
-<button id="boost">⚡</button>
+<button id="boost">
+  ⚡
+</button>
 
 <div id="dead">
 
@@ -360,7 +563,7 @@ button{
     <h2>GAME OVER</h2>
 
     <p id="deadReason">
-      Sinu uss sai otsa!
+      Sinu snake sai otsa!
     </p>
 
     <br>
@@ -375,154 +578,161 @@ button{
       <b id="finalKills">0</b>
     </p>
 
-    <button class="green" onclick="location.reload()">
+    <button
+      class="green"
+      onclick="location.reload()">
       🔄 UUESTI
     </button>
 
   </div>
-
 </div>
 
 <script>
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
+const canvas =
+  document.getElementById("game");
 
-const mini=document.getElementById("mini");
-const mctx=mini.getContext("2d");
+const ctx =
+  canvas.getContext("2d");
 
-let W=innerWidth;
-let H=innerHeight;
+const mini =
+  document.getElementById("mini");
 
-canvas.width=W;
-canvas.height=H;
+const mctx =
+  mini.getContext("2d");
 
-mini.width=400;
-mini.height=400;
+let W = innerWidth;
+let H = innerHeight;
 
-addEventListener("resize",()=>{
-  W=innerWidth;
-  H=innerHeight;
+canvas.width = W;
+canvas.height = H;
 
-  canvas.width=W;
-  canvas.height=H;
+mini.width = 400;
+mini.height = 400;
+
+addEventListener("resize", () => {
+
+  W = innerWidth;
+  H = innerHeight;
+
+  canvas.width = W;
+  canvas.height = H;
 });
 
-const WORLD=10000;
+const WORLD = 12000;
 
-let running=false;
-let single=false;
-let dead=false;
+let running = false;
+let single = false;
+let dead = false;
 
-const player={
+const player = {
+
   id:null,
-  name:localStorage.getItem("wormName")||"Player",
+
+  name:
+    localStorage.getItem("snakeName")
+    || "Player",
 
   x:WORLD/2,
   y:WORLD/2,
 
+  renderX:WORLD/2,
+  renderY:WORLD/2,
+
   angle:0,
   targetAngle:0,
 
-  length:55,
+  length:70,
   score:0,
   kills:0,
 
-  color:"#61ff73",
+  color:"#53ff69",
 
   body:[]
 };
 
-document.getElementById("name").value=player.name;
+document.getElementById("name").value =
+  player.name;
 
-document.getElementById("name").oninput=e=>{
-  player.name=e.target.value
-    .replace(/[<>]/g,"")
-    .slice(0,16);
+document.getElementById("name").oninput =
+  e => {
 
-  localStorage.setItem(
-    "wormName",
-    player.name
-  );
-};
+    player.name =
+      e.target.value
+      .replace(/[<>]/g,"")
+      .substring(0,16);
 
-const colors=[
-  "#61ff73",
-  "#4da3ff",
-  "#ff5269",
-  "#ffd84d",
-  "#b86cff",
-  "#ff914d",
-  "#00dfc4",
-  "#ff63c8"
+    localStorage.setItem(
+      "snakeName",
+      player.name
+    );
+  };
+
+const COLORS = [
+  "#53ff69",
+  "#39a9ff",
+  "#ff4f70",
+  "#ffd447",
+  "#b96cff",
+  "#ff8b42",
+  "#27e0c0",
+  "#ff5bc8"
 ];
 
 function randomColor(){
-  return colors[
-    Math.floor(Math.random()*colors.length)
+
+  return COLORS[
+    Math.floor(
+      Math.random()*COLORS.length
+    )
   ];
-}
-
-function resetPlayer(){
-
-  player.x=
-    1200+
-    Math.random()*7600;
-
-  player.y=
-    1200+
-    Math.random()*7600;
-
-  player.angle=
-    Math.random()*Math.PI*2;
-
-  player.targetAngle=
-    player.angle;
-
-  player.length=55;
-  player.score=0;
-  player.kills=0;
-
-  player.body=[];
-
-  for(let i=0;i<55;i++){
-
-    player.body.push({
-      x:
-        player.x-
-        Math.cos(player.angle)*i*8,
-
-      y:
-        player.y-
-        Math.sin(player.angle)*i*8
-    });
-
-  }
 }
 
 /* FOOD */
 
-const food=[];
+const food = [];
 
-function makeFood(){
+function newFood(){
 
   return {
-    x:100+Math.random()*9800,
-    y:100+Math.random()*9800,
-    r:4+Math.random()*4,
-    value:1+Math.floor(Math.random()*4),
-    color:randomColor()
+
+    x:
+      100+
+      Math.random()*
+      (WORLD-200),
+
+    y:
+      100+
+      Math.random()*
+      (WORLD-200),
+
+    r:
+      5+
+      Math.random()*4,
+
+    value:
+      1+
+      Math.floor(
+        Math.random()*4
+      ),
+
+    color:
+      randomColor(),
+
+    phase:
+      Math.random()*
+      Math.PI*2
   };
 }
 
-for(let i=0;i<700;i++){
-  food.push(makeFood());
+for(let i=0;i<900;i++){
+  food.push(newFood());
 }
 
 /* BOTS */
 
-const bots=[];
+const bots = [];
 
-const botNames=[
+const BOT_NAMES = [
   "Shadow",
   "Viper",
   "Blaze",
@@ -539,48 +749,55 @@ const botNames=[
 
 function createBot(){
 
-  const b={
+  const b = {
 
     id:
       Math.random()
       .toString(36)
-      .slice(2),
+      .substring(2),
 
     name:
-      botNames[
+      BOT_NAMES[
         Math.floor(
-          Math.random()*botNames.length
+          Math.random()*
+          BOT_NAMES.length
         )
       ],
 
     x:
-      700+
-      Math.random()*8600,
+      500+
+      Math.random()*
+      (WORLD-1000),
 
     y:
-      700+
-      Math.random()*8600,
+      500+
+      Math.random()*
+      (WORLD-1000),
 
     angle:
-      Math.random()*Math.PI*2,
+      Math.random()*
+      Math.PI*2,
 
     target:0,
 
     length:
-      40+
-      Math.random()*100,
+      55+
+      Math.random()*130,
 
-    score:0,
+    score:
+      Math.floor(
+        Math.random()*200
+      ),
 
-    color:randomColor(),
+    color:
+      randomColor(),
 
     body:[],
 
     timer:0
-
   };
 
-  b.target=b.angle;
+  b.target = b.angle;
 
   for(
     let i=0;
@@ -589,15 +806,17 @@ function createBot(){
   ){
 
     b.body.push({
+
       x:
         b.x-
-        Math.cos(b.angle)*i*8,
+        Math.cos(b.angle)*
+        i*7,
 
       y:
         b.y-
-        Math.sin(b.angle)*i*8
+        Math.sin(b.angle)*
+        i*7
     });
-
   }
 
   return b;
@@ -605,70 +824,127 @@ function createBot(){
 
 function createBots(){
 
-  bots.length=0;
+  bots.length = 0;
 
-  for(let i=0;i<14;i++){
+  for(let i=0;i<16;i++){
     bots.push(createBot());
+  }
+}
+
+/* RESET */
+
+function resetPlayer(){
+
+  player.x =
+    1200+
+    Math.random()*
+    (WORLD-2400);
+
+  player.y =
+    1200+
+    Math.random()*
+    (WORLD-2400);
+
+  player.renderX =
+    player.x;
+
+  player.renderY =
+    player.y;
+
+  player.angle =
+    Math.random()*
+    Math.PI*2;
+
+  player.targetAngle =
+    player.angle;
+
+  player.length = 70;
+  player.score = 0;
+  player.kills = 0;
+
+  player.body = [];
+
+  for(
+    let i=0;
+    i<player.length;
+    i++
+  ){
+
+    player.body.push({
+
+      x:
+        player.x-
+        Math.cos(player.angle)*
+        i*7,
+
+      y:
+        player.y-
+        Math.sin(player.angle)*
+        i*7
+    });
   }
 }
 
 /* INPUT */
 
-let mouseX=W/2;
-let mouseY=H/2;
-let boosting=false;
+let mouseX = W/2;
+let mouseY = H/2;
 
-addEventListener("mousemove",e=>{
-  mouseX=e.clientX;
-  mouseY=e.clientY;
-});
+let boosting = false;
 
-addEventListener("keydown",e=>{
+addEventListener(
+  "mousemove",
+  e => {
 
-  if(e.code==="Space"){
-    boosting=true;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
   }
+);
 
-  if(e.key.toLowerCase()==="w" || e.key==="ArrowUp"){
-    player.targetAngle=-Math.PI/2;
+addEventListener(
+  "keydown",
+  e => {
+
+    if(e.code==="Space"){
+      boosting=true;
+    }
   }
+);
 
-  if(e.key.toLowerCase()==="s" || e.key==="ArrowDown"){
-    player.targetAngle=Math.PI/2;
+addEventListener(
+  "keyup",
+  e => {
+
+    if(e.code==="Space"){
+      boosting=false;
+    }
   }
+);
 
-  if(e.key.toLowerCase()==="a" || e.key==="ArrowLeft"){
-    player.targetAngle=Math.PI;
-  }
+/* MOBILE JOYSTICK */
 
-  if(e.key.toLowerCase()==="d" || e.key==="ArrowRight"){
-    player.targetAngle=0;
-  }
-});
+const stickArea =
+  document.getElementById(
+    "stickArea"
+  );
 
-addEventListener("keyup",e=>{
-  if(e.code==="Space"){
-    boosting=false;
-  }
-});
+const stick =
+  document.getElementById(
+    "stick"
+  );
 
-/* MOBILE */
+let joystick = false;
 
-const stickArea=
-document.getElementById("stickArea");
+function moveStick(x,y){
 
-const stick=
-document.getElementById("stick");
-
-let joystick=false;
-
-function joystickMove(x,y){
-
-  const r=
+  const r =
     stickArea.getBoundingClientRect();
 
-  const cx=r.left+r.width/2;
-  const cy=r.top+r.height/2;
+  const cx =
+    r.left+r.width/2;
+
+  const cy =
+    r.top+r.height/2;
 
   let dx=x-cx;
   let dy=y-cy;
@@ -678,32 +954,35 @@ function joystickMove(x,y){
   const d=Math.hypot(dx,dy);
 
   if(d>max){
+
     dx=dx/d*max;
     dy=dy/d*max;
   }
 
-  stick.style.left=
+  stick.style.left =
     `calc(50% + ${dx}px)`;
 
-  stick.style.top=
+  stick.style.top =
     `calc(50% + ${dy}px)`;
 
   if(d>7){
-    player.targetAngle=
+
+    player.targetAngle =
       Math.atan2(dy,dx);
   }
 }
 
 stickArea.addEventListener(
   "pointerdown",
-  e=>{
+  e => {
+
     joystick=true;
 
     stickArea.setPointerCapture(
       e.pointerId
     );
 
-    joystickMove(
+    moveStick(
       e.clientX,
       e.clientY
     );
@@ -712,9 +991,11 @@ stickArea.addEventListener(
 
 stickArea.addEventListener(
   "pointermove",
-  e=>{
+  e => {
+
     if(joystick){
-      joystickMove(
+
+      moveStick(
         e.clientX,
         e.clientY
       );
@@ -722,7 +1003,7 @@ stickArea.addEventListener(
   }
 );
 
-function stopJoystick(){
+function stopStick(){
 
   joystick=false;
 
@@ -732,20 +1013,23 @@ function stopJoystick(){
 
 stickArea.addEventListener(
   "pointerup",
-  stopJoystick
+  stopStick
 );
 
 stickArea.addEventListener(
   "pointercancel",
-  stopJoystick
+  stopStick
 );
 
-const boostButton=
-document.getElementById("boost");
+const boostButton =
+  document.getElementById(
+    "boost"
+  );
 
 boostButton.addEventListener(
   "pointerdown",
-  e=>{
+  e => {
+
     e.preventDefault();
     boosting=true;
   }
@@ -753,65 +1037,62 @@ boostButton.addEventListener(
 
 boostButton.addEventListener(
   "pointerup",
-  ()=>{
+  () => {
     boosting=false;
   }
 );
 
 boostButton.addEventListener(
   "pointercancel",
-  ()=>{
+  () => {
     boosting=false;
   }
 );
 
-/* PLAYER */
+/* PLAYER UPDATE */
 
 function updatePlayer(){
 
-  let d=
+  let diff =
     player.targetAngle-
     player.angle;
 
-  while(d>Math.PI)
-    d-=Math.PI*2;
+  while(diff>Math.PI)
+    diff-=Math.PI*2;
 
-  while(d<-Math.PI)
-    d+=Math.PI*2;
+  while(diff<-Math.PI)
+    diff+=Math.PI*2;
 
-  player.angle+=d*.17;
+  player.angle += diff*.18;
 
-  let speed=7;
+  let speed = 7.2;
 
   if(
     boosting &&
-    player.length>45
+    player.length>50
   ){
 
-    speed=11;
-    player.length-=.08;
-
+    speed=11.5;
+    player.length-=.11;
   }
 
-  player.x+=
-    Math.cos(player.angle)*speed;
+  player.x +=
+    Math.cos(player.angle)*
+    speed;
 
-  player.y+=
-    Math.sin(player.angle)*speed;
+  player.y +=
+    Math.sin(player.angle)*
+    speed;
 
   if(
-    player.x<50 ||
-    player.x>WORLD-50 ||
-    player.y<50 ||
-    player.y>WORLD-50
+    player.x<40 ||
+    player.x>WORLD-40 ||
+    player.y<40 ||
+    player.y>WORLD-40
   ){
 
-    die(
-      "Läksid vastu seina!"
-    );
-
+    die("Läksid vastu seina!");
     return;
-
   }
 
   player.body.unshift({
@@ -819,12 +1100,17 @@ function updatePlayer(){
     y:player.y
   });
 
+  const wanted =
+    Math.max(
+      50,
+      Math.floor(player.length)
+    );
+
   while(
-    player.body.length<
-    Math.floor(player.length)
+    player.body.length<wanted
   ){
 
-    const last=
+    const last =
       player.body[
         player.body.length-1
       ];
@@ -833,22 +1119,19 @@ function updatePlayer(){
       x:last.x,
       y:last.y
     });
-
   }
 
   while(
-    player.body.length>
-    Math.floor(player.length)
+    player.body.length>wanted
   ){
 
     player.body.pop();
-
   }
 
   eatFood(player);
 }
 
-/* FOOD */
+/* EAT */
 
 function eatFood(snake){
 
@@ -864,16 +1147,17 @@ function eatFood(snake){
       Math.hypot(
         snake.x-f.x,
         snake.y-f.y
-      )<27
+      )<34
     ){
 
-      snake.score+=f.value;
-      snake.length+=
-        f.value*.65;
+      snake.score +=
+        f.value;
+
+      snake.length +=
+        f.value*.75;
 
       food.splice(i,1);
-      food.push(makeFood());
-
+      food.push(newFood());
     }
   }
 }
@@ -888,9 +1172,9 @@ function updateBots(){
 
     if(b.timer<=0){
 
-      b.timer=
+      b.timer =
         20+
-        Math.random()*70;
+        Math.random()*80;
 
       let closest=null;
       let best=Infinity;
@@ -898,59 +1182,67 @@ function updateBots(){
       for(
         let i=0;
         i<food.length;
-        i+=5
+        i+=7
       ){
 
         const f=food[i];
 
-        const d=
+        const d =
           Math.hypot(
             b.x-f.x,
             b.y-f.y
           );
 
         if(d<best){
+
           best=d;
           closest=f;
         }
-
       }
 
       if(closest){
 
-        b.target=
+        b.target =
           Math.atan2(
             closest.y-b.y,
             closest.x-b.x
           );
-
       }
-
     }
 
-    let d=
+    let diff =
       b.target-b.angle;
 
-    while(d>Math.PI)
-      d-=Math.PI*2;
+    while(diff>Math.PI)
+      diff-=Math.PI*2;
 
-    while(d<-Math.PI)
-      d+=Math.PI*2;
+    while(diff<-Math.PI)
+      diff+=Math.PI*2;
 
-    b.angle+=d*.06;
+    b.angle += diff*.055;
 
-    b.x+=
-      Math.cos(b.angle)*5.5;
+    b.x +=
+      Math.cos(b.angle)*5.3;
 
-    b.y+=
-      Math.sin(b.angle)*5.5;
+    b.y +=
+      Math.sin(b.angle)*5.3;
 
-    if(b.x<100 || b.x>WORLD-100){
-      b.target=Math.PI-b.target;
+    if(
+      b.x<100 ||
+      b.x>WORLD-100
+    ){
+
+      b.target =
+        Math.PI-b.angle;
     }
 
-    if(b.y<100 || b.y>WORLD-100){
-      b.target=-b.target;
+    if(
+      b.y<100 ||
+      b.y>WORLD-100
+    ){
+
+      b.target =
+        -b.angle;
     }
 
     b.body.unshift({
@@ -963,7 +1255,7 @@ function updateBots(){
       Math.floor(b.length)
     ){
 
-      const last=
+      const last =
         b.body[
           b.body.length-1
         ];
@@ -972,7 +1264,6 @@ function updateBots(){
         x:last.x,
         y:last.y
       });
-
     }
 
     while(
@@ -981,18 +1272,15 @@ function updateBots(){
     ){
 
       b.body.pop();
-
     }
 
     eatFood(b);
   }
 }
 
-/* COLLISIONS */
+/* COLLISION */
 
-function collision(){
-
-  /* player head -> bot body */
+function collisions(){
 
   for(
     let bi=bots.length-1;
@@ -1002,27 +1290,30 @@ function collision(){
 
     const b=bots[bi];
 
+    /* PLAYER HEAD -> BOT */
+
     for(
-      let i=8;
+      let i=10;
       i<b.body.length;
       i+=2
     ){
 
+      const p=b.body[i];
+
       if(
         Math.hypot(
-          player.x-b.body[i].x,
-          player.y-b.body[i].y
-        )<29
+          player.x-p.x,
+          player.y-p.y
+        )<30
       ){
 
         killBot(bi);
         break;
-
       }
     }
   }
 
-  /* bot head -> player body */
+  /* BOT HEAD -> PLAYER */
 
   for(
     let bi=bots.length-1;
@@ -1033,31 +1324,31 @@ function collision(){
     const b=bots[bi];
 
     for(
-      let i=8;
+      let i=10;
       i<player.body.length;
       i+=2
     ){
 
+      const p=player.body[i];
+
       if(
         Math.hypot(
-          b.x-player.body[i].x,
-          b.y-player.body[i].y
-        )<29
+          b.x-p.x,
+          b.y-p.y
+        )<30
       ){
-
-        dropFood(b);
 
         bots.splice(bi,1);
 
         player.kills++;
         player.score+=100;
-        player.length+=15;
+        player.length+=18;
 
         setTimeout(()=>{
           if(running){
             bots.push(createBot());
           }
-        },500);
+        },700);
 
         break;
       }
@@ -1071,88 +1362,110 @@ function killBot(index){
 
   if(!b) return;
 
-  dropFood(b);
+  for(
+    let i=0;
+    i<b.body.length;
+    i+=4
+  ){
+
+    food.push({
+
+      x:b.body[i].x,
+      y:b.body[i].y,
+
+      r:7,
+      value:5,
+
+      color:b.color,
+
+      phase:
+        Math.random()*
+        Math.PI*2
+    });
+  }
 
   bots.splice(index,1);
 
   player.kills++;
   player.score+=100;
-  player.length+=15;
+  player.length+=18;
 
   setTimeout(()=>{
     if(running){
       bots.push(createBot());
     }
-  },500);
+  },700);
 }
 
-function dropFood(snake){
-
-  for(
-    let i=0;
-    i<snake.body.length;
-    i+=3
-  ){
-
-    food.push({
-      x:snake.body[i].x,
-      y:snake.body[i].y,
-      r:7,
-      value:4,
-      color:snake.color
-    });
-
-  }
-}
-
-/* WORM DRAWING */
+/* DRAW WORM */
 
 function drawWorm(snake){
 
   if(
     !snake.body ||
-    snake.body.length===0
+    snake.body.length<2
   ){
     return;
   }
 
+  ctx.save();
+
   /*
-    BIG CONTINUOUS BODY
+    SHADOW
   */
 
-  ctx.save();
+  ctx.beginPath();
+
+  for(
+    let i=snake.body.length-1;
+    i>=0;
+    i--
+  ){
+
+    const p=snake.body[i];
+
+    if(i===snake.body.length-1)
+      ctx.moveTo(p.x+5,p.y+7);
+    else
+      ctx.lineTo(p.x+5,p.y+7);
+  }
 
   ctx.lineCap="round";
   ctx.lineJoin="round";
 
-  /*
-    outer body
-  */
+  ctx.strokeStyle=
+    "rgba(0,0,0,.4)";
 
-  ctx.beginPath();
+  ctx.lineWidth=35;
 
-  for(
-    let i=snake.body.length-1;
-    i>=0;
-    i--
-  ){
-
-    const p=snake.body[i];
-
-    if(i===snake.body.length-1){
-      ctx.moveTo(p.x,p.y);
-    }else{
-      ctx.lineTo(p.x,p.y);
-    }
-  }
-
-  ctx.strokeStyle="rgba(0,0,0,.35)";
-  ctx.lineWidth=31;
   ctx.stroke();
 
   /*
-    actual body
+    BODY GRADIENT
   */
+
+  const grad =
+    ctx.createLinearGradient(
+      snake.x-30,
+      snake.y-30,
+      snake.x+30,
+      snake.y+30
+    );
+
+  grad.addColorStop(
+    0,
+    "#ffffff"
+  );
+
+  grad.addColorStop(
+    .12,
+    snake.color
+  );
+
+  grad.addColorStop(
+    1,
+    snake.color
+  );
 
   ctx.beginPath();
 
@@ -1164,19 +1477,22 @@ function drawWorm(snake){
 
     const p=snake.body[i];
 
-    if(i===snake.body.length-1){
+    if(i===snake.body.length-1)
       ctx.moveTo(p.x,p.y);
-    }else{
+    else
       ctx.lineTo(p.x,p.y);
-    }
   }
 
-  ctx.strokeStyle=snake.color;
-  ctx.lineWidth=25;
+  ctx.lineCap="round";
+  ctx.lineJoin="round";
+
+  ctx.strokeStyle=grad;
+  ctx.lineWidth=29;
+
   ctx.stroke();
 
   /*
-    body highlight
+    BODY SHINE
   */
 
   ctx.beginPath();
@@ -1189,19 +1505,21 @@ function drawWorm(snake){
 
     const p=snake.body[i];
 
-    if(i===snake.body.length-1){
-      ctx.moveTo(p.x,p.y);
-    }else{
-      ctx.lineTo(p.x,p.y);
-    }
+    if(i===snake.body.length-1)
+      ctx.moveTo(p.x,p.y-3);
+    else
+      ctx.lineTo(p.x,p.y-3);
   }
 
-  ctx.strokeStyle="rgba(255,255,255,.16)";
+  ctx.strokeStyle=
+    "rgba(255,255,255,.18)";
+
   ctx.lineWidth=7;
+
   ctx.stroke();
 
   /*
-    head
+    HEAD
   */
 
   ctx.translate(
@@ -1213,15 +1531,45 @@ function drawWorm(snake){
     snake.angle
   );
 
-  ctx.fillStyle=snake.color;
+  const headGrad =
+    ctx.createRadialGradient(
+      -7,
+      -9,
+      2,
+      0,
+      0,
+      34
+    );
+
+  headGrad.addColorStop(
+    0,
+    "#ffffff"
+  );
+
+  headGrad.addColorStop(
+    .18,
+    snake.color
+  );
+
+  headGrad.addColorStop(
+    1,
+    snake.color
+  );
+
+  ctx.fillStyle=headGrad;
+
+  ctx.shadowColor=
+    snake.color;
+
+  ctx.shadowBlur=15;
 
   ctx.beginPath();
 
   ctx.ellipse(
     0,
     0,
+    34,
     30,
-    27,
     0,
     0,
     Math.PI*2
@@ -1229,8 +1577,10 @@ function drawWorm(snake){
 
   ctx.fill();
 
+  ctx.shadowBlur=0;
+
   /*
-    face
+    EYES
   */
 
   ctx.fillStyle="white";
@@ -1239,8 +1589,8 @@ function drawWorm(snake){
 
   ctx.arc(
     13,
-    -10,
-    8,
+    -11,
+    9,
     0,
     Math.PI*2
   );
@@ -1251,22 +1601,22 @@ function drawWorm(snake){
 
   ctx.arc(
     13,
-    10,
-    8,
+    11,
+    9,
     0,
     Math.PI*2
   );
 
   ctx.fill();
 
-  ctx.fillStyle="#111";
+  ctx.fillStyle="#101510";
 
   ctx.beginPath();
 
   ctx.arc(
-    16,
-    -10,
-    4,
+    17,
+    -11,
+    4.5,
     0,
     Math.PI*2
   );
@@ -1276,9 +1626,9 @@ function drawWorm(snake){
   ctx.beginPath();
 
   ctx.arc(
-    16,
-    10,
-    4,
+    17,
+    11,
+    4.5,
     0,
     Math.PI*2
   );
@@ -1293,32 +1643,41 @@ function drawWorm(snake){
 
   ctx.textAlign="center";
 
-  ctx.font="bold 15px Arial";
+  ctx.font=
+    "bold 14px Arial";
 
   ctx.lineWidth=5;
 
-  ctx.strokeStyle="rgba(0,0,0,.8)";
+  ctx.strokeStyle=
+    "rgba(0,0,0,.8)";
 
   ctx.strokeText(
-    snake.name||"Player",
+    snake.name || "Player",
     snake.x,
-    snake.y-40
+    snake.y-48
   );
 
   ctx.fillStyle="white";
 
   ctx.fillText(
-    snake.name||"Player",
+    snake.name || "Player",
     snake.x,
-    snake.y-40
+    snake.y-48
   );
 }
 
-/* DRAW */
+/* DRAW WORLD */
 
 function draw(){
 
-  ctx.fillStyle="#071008";
+  ctx.clearRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+  ctx.fillStyle="#071009";
 
   ctx.fillRect(
     0,
@@ -1329,16 +1688,28 @@ function draw(){
 
   if(!running) return;
 
+  /*
+    SMOOTH CAMERA
+  */
+
+  player.renderX +=
+    (player.x-player.renderX)*.18;
+
+  player.renderY +=
+    (player.y-player.renderY)*.18;
+
   ctx.save();
 
   ctx.translate(
-    W/2-player.x,
-    H/2-player.y
+    W/2-player.renderX,
+    H/2-player.renderY
   );
 
-  /* WORLD */
+  /*
+    WORLD
+  */
 
-  ctx.fillStyle="#102416";
+  ctx.fillStyle="#102716";
 
   ctx.fillRect(
     0,
@@ -1347,26 +1718,30 @@ function draw(){
     WORLD
   );
 
-  /* GRID */
-
-  ctx.strokeStyle=
-    "rgba(255,255,255,.035)";
+  /*
+    GRID
+  */
 
   const grid=120;
 
-  const minX=
+  const startX =
     Math.floor(
-      (player.x-W/2)/grid
+      (player.renderX-W/2)/grid
     )*grid;
 
-  const maxX=
+  const endX =
     Math.ceil(
-      (player.x+W/2)/grid
+      (player.renderX+W/2)/grid
     )*grid;
+
+  ctx.strokeStyle=
+    "rgba(160,255,170,.035)";
+
+  ctx.lineWidth=1;
 
   for(
-    let x=minX;
-    x<=maxX;
+    let x=startX;
+    x<=endX;
     x+=grid
   ){
 
@@ -1374,63 +1749,77 @@ function draw(){
 
     ctx.moveTo(
       x,
-      player.y-H
+      player.renderY-H
     );
 
     ctx.lineTo(
       x,
-      player.y+H
+      player.renderY+H
     );
 
     ctx.stroke();
-
   }
 
-  const minY=
+  const startY =
     Math.floor(
-      (player.y-H/2)/grid
+      (player.renderY-H/2)/grid
     )*grid;
 
-  const maxY=
+  const endY =
     Math.ceil(
-      (player.y+H/2)/grid
+      (player.renderY+H/2)/grid
     )*grid;
 
   for(
-    let y=minY;
-    y<=maxY;
+    let y=startY;
+    y<=endY;
     y+=grid
   ){
 
     ctx.beginPath();
 
     ctx.moveTo(
-      player.x-W,
+      player.renderX-W,
       y
     );
 
     ctx.lineTo(
-      player.x+W,
+      player.renderX+W,
       y
     );
 
     ctx.stroke();
-
   }
 
-  /* FOOD */
+  /*
+    FOOD
+  */
+
+  const time =
+    performance.now()/400;
 
   for(const f of food){
 
     if(
-      Math.abs(f.x-player.x)>W/2+100 ||
-      Math.abs(f.y-player.y)>H/2+100
+      Math.abs(
+        f.x-player.renderX
+      )>W/2+100 ||
+
+      Math.abs(
+        f.y-player.renderY
+      )>H/2+100
     ){
       continue;
     }
 
-    ctx.shadowBlur=12;
+    const pulse =
+      1+
+      Math.sin(
+        time+f.phase
+      )*.18;
+
     ctx.shadowColor=f.color;
+    ctx.shadowBlur=14;
 
     ctx.fillStyle=f.color;
 
@@ -1439,7 +1828,7 @@ function draw(){
     ctx.arc(
       f.x,
       f.y,
-      f.r,
+      f.r*pulse,
       0,
       Math.PI*2
     );
@@ -1447,17 +1836,52 @@ function draw(){
     ctx.fill();
 
     ctx.shadowBlur=0;
+
+    ctx.fillStyle=
+      "rgba(255,255,255,.65)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      f.x-f.r*.25,
+      f.y-f.r*.3,
+      f.r*.25,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
   }
 
-  /* BOTS */
+  /*
+    BOTS
+  */
 
   for(const b of bots){
     drawWorm(b);
   }
 
-  /* PLAYER */
+  /*
+    PLAYER
+  */
 
   drawWorm(player);
+
+  /*
+    WORLD BORDER
+  */
+
+  ctx.strokeStyle=
+    "rgba(80,255,100,.65)";
+
+  ctx.lineWidth=20;
+
+  ctx.strokeRect(
+    0,
+    0,
+    WORLD,
+    WORLD
+  );
 
   ctx.restore();
 
@@ -1468,13 +1892,27 @@ function draw(){
 
 function drawMinimap(){
 
-  mctx.fillStyle="#0b1a0d";
+  mctx.fillStyle="#071009";
 
   mctx.fillRect(
     0,
     0,
     400,
     400
+  );
+
+  /*
+    BORDER
+  */
+
+  mctx.strokeStyle=
+    "rgba(90,255,110,.25)";
+
+  mctx.strokeRect(
+    2,
+    2,
+    396,
+    396
   );
 
   for(const b of bots){
@@ -1486,7 +1924,7 @@ function drawMinimap(){
     mctx.arc(
       b.x/WORLD*400,
       b.y/WORLD*400,
-      5,
+      4.5,
       0,
       Math.PI*2
     );
@@ -1496,17 +1934,24 @@ function drawMinimap(){
 
   mctx.fillStyle=player.color;
 
+  mctx.shadowColor=
+    player.color;
+
+  mctx.shadowBlur=12;
+
   mctx.beginPath();
 
   mctx.arc(
     player.x/WORLD*400,
     player.y/WORLD*400,
-    8,
+    7,
     0,
     Math.PI*2
   );
 
   mctx.fill();
+
+  mctx.shadowBlur=0;
 }
 
 /* TOP 3 */
@@ -1528,7 +1973,6 @@ function updateLeaderboard(){
       score:b.score,
       color:b.color
     });
-
   }
 
   list.sort(
@@ -1536,29 +1980,30 @@ function updateLeaderboard(){
       b.score-a.score
   );
 
-  const lb=
+  const box =
     document.getElementById("lb");
 
-  lb.innerHTML="";
+  box.innerHTML="";
 
-  list.slice(0,3).forEach(
-    (x,i)=>{
+  list
+    .slice(0,3)
+    .forEach((x,i)=>{
 
-      const row=
-        document.createElement("div");
+      const row =
+        document.createElement(
+          "div"
+        );
 
       row.className="row";
 
-      row.innerHTML=`
-        <span style="color:${x.color}">
+      row.innerHTML =
+        `<span style="color:${x.color}">
           ${i+1}. ${x.name}
         </span>
-        <b>${Math.floor(x.score)}</b>
-      `;
+        <b>${Math.floor(x.score)}</b>`;
 
-      lb.appendChild(row);
-    }
-  );
+      box.appendChild(row);
+    });
 }
 
 /* HUD */
@@ -1655,20 +2100,17 @@ let myId=null;
 
 function connect(){
 
-  const protocol=
+  const protocol =
     location.protocol==="https:"
       ? "wss:"
       : "ws:";
 
-  ws=new WebSocket(
-    protocol+
-    "//"+
-    location.host
-  );
-
-  ws.onopen=()=>{
-    console.log("Connected");
-  };
+  ws =
+    new WebSocket(
+      protocol+
+      "//"+
+      location.host
+    );
 
   ws.onmessage=e=>{
 
@@ -1684,7 +2126,6 @@ function connect(){
 
       myId=data.id;
       player.id=myId;
-
     }
 
     if(
@@ -1714,26 +2155,38 @@ function connect(){
 
     if(data.type==="state"){
 
-      for(const p of data.players){
+      for(
+        const p of data.players
+      ){
 
         if(p.id===myId){
 
-          if(!single){
+          player.x=p.x;
+          player.y=p.y;
 
-            player.x=p.x;
-            player.y=p.y;
-            player.angle=p.angle;
-            player.length=p.length;
-            player.score=p.score;
-            player.kills=p.kills;
-            player.body=p.body;
-            player.alive=p.alive;
+          player.angle=p.angle;
 
-            if(!p.alive){
-              die("Vastane sai sind kätte!");
-            }
+          player.length=
+            p.length;
+
+          player.score=
+            p.score;
+
+          player.kills=
+            p.kills;
+
+          player.body=
+            p.body;
+
+          player.alive=
+            p.alive;
+
+          if(!p.alive){
+
+            die(
+              "Vastane tabas sind!"
+            );
           }
-
         }
       }
 
@@ -1762,22 +2215,26 @@ function connect(){
 
 function updateRoomPlayers(players){
 
-  const box=
-    document.getElementById("players");
+  const box =
+    document.getElementById(
+      "players"
+    );
 
   box.innerHTML="";
 
-  for(const p of players){
+  players.forEach(p=>{
 
-    const div=
-      document.createElement("div");
+    const div =
+      document.createElement(
+        "div"
+      );
 
     div.textContent=p.name;
 
     div.style.color=p.color;
 
     box.appendChild(div);
-  }
+  });
 }
 
 document.getElementById(
@@ -1792,7 +2249,7 @@ document.getElementById(
     document.getElementById(
       "error"
     ).textContent=
-      "Server pole ühendatud.";
+      "Server pole valmis.";
 
     return;
   }
@@ -1810,7 +2267,7 @@ document.getElementById(
   "join"
 ).onclick=()=>{
 
-  const code=
+  const code =
     document.getElementById(
       "room"
     ).value
@@ -1843,7 +2300,8 @@ document.getElementById(
 
   if(
     ws &&
-    ws.readyState===WebSocket.OPEN
+    ws.readyState===
+    WebSocket.OPEN
   ){
 
     ws.send(
@@ -1854,13 +2312,14 @@ document.getElementById(
   }
 };
 
-/* SEND MULTIPLAYER INPUT */
+/* MULTIPLAYER INPUT */
 
 setInterval(()=>{
 
   if(
     ws &&
-    ws.readyState===WebSocket.OPEN &&
+    ws.readyState===
+    WebSocket.OPEN &&
     running &&
     !single
   ){
@@ -1876,7 +2335,7 @@ setInterval(()=>{
 
 },50);
 
-/* MAIN LOOP */
+/* GAME LOOP */
 
 function loop(){
 
@@ -1886,63 +2345,59 @@ function loop(){
 
       if(innerWidth>800){
 
-        const dx=
+        const dx =
           mouseX-W/2;
 
-        const dy=
+        const dy =
           mouseY-H/2;
 
         if(
           Math.hypot(dx,dy)>10
         ){
 
-          player.targetAngle=
-            Math.atan2(dy,dx);
+          player.targetAngle =
+            Math.atan2(
+              dy,
+              dx
+            );
         }
       }
 
       updatePlayer();
       updateBots();
-      collision();
+      collisions();
 
     }else{
 
       /*
-        Multiplayer client-side movement
-        makes movement feel smooth.
+        Smooth local movement
       */
 
-      let d=
+      let diff =
         player.targetAngle-
         player.angle;
 
-      while(d>Math.PI)
-        d-=Math.PI*2;
+      while(diff>Math.PI)
+        diff-=Math.PI*2;
 
-      while(d<-Math.PI)
-        d+=Math.PI*2;
+      while(diff<-Math.PI)
+        diff+=Math.PI*2;
 
-      player.angle+=d*.17;
+      player.angle += diff*.18;
 
-      const speed=
+      const speed =
         boosting &&
-        player.length>45
-          ? 11
-          : 7;
+        player.length>50
+          ? 11.5
+          : 7.2;
 
-      if(
-        boosting &&
-        player.length>45
-      ){
+      player.x +=
+        Math.cos(player.angle)*
+        speed;
 
-        player.length-=.08;
-      }
-
-      player.x+=
-        Math.cos(player.angle)*speed;
-
-      player.y+=
-        Math.sin(player.angle)*speed;
+      player.y +=
+        Math.sin(player.angle)*
+        speed;
 
       player.body.unshift({
         x:player.x,
@@ -1954,7 +2409,7 @@ function loop(){
         Math.floor(player.length)
       ){
 
-        const last=
+        const last =
           player.body[
             player.body.length-1
           ];
@@ -1983,7 +2438,9 @@ function loop(){
 }
 
 resetPlayer();
+
 connect();
+
 requestAnimationFrame(loop);
 </script>
 
