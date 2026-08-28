@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="et">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
->
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 
 <title>Worm Arena</title>
 
 <style>
-
 *{
   box-sizing:border-box;
   margin:0;
@@ -21,12 +15,11 @@
   -webkit-user-select:none;
 }
 
-html,
-body{
+html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#07120a;
+  background:#071008;
   font-family:Arial,sans-serif;
   touch-action:none;
 }
@@ -43,27 +36,21 @@ canvas{
   inset:0;
   z-index:100;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   background:
-    radial-gradient(
-      circle at center,
-      #1b5525,
-      #07120a 70%
-    );
+    radial-gradient(circle,#245d2c,#071008 70%);
 }
 
 .panel{
-  width:min(430px,94vw);
-  max-height:95vh;
-  overflow:auto;
-  padding:25px;
-  border-radius:24px;
-  background:rgba(7,14,8,.96);
-  border:1px solid #396d40;
+  width:min(420px,94vw);
+  padding:26px;
+  border-radius:25px;
+  background:rgba(5,12,6,.97);
+  border:1px solid #376e3e;
   color:white;
   text-align:center;
-  box-shadow:0 25px 100px #000;
+  box-shadow:0 20px 80px #000;
 }
 
 .logo{
@@ -71,13 +58,13 @@ canvas{
 }
 
 h1{
-  color:#67ff7a;
+  color:#61ff73;
   font-size:38px;
 }
 
 .sub{
-  color:#829583;
-  margin-bottom:20px;
+  color:#879b8a;
+  margin:7px 0 20px;
 }
 
 input{
@@ -85,8 +72,8 @@ input{
   height:48px;
   margin:5px 0;
   border-radius:12px;
-  border:1px solid #315c36;
-  background:#111b12;
+  border:1px solid #355e3a;
+  background:#111a12;
   color:white;
   text-align:center;
   font-size:16px;
@@ -103,35 +90,40 @@ button{
 }
 
 .green{
-  background:#67ff7a;
+  background:#61ff73;
   color:#061008;
 }
 
 .dark{
-  background:#152217;
+  background:#172319;
   color:white;
-  border:1px solid #345e39;
+  border:1px solid #385e3d;
 }
 
 #roomBox{
   display:none;
   margin-top:12px;
-  padding:12px;
-  background:#111c12;
-  border-radius:12px;
+  padding:13px;
+  background:#101a11;
+  border-radius:13px;
 }
 
 #roomCode{
+  color:#61ff73;
   font-size:32px;
-  color:#67ff7a;
   font-weight:bold;
   letter-spacing:6px;
 }
 
+#players{
+  margin-top:10px;
+  line-height:22px;
+}
+
 #error{
-  min-height:24px;
-  color:#ff6676;
+  min-height:22px;
   margin-top:8px;
+  color:#ff6470;
 }
 
 #hud{
@@ -145,10 +137,10 @@ button{
 
 .stat{
   background:rgba(0,0,0,.72);
-  color:white;
   border:1px solid #345e39;
   border-radius:10px;
   padding:7px 11px;
+  color:white;
 }
 
 .stat small{
@@ -161,20 +153,20 @@ button{
   display:none;
   position:fixed;
   z-index:20;
-  right:10px;
   top:10px;
+  right:10px;
   width:190px;
+  padding:10px;
+  border-radius:13px;
   background:rgba(0,0,0,.75);
   border:1px solid #345e39;
-  border-radius:12px;
   color:white;
-  padding:10px;
 }
 
 .lbtitle{
-  color:#67ff7a;
+  color:#61ff73;
   font-weight:bold;
-  margin-bottom:5px;
+  margin-bottom:4px;
 }
 
 .row{
@@ -192,9 +184,9 @@ button{
   bottom:10px;
   width:160px;
   height:160px;
-  background:#0d1c10;
-  border:2px solid #67ff7a;
+  border:2px solid #61ff73;
   border-radius:14px;
+  background:#0c1b0e;
 }
 
 #mini{
@@ -211,8 +203,8 @@ button{
   width:130px;
   height:130px;
   border-radius:50%;
-  background:rgba(103,255,122,.08);
-  border:2px solid rgba(103,255,122,.35);
+  background:rgba(97,255,115,.08);
+  border:2px solid rgba(97,255,115,.35);
 }
 
 #stick{
@@ -222,9 +214,9 @@ button{
   width:55px;
   height:55px;
   border-radius:50%;
-  background:#67ff7a;
-  transform:translate(-50%,-50%);
+  background:#61ff73;
   border:3px solid white;
+  transform:translate(-50%,-50%);
 }
 
 #boost{
@@ -236,9 +228,9 @@ button{
   width:82px;
   height:82px;
   border-radius:50%;
-  background:#0984bd;
+  background:#087db5;
   color:white;
-  border:3px solid #c2f1ff;
+  border:3px solid #bceeff;
   font-size:28px;
 }
 
@@ -247,47 +239,36 @@ button{
   position:fixed;
   inset:0;
   z-index:200;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   background:rgba(0,0,0,.8);
 }
 
 .deadBox{
   width:min(380px,90vw);
-  background:#0b160c;
-  color:white;
-  border:1px solid #3a6940;
-  border-radius:20px;
   padding:30px;
+  border-radius:20px;
+  background:#0b160c;
+  border:1px solid #396740;
+  color:white;
   text-align:center;
 }
 
 .deadBox h2{
-  color:#ff596b;
+  color:#ff5a6c;
   font-size:40px;
 }
 
 @media(max-width:800px){
-
-  #stickArea,
-  #boost{
+  #stickArea,#boost{
     display:block;
   }
 
   #leaderboard{
-    width:145px;
-    font-size:11px;
+    width:150px;
   }
-
-  #hud{
-    flex-wrap:wrap;
-    width:190px;
-  }
-
 }
-
 </style>
-
 </head>
 
 <body>
@@ -295,173 +276,122 @@ button{
 <canvas id="game"></canvas>
 
 <div id="menu">
+  <div class="panel">
 
-<div class="panel">
+    <div class="logo">🪱</div>
 
-<div class="logo">🪱</div>
+    <h1>WORM ARENA</h1>
 
-<h1>WORM ARENA</h1>
+    <div class="sub">
+      Grow • Eat • Boost • Survive
+    </div>
 
-<div class="sub">
-Grow • Boost • Survive
-</div>
+    <input id="name" maxlength="16" placeholder="Sinu nimi">
 
-<input
-  id="name"
-  maxlength="16"
-  placeholder="Sinu nimi"
->
+    <button class="green" id="single">
+      🤖 SINGLEPLAYER
+    </button>
 
-<button
-  class="green"
-  id="single"
->
-🤖 SINGLEPLAYER
-</button>
+    <button class="dark" id="create">
+      🏠 LOO ROOM
+    </button>
 
-<button
-  class="dark"
-  id="create"
->
-🏠 LOO ROOM
-</button>
+    <input id="room" maxlength="5" placeholder="ROOM CODE">
 
-<input
-  id="room"
-  maxlength="5"
-  placeholder="ROOM CODE"
->
+    <button class="dark" id="join">
+      🚪 LIITU ROOMI
+    </button>
 
-<button
-  class="dark"
-  id="join"
->
-🚪 LIITU ROOMI
-</button>
+    <div id="roomBox">
+      <div>ROOM</div>
 
-<div id="roomBox">
+      <div id="roomCode">-----</div>
 
-<div>ROOM</div>
+      <div id="players"></div>
 
-<div id="roomCode">
------
-</div>
+      <button class="green" id="start">
+        ▶ ALUSTA
+      </button>
+    </div>
 
-<div id="players"></div>
+    <div id="error"></div>
 
-<button
-  class="green"
-  id="start"
->
-▶ ALUSTA MÄNGU
-</button>
-
-</div>
-
-<div id="error"></div>
-
-</div>
-
+  </div>
 </div>
 
 <div id="hud">
 
-<div class="stat">
-<small>SCORE</small>
-<b id="score">0</b>
-</div>
+  <div class="stat">
+    <small>SCORE</small>
+    <b id="score">0</b>
+  </div>
 
-<div class="stat">
-<small>KILLS</small>
-<b id="kills">0</b>
-</div>
+  <div class="stat">
+    <small>KILLS</small>
+    <b id="kills">0</b>
+  </div>
 
-<div class="stat">
-<small>LENGTH</small>
-<b id="length">35</b>
-</div>
+  <div class="stat">
+    <small>LENGTH</small>
+    <b id="length">55</b>
+  </div>
 
 </div>
 
 <div id="leaderboard">
-
-<div class="lbtitle">
-🏆 TOP 3
-</div>
-
-<div id="lb"></div>
-
+  <div class="lbtitle">🏆 TOP 3</div>
+  <div id="lb"></div>
 </div>
 
 <div id="minimap">
-
-<canvas id="mini"></canvas>
-
+  <canvas id="mini"></canvas>
 </div>
 
 <div id="stickArea">
-
-<div id="stick"></div>
-
+  <div id="stick"></div>
 </div>
 
-<button id="boost">
-⚡
-</button>
+<button id="boost">⚡</button>
 
 <div id="dead">
 
-<div class="deadBox">
+  <div class="deadBox">
 
-<h2>GAME OVER</h2>
+    <h2>GAME OVER</h2>
 
-<p id="deadReason">
-Sinu uss sai otsa!
-</p>
+    <p id="deadReason">
+      Sinu uss sai otsa!
+    </p>
 
-<br>
+    <br>
 
-<p>
-Score:
-<b id="finalScore">
-0
-</b>
-</p>
+    <p>
+      Score:
+      <b id="finalScore">0</b>
+    </p>
 
-<p>
-Kills:
-<b id="finalKills">
-0
-</b>
-</p>
+    <p>
+      Kills:
+      <b id="finalKills">0</b>
+    </p>
 
-<button
-  class="green"
-  onclick="location.reload()"
->
-🔄 UUESTI
-</button>
+    <button class="green" onclick="location.reload()">
+      🔄 UUESTI
+    </button>
 
-</div>
+  </div>
 
 </div>
 
 <script>
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
 
-const canvas =
-document.getElementById("game");
+const mini=document.getElementById("mini");
+const mctx=mini.getContext("2d");
 
-const ctx =
-canvas.getContext("2d");
-
-const mini =
-document.getElementById("mini");
-
-const mctx =
-mini.getContext("2d");
-
-let W = innerWidth;
-let H = innerHeight;
+let W=innerWidth;
+let H=innerHeight;
 
 canvas.width=W;
 canvas.height=H;
@@ -469,30 +399,23 @@ canvas.height=H;
 mini.width=400;
 mini.height=400;
 
-addEventListener(
-  "resize",
-  ()=>{
-    W=innerWidth;
-    H=innerHeight;
+addEventListener("resize",()=>{
+  W=innerWidth;
+  H=innerHeight;
 
-    canvas.width=W;
-    canvas.height=H;
-  }
-);
+  canvas.width=W;
+  canvas.height=H;
+});
 
 const WORLD=10000;
 
 let running=false;
-let dead=false;
 let single=false;
+let dead=false;
 
 const player={
-
   id:null,
-
-  name:
-    localStorage.getItem("name")
-    || "Player",
+  name:localStorage.getItem("wormName")||"Player",
 
   x:WORLD/2,
   y:WORLD/2,
@@ -500,164 +423,106 @@ const player={
   angle:0,
   targetAngle:0,
 
-  length:35,
+  length:55,
   score:0,
   kills:0,
 
-  color:"#67ff7a",
+  color:"#61ff73",
 
   body:[]
-
 };
 
-document.getElementById(
-  "name"
-).value=player.name;
+document.getElementById("name").value=player.name;
 
-document.getElementById(
-  "name"
-).oninput=e=>{
-
-  player.name=
-    e.target.value
-      .replace(/[<>]/g,"")
-      .slice(0,16);
+document.getElementById("name").oninput=e=>{
+  player.name=e.target.value
+    .replace(/[<>]/g,"")
+    .slice(0,16);
 
   localStorage.setItem(
-    "name",
+    "wormName",
     player.name
   );
-
 };
 
-/* COLORS */
-
 const colors=[
-  "#67ff7a",
+  "#61ff73",
   "#4da3ff",
-  "#ff5369",
+  "#ff5269",
   "#ffd84d",
-  "#b66cff",
-  "#ff8c42",
-  "#00dfca",
+  "#b86cff",
+  "#ff914d",
+  "#00dfc4",
   "#ff63c8"
 ];
 
 function randomColor(){
-
   return colors[
-    Math.floor(
-      Math.random()*
-      colors.length
-    )
+    Math.floor(Math.random()*colors.length)
   ];
-
 }
-
-/* RESET */
 
 function resetPlayer(){
 
   player.x=
-    WORLD/2;
+    1200+
+    Math.random()*7600;
 
   player.y=
-    WORLD/2;
+    1200+
+    Math.random()*7600;
 
   player.angle=
-    Math.random()*
-    Math.PI*2;
+    Math.random()*Math.PI*2;
 
   player.targetAngle=
     player.angle;
 
-  player.length=35;
+  player.length=55;
   player.score=0;
   player.kills=0;
 
   player.body=[];
 
-  for(
-    let i=0;
-    i<35;
-    i++
-  ){
+  for(let i=0;i<55;i++){
 
     player.body.push({
-
       x:
         player.x-
-        Math.cos(player.angle)*
-        i*9,
+        Math.cos(player.angle)*i*8,
 
       y:
         player.y-
-        Math.sin(player.angle)*
-        i*9
-
+        Math.sin(player.angle)*i*8
     });
 
   }
-
 }
 
 /* FOOD */
 
 const food=[];
 
-function newFood(){
+function makeFood(){
 
   return {
-
-    x:
-      150+
-      Math.random()*
-      (WORLD-300),
-
-    y:
-      150+
-      Math.random()*
-      (WORLD-300),
-
-    r:
-      4+
-      Math.random()*4,
-
-    value:
-      1+
-      Math.floor(
-        Math.random()*4
-      ),
-
-    color:
-      colors[
-        Math.floor(
-          Math.random()*
-          colors.length
-        )
-      ]
-
+    x:100+Math.random()*9800,
+    y:100+Math.random()*9800,
+    r:4+Math.random()*4,
+    value:1+Math.floor(Math.random()*4),
+    color:randomColor()
   };
-
 }
 
-for(
-  let i=0;
-  i<700;
-  i++
-){
-
-  food.push(
-    newFood()
-  );
-
+for(let i=0;i<700;i++){
+  food.push(makeFood());
 }
 
 /* BOTS */
 
 const bots=[];
 
-const names=[
+const botNames=[
   "Shadow",
   "Viper",
   "Blaze",
@@ -668,8 +533,8 @@ const names=[
   "Cobra",
   "Turbo",
   "Venom",
-  "Pixel",
-  "Rocket"
+  "Rocket",
+  "Pixel"
 ];
 
 function createBot(){
@@ -682,41 +547,36 @@ function createBot(){
       .slice(2),
 
     name:
-      names[
+      botNames[
         Math.floor(
-          Math.random()*
-          names.length
+          Math.random()*botNames.length
         )
       ],
 
     x:
-      500+
-      Math.random()*
-      (WORLD-1000),
+      700+
+      Math.random()*8600,
 
     y:
-      500+
-      Math.random()*
-      (WORLD-1000),
+      700+
+      Math.random()*8600,
 
     angle:
-      Math.random()*
-      Math.PI*2,
+      Math.random()*Math.PI*2,
 
     target:0,
 
     length:
-      25+
-      Math.random()*70,
+      40+
+      Math.random()*100,
 
     score:0,
 
-    color:
-      randomColor(),
+    color:randomColor(),
 
     body:[],
 
-    think:0
+    timer:0
 
   };
 
@@ -729,164 +589,97 @@ function createBot(){
   ){
 
     b.body.push({
-
       x:
         b.x-
-        Math.cos(b.angle)*
-        i*9,
+        Math.cos(b.angle)*i*8,
 
       y:
         b.y-
-        Math.sin(b.angle)*
-        i*9
-
+        Math.sin(b.angle)*i*8
     });
 
   }
 
   return b;
-
 }
 
 function createBots(){
 
   bots.length=0;
 
-  for(
-    let i=0;
-    i<15;
-    i++
-  ){
-
-    bots.push(
-      createBot()
-    );
-
+  for(let i=0;i<14;i++){
+    bots.push(createBot());
   }
-
 }
 
-/* CONTROL */
+/* INPUT */
 
 let mouseX=W/2;
 let mouseY=H/2;
+let boosting=false;
 
-addEventListener(
-  "mousemove",
-  e=>{
+addEventListener("mousemove",e=>{
+  mouseX=e.clientX;
+  mouseY=e.clientY;
+});
 
-    mouseX=e.clientX;
-    mouseY=e.clientY;
+addEventListener("keydown",e=>{
 
+  if(e.code==="Space"){
+    boosting=true;
   }
-);
 
-let boost=false;
-
-addEventListener(
-  "keydown",
-  e=>{
-
-    if(e.code==="Space"){
-      boost=true;
-    }
-
-    if(
-      e.key.toLowerCase()==="w" ||
-      e.key==="ArrowUp"
-    ){
-      player.targetAngle=-Math.PI/2;
-    }
-
-    if(
-      e.key.toLowerCase()==="s" ||
-      e.key==="ArrowDown"
-    ){
-      player.targetAngle=Math.PI/2;
-    }
-
-    if(
-      e.key.toLowerCase()==="a" ||
-      e.key==="ArrowLeft"
-    ){
-      player.targetAngle=Math.PI;
-    }
-
-    if(
-      e.key.toLowerCase()==="d" ||
-      e.key==="ArrowRight"
-    ){
-      player.targetAngle=0;
-    }
-
+  if(e.key.toLowerCase()==="w" || e.key==="ArrowUp"){
+    player.targetAngle=-Math.PI/2;
   }
-);
 
-addEventListener(
-  "keyup",
-  e=>{
-
-    if(e.code==="Space"){
-      boost=false;
-    }
-
+  if(e.key.toLowerCase()==="s" || e.key==="ArrowDown"){
+    player.targetAngle=Math.PI/2;
   }
-);
 
-canvas.addEventListener(
-  "pointerdown",
-  ()=>{
-    if(innerWidth>800){
-      boost=true;
-    }
+  if(e.key.toLowerCase()==="a" || e.key==="ArrowLeft"){
+    player.targetAngle=Math.PI;
   }
-);
 
-canvas.addEventListener(
-  "pointerup",
-  ()=>{
-    boost=false;
+  if(e.key.toLowerCase()==="d" || e.key==="ArrowRight"){
+    player.targetAngle=0;
   }
-);
+});
 
-/* MOBILE JOYSTICK */
+addEventListener("keyup",e=>{
+  if(e.code==="Space"){
+    boosting=false;
+  }
+});
+
+/* MOBILE */
 
 const stickArea=
-document.getElementById(
-  "stickArea"
-);
+document.getElementById("stickArea");
 
 const stick=
-document.getElementById(
-  "stick"
-);
+document.getElementById("stick");
 
 let joystick=false;
 
-function moveStick(x,y){
+function joystickMove(x,y){
 
   const r=
     stickArea.getBoundingClientRect();
 
-  const cx=
-    r.left+r.width/2;
-
-  const cy=
-    r.top+r.height/2;
+  const cx=r.left+r.width/2;
+  const cy=r.top+r.height/2;
 
   let dx=x-cx;
   let dy=y-cy;
 
   const max=50;
 
-  const d=
-    Math.hypot(dx,dy);
+  const d=Math.hypot(dx,dy);
 
   if(d>max){
-
     dx=dx/d*max;
     dy=dy/d*max;
-
   }
 
   stick.style.left=
@@ -896,45 +689,36 @@ function moveStick(x,y){
     `calc(50% + ${dy}px)`;
 
   if(d>7){
-
     player.targetAngle=
       Math.atan2(dy,dx);
-
   }
-
 }
 
 stickArea.addEventListener(
   "pointerdown",
   e=>{
-
     joystick=true;
 
     stickArea.setPointerCapture(
       e.pointerId
     );
 
-    moveStick(
+    joystickMove(
       e.clientX,
       e.clientY
     );
-
   }
 );
 
 stickArea.addEventListener(
   "pointermove",
   e=>{
-
     if(joystick){
-
-      moveStick(
+      joystickMove(
         e.clientX,
         e.clientY
       );
-
     }
-
   }
 );
 
@@ -944,7 +728,6 @@ function stopJoystick(){
 
   stick.style.left="50%";
   stick.style.top="50%";
-
 }
 
 stickArea.addEventListener(
@@ -958,33 +741,31 @@ stickArea.addEventListener(
 );
 
 const boostButton=
-document.getElementById(
-  "boost"
-);
+document.getElementById("boost");
 
 boostButton.addEventListener(
   "pointerdown",
   e=>{
     e.preventDefault();
-    boost=true;
+    boosting=true;
   }
 );
 
 boostButton.addEventListener(
   "pointerup",
   ()=>{
-    boost=false;
+    boosting=false;
   }
 );
 
 boostButton.addEventListener(
   "pointercancel",
   ()=>{
-    boost=false;
+    boosting=false;
   }
 );
 
-/* PLAYER UPDATE */
+/* PLAYER */
 
 function updatePlayer(){
 
@@ -998,39 +779,35 @@ function updatePlayer(){
   while(d<-Math.PI)
     d+=Math.PI*2;
 
-  player.angle+=d*.16;
+  player.angle+=d*.17;
 
-  const speed=
-    boost && player.length>38
-      ? 10
-      : 6.5;
+  let speed=7;
 
   if(
-    boost &&
-    player.length>38
+    boosting &&
+    player.length>45
   ){
 
-    player.length-=.045;
+    speed=11;
+    player.length-=.08;
 
   }
 
   player.x+=
-    Math.cos(player.angle)*
-    speed;
+    Math.cos(player.angle)*speed;
 
   player.y+=
-    Math.sin(player.angle)*
-    speed;
+    Math.sin(player.angle)*speed;
 
   if(
-    player.x<80 ||
-    player.x>WORLD-80 ||
-    player.y<80 ||
-    player.y>WORLD-80
+    player.x<50 ||
+    player.x>WORLD-50 ||
+    player.y<50 ||
+    player.y>WORLD-50
   ){
 
     die(
-      "Läksid vastu arena piiri!"
+      "Läksid vastu seina!"
     );
 
     return;
@@ -1069,7 +846,6 @@ function updatePlayer(){
   }
 
   eatFood(player);
-
 }
 
 /* FOOD */
@@ -1092,34 +868,31 @@ function eatFood(snake){
     ){
 
       snake.score+=f.value;
-      snake.length+=f.value*.7;
+      snake.length+=
+        f.value*.65;
 
       food.splice(i,1);
-      food.push(newFood());
+      food.push(makeFood());
 
     }
-
   }
-
 }
 
-/* BOTS */
+/* BOT UPDATE */
 
 function updateBots(){
 
-  for(
-    const b of bots
-  ){
+  for(const b of bots){
 
-    b.think--;
+    b.timer--;
 
-    if(b.think<=0){
+    if(b.timer<=0){
 
-      b.think=
-        25+
+      b.timer=
+        20+
         Math.random()*70;
 
-      let nearest=null;
+      let closest=null;
       let best=Infinity;
 
       for(
@@ -1137,30 +910,19 @@ function updateBots(){
           );
 
         if(d<best){
-
           best=d;
-          nearest=f;
-
+          closest=f;
         }
 
       }
 
-      if(nearest){
+      if(closest){
 
         b.target=
           Math.atan2(
-            nearest.y-b.y,
-            nearest.x-b.x
+            closest.y-b.y,
+            closest.x-b.x
           );
-
-      }
-
-      if(
-        Math.random()<.15
-      ){
-
-        b.target+=
-          (Math.random()-.5)*2;
 
       }
 
@@ -1175,32 +937,20 @@ function updateBots(){
     while(d<-Math.PI)
       d+=Math.PI*2;
 
-    b.angle+=d*.045;
+    b.angle+=d*.06;
 
     b.x+=
-      Math.cos(b.angle)*5.2;
+      Math.cos(b.angle)*5.5;
 
     b.y+=
-      Math.sin(b.angle)*5.2;
+      Math.sin(b.angle)*5.5;
 
-    if(
-      b.x<100 ||
-      b.x>WORLD-100
-    ){
-
-      b.target=
-        Math.PI-b.target;
-
+    if(b.x<100 || b.x>WORLD-100){
+      b.target=Math.PI-b.target;
     }
 
-    if(
-      b.y<100 ||
-      b.y>WORLD-100
-    ){
-
-      b.target=
-        -b.target;
-
+    if(b.y<100 || b.y>WORLD-100){
+      b.target=-b.target;
     }
 
     b.body.unshift({
@@ -1235,16 +985,14 @@ function updateBots(){
     }
 
     eatFood(b);
-
   }
-
 }
 
-/* COMBAT */
+/* COLLISIONS */
 
-function collisions(){
+function collision(){
 
-  // player head against bot body
+  /* player head -> bot body */
 
   for(
     let bi=bots.length-1;
@@ -1255,7 +1003,7 @@ function collisions(){
     const b=bots[bi];
 
     for(
-      let i=5;
+      let i=8;
       i<b.body.length;
       i+=2
     ){
@@ -1264,19 +1012,17 @@ function collisions(){
         Math.hypot(
           player.x-b.body[i].x,
           player.y-b.body[i].y
-        )<25
+        )<29
       ){
 
         killBot(bi);
         break;
 
       }
-
     }
-
   }
 
-  // bot heads against player body
+  /* bot head -> player body */
 
   for(
     let bi=bots.length-1;
@@ -1287,7 +1033,7 @@ function collisions(){
     const b=bots[bi];
 
     for(
-      let i=6;
+      let i=8;
       i<player.body.length;
       i+=2
     ){
@@ -1296,25 +1042,27 @@ function collisions(){
         Math.hypot(
           b.x-player.body[i].x,
           b.y-player.body[i].y
-        )<25
+        )<29
       ){
 
-        dropSnake(b);
+        dropFood(b);
 
         bots.splice(bi,1);
 
         player.kills++;
         player.score+=100;
-        player.length+=12;
+        player.length+=15;
+
+        setTimeout(()=>{
+          if(running){
+            bots.push(createBot());
+          }
+        },500);
 
         break;
-
       }
-
     }
-
   }
-
 }
 
 function killBot(index){
@@ -1323,26 +1071,22 @@ function killBot(index){
 
   if(!b) return;
 
-  dropSnake(b);
+  dropFood(b);
 
   bots.splice(index,1);
 
   player.kills++;
   player.score+=100;
-  player.length+=12;
+  player.length+=15;
 
-  setTimeout(
-    ()=>{
-      if(running){
-        bots.push(createBot());
-      }
-    },
-    500
-  );
-
+  setTimeout(()=>{
+    if(running){
+      bots.push(createBot());
+    }
+  },500);
 }
 
-function dropSnake(snake){
+function dropFood(snake){
 
   for(
     let i=0;
@@ -1351,23 +1095,17 @@ function dropSnake(snake){
   ){
 
     food.push({
-
       x:snake.body[i].x,
       y:snake.body[i].y,
-
       r:7,
-
-      value:3,
-
+      value:4,
       color:snake.color
-
     });
 
   }
-
 }
 
-/* DRAW WORM */
+/* WORM DRAWING */
 
 function drawWorm(snake){
 
@@ -1379,8 +1117,19 @@ function drawWorm(snake){
   }
 
   /*
-    BODY
+    BIG CONTINUOUS BODY
   */
+
+  ctx.save();
+
+  ctx.lineCap="round";
+  ctx.lineJoin="round";
+
+  /*
+    outer body
+  */
+
+  ctx.beginPath();
 
   for(
     let i=snake.body.length-1;
@@ -1390,35 +1139,70 @@ function drawWorm(snake){
 
     const p=snake.body[i];
 
-    const t=
-      i/snake.body.length;
-
-    const radius=
-      15-
-      t*5;
-
-    ctx.fillStyle=
-      snake.color;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      p.x,
-      p.y,
-      Math.max(8,radius),
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
+    if(i===snake.body.length-1){
+      ctx.moveTo(p.x,p.y);
+    }else{
+      ctx.lineTo(p.x,p.y);
+    }
   }
 
+  ctx.strokeStyle="rgba(0,0,0,.35)";
+  ctx.lineWidth=31;
+  ctx.stroke();
+
   /*
-    HEAD
+    actual body
   */
 
-  ctx.save();
+  ctx.beginPath();
+
+  for(
+    let i=snake.body.length-1;
+    i>=0;
+    i--
+  ){
+
+    const p=snake.body[i];
+
+    if(i===snake.body.length-1){
+      ctx.moveTo(p.x,p.y);
+    }else{
+      ctx.lineTo(p.x,p.y);
+    }
+  }
+
+  ctx.strokeStyle=snake.color;
+  ctx.lineWidth=25;
+  ctx.stroke();
+
+  /*
+    body highlight
+  */
+
+  ctx.beginPath();
+
+  for(
+    let i=snake.body.length-1;
+    i>=0;
+    i--
+  ){
+
+    const p=snake.body[i];
+
+    if(i===snake.body.length-1){
+      ctx.moveTo(p.x,p.y);
+    }else{
+      ctx.lineTo(p.x,p.y);
+    }
+  }
+
+  ctx.strokeStyle="rgba(255,255,255,.16)";
+  ctx.lineWidth=7;
+  ctx.stroke();
+
+  /*
+    head
+  */
 
   ctx.translate(
     snake.x,
@@ -1429,16 +1213,15 @@ function drawWorm(snake){
     snake.angle
   );
 
-  ctx.fillStyle=
-    snake.color;
+  ctx.fillStyle=snake.color;
 
   ctx.beginPath();
 
   ctx.ellipse(
     0,
     0,
-    24,
-    22,
+    30,
+    27,
     0,
     0,
     Math.PI*2
@@ -1447,7 +1230,7 @@ function drawWorm(snake){
   ctx.fill();
 
   /*
-    eyes
+    face
   */
 
   ctx.fillStyle="white";
@@ -1455,9 +1238,9 @@ function drawWorm(snake){
   ctx.beginPath();
 
   ctx.arc(
-    10,
-    -8,
-    7,
+    13,
+    -10,
+    8,
     0,
     Math.PI*2
   );
@@ -1467,9 +1250,9 @@ function drawWorm(snake){
   ctx.beginPath();
 
   ctx.arc(
+    13,
     10,
     8,
-    7,
     0,
     Math.PI*2
   );
@@ -1481,9 +1264,9 @@ function drawWorm(snake){
   ctx.beginPath();
 
   ctx.arc(
-    13,
-    -8,
-    3,
+    16,
+    -10,
+    4,
     0,
     Math.PI*2
   );
@@ -1493,35 +1276,14 @@ function drawWorm(snake){
   ctx.beginPath();
 
   ctx.arc(
-    13,
-    8,
-    3,
+    16,
+    10,
+    4,
     0,
     Math.PI*2
   );
 
   ctx.fill();
-
-  /*
-    smile
-  */
-
-  ctx.strokeStyle=
-    "rgba(0,0,0,.45)";
-
-  ctx.lineWidth=2;
-
-  ctx.beginPath();
-
-  ctx.arc(
-    7,
-    0,
-    8,
-    .2,
-    1.1
-  );
-
-  ctx.stroke();
 
   ctx.restore();
 
@@ -1531,35 +1293,32 @@ function drawWorm(snake){
 
   ctx.textAlign="center";
 
-  ctx.font=
-    "bold 14px Arial";
+  ctx.font="bold 15px Arial";
 
-  ctx.strokeStyle=
-    "rgba(0,0,0,.8)";
+  ctx.lineWidth=5;
 
-  ctx.lineWidth=4;
+  ctx.strokeStyle="rgba(0,0,0,.8)";
 
   ctx.strokeText(
-    snake.name || "Player",
+    snake.name||"Player",
     snake.x,
-    snake.y-34
+    snake.y-40
   );
 
   ctx.fillStyle="white";
 
   ctx.fillText(
-    snake.name || "Player",
+    snake.name||"Player",
     snake.x,
-    snake.y-34
+    snake.y-40
   );
-
 }
 
-/* CAMERA */
+/* DRAW */
 
 function draw(){
 
-  ctx.fillStyle="#07120a";
+  ctx.fillStyle="#071008";
 
   ctx.fillRect(
     0,
@@ -1577,11 +1336,9 @@ function draw(){
     H/2-player.y
   );
 
-  /*
-    WORLD
-  */
+  /* WORLD */
 
-  ctx.fillStyle="#102316";
+  ctx.fillStyle="#102416";
 
   ctx.fillRect(
     0,
@@ -1590,28 +1347,26 @@ function draw(){
     WORLD
   );
 
-  /*
-    GRID
-  */
+  /* GRID */
 
   ctx.strokeStyle=
     "rgba(255,255,255,.035)";
 
   const grid=120;
 
-  const startX=
+  const minX=
     Math.floor(
       (player.x-W/2)/grid
     )*grid;
 
-  const endX=
+  const maxX=
     Math.ceil(
       (player.x+W/2)/grid
     )*grid;
 
   for(
-    let x=startX;
-    x<=endX;
+    let x=minX;
+    x<=maxX;
     x+=grid
   ){
 
@@ -1631,19 +1386,19 @@ function draw(){
 
   }
 
-  const startY=
+  const minY=
     Math.floor(
       (player.y-H/2)/grid
     )*grid;
 
-  const endY=
+  const maxY=
     Math.ceil(
       (player.y+H/2)/grid
     )*grid;
 
   for(
-    let y=startY;
-    y<=endY;
+    let y=minY;
+    y<=maxY;
     y+=grid
   ){
 
@@ -1663,13 +1418,9 @@ function draw(){
 
   }
 
-  /*
-    FOOD
-  */
+  /* FOOD */
 
-  for(
-    const f of food
-  ){
+  for(const f of food){
 
     if(
       Math.abs(f.x-player.x)>W/2+100 ||
@@ -1678,7 +1429,7 @@ function draw(){
       continue;
     }
 
-    ctx.shadowBlur=10;
+    ctx.shadowBlur=12;
     ctx.shadowColor=f.color;
 
     ctx.fillStyle=f.color;
@@ -1696,56 +1447,28 @@ function draw(){
     ctx.fill();
 
     ctx.shadowBlur=0;
-
   }
 
-  /*
-    BOTS
-  */
+  /* BOTS */
 
-  for(
-    const b of bots
-  ){
-
+  for(const b of bots){
     drawWorm(b);
-
   }
 
-  /*
-    PLAYER
-  */
+  /* PLAYER */
 
   drawWorm(player);
 
   ctx.restore();
 
   drawMinimap();
-
 }
 
 /* MINIMAP */
 
-function miniDot(x,y,color,r){
-
-  mctx.fillStyle=color;
-
-  mctx.beginPath();
-
-  mctx.arc(
-    x/WORLD*400,
-    y/WORLD*400,
-    r,
-    0,
-    Math.PI*2
-  );
-
-  mctx.fill();
-
-}
-
 function drawMinimap(){
 
-  mctx.fillStyle="#0c1c10";
+  mctx.fillStyle="#0b1a0d";
 
   mctx.fillRect(
     0,
@@ -1754,45 +1477,51 @@ function drawMinimap(){
     400
   );
 
-  for(
-    const b of bots
-  ){
+  for(const b of bots){
 
-    miniDot(
-      b.x,
-      b.y,
-      b.color,
-      5
+    mctx.fillStyle=b.color;
+
+    mctx.beginPath();
+
+    mctx.arc(
+      b.x/WORLD*400,
+      b.y/WORLD*400,
+      5,
+      0,
+      Math.PI*2
     );
 
+    mctx.fill();
   }
 
-  miniDot(
-    player.x,
-    player.y,
-    player.color,
-    8
+  mctx.fillStyle=player.color;
+
+  mctx.beginPath();
+
+  mctx.arc(
+    player.x/WORLD*400,
+    player.y/WORLD*400,
+    8,
+    0,
+    Math.PI*2
   );
 
+  mctx.fill();
 }
 
-/* LEADERBOARD */
+/* TOP 3 */
 
 function updateLeaderboard(){
 
   const list=[
-
     {
       name:player.name,
       score:player.score,
       color:player.color
     }
-
   ];
 
-  for(
-    const b of bots
-  ){
+  for(const b of bots){
 
     list.push({
       name:b.name,
@@ -1812,38 +1541,29 @@ function updateLeaderboard(){
 
   lb.innerHTML="";
 
-  list
-    .slice(0,3)
-    .forEach(
-      (x,i)=>{
+  list.slice(0,3).forEach(
+    (x,i)=>{
 
-        const div=
-          document.createElement("div");
+      const row=
+        document.createElement("div");
 
-        div.className="row";
+      row.className="row";
 
-        div.innerHTML=`
+      row.innerHTML=`
+        <span style="color:${x.color}">
+          ${i+1}. ${x.name}
+        </span>
+        <b>${Math.floor(x.score)}</b>
+      `;
 
-          <span style="color:${x.color}">
-            ${i+1}. ${x.name}
-          </span>
-
-          <b>
-            ${Math.floor(x.score)}
-          </b>
-
-        `;
-
-        lb.appendChild(div);
-
-      }
-    );
-
+      lb.appendChild(row);
+    }
+  );
 }
 
 /* HUD */
 
-function hud(){
+function updateHUD(){
 
   document.getElementById(
     "score"
@@ -1861,7 +1581,6 @@ function hud(){
     Math.floor(player.length);
 
   updateLeaderboard();
-
 }
 
 /* DEATH */
@@ -1890,7 +1609,6 @@ function die(reason){
   document.getElementById(
     "dead"
   ).style.display="flex";
-
 }
 
 /* START */
@@ -1917,7 +1635,6 @@ function startGame(){
   document.getElementById(
     "minimap"
   ).style.display="block";
-
 }
 
 document.getElementById(
@@ -1929,13 +1646,11 @@ document.getElementById(
   createBots();
 
   startGame();
-
 };
 
 /* MULTIPLAYER */
 
 let ws=null;
-let remote=new Map();
 let myId=null;
 
 function connect(){
@@ -1945,19 +1660,14 @@ function connect(){
       ? "wss:"
       : "ws:";
 
-  ws=
-    new WebSocket(
-      protocol+
-      "//"+
-      location.host
-    );
+  ws=new WebSocket(
+    protocol+
+    "//"+
+    location.host
+  );
 
   ws.onopen=()=>{
-
-    console.log(
-      "Connected"
-    );
-
+    console.log("Connected");
   };
 
   ws.onmessage=e=>{
@@ -1970,9 +1680,7 @@ function connect(){
       return;
     }
 
-    if(
-      data.type==="connected"
-    ){
+    if(data.type==="connected"){
 
       myId=data.id;
       player.id=myId;
@@ -1985,7 +1693,6 @@ function connect(){
     ){
 
       myId=data.id;
-
       player.id=myId;
 
       document.getElementById(
@@ -1996,95 +1703,52 @@ function connect(){
         "roomCode"
       ).textContent=
         data.code;
-
     }
 
-    if(
-      data.type==="gameStart"
-    ){
+    if(data.type==="gameStart"){
 
       single=false;
 
       startGame();
-
     }
 
-    if(
-      data.type==="state"
-    ){
+    if(data.type==="state"){
 
-      remote.clear();
+      for(const p of data.players){
 
-      for(
-        const p of data.players
-      ){
-
-        if(
-          p.id===myId
-        ){
+        if(p.id===myId){
 
           if(!single){
 
-            player.x=
-              lerp(
-                player.x,
-                p.x,
-                .35
-              );
+            player.x=p.x;
+            player.y=p.y;
+            player.angle=p.angle;
+            player.length=p.length;
+            player.score=p.score;
+            player.kills=p.kills;
+            player.body=p.body;
+            player.alive=p.alive;
 
-            player.y=
-              lerp(
-                player.y,
-                p.y,
-                .35
-              );
-
-            player.angle=
-              lerpAngle(
-                player.angle,
-                p.angle,
-                .35
-              );
-
-            player.score=
-              p.score;
-
-            player.kills=
-              p.kills;
-
-            player.length=
-              p.length;
-
+            if(!p.alive){
+              die("Vastane sai sind kätte!");
+            }
           }
 
-        }else{
-
-          remote.set(
-            p.id,
-            p
-          );
-
         }
-
       }
 
       updateRoomPlayers(
         data.players
       );
-
     }
 
-    if(
-      data.type==="error"
-    ){
+    if(data.type==="error"){
 
       document.getElementById(
         "error"
       ).textContent=
         data.message;
-
     }
-
   };
 
   ws.onerror=()=>{
@@ -2093,32 +1757,28 @@ function connect(){
       "error"
     ).textContent=
       "Serveriga ei saanud ühendust.";
-
   };
-
 }
 
-function lerp(a,b,t){
+function updateRoomPlayers(players){
 
-  return a+(b-a)*t;
+  const box=
+    document.getElementById("players");
 
+  box.innerHTML="";
+
+  for(const p of players){
+
+    const div=
+      document.createElement("div");
+
+    div.textContent=p.name;
+
+    div.style.color=p.color;
+
+    box.appendChild(div);
+  }
 }
-
-function lerpAngle(a,b,t){
-
-  let d=b-a;
-
-  while(d>Math.PI)
-    d-=Math.PI*2;
-
-  while(d<-Math.PI)
-    d+=Math.PI*2;
-
-  return a+d*t;
-
-}
-
-/* ROOM */
 
 document.getElementById(
   "create"
@@ -2135,21 +1795,15 @@ document.getElementById(
       "Server pole ühendatud.";
 
     return;
-
   }
 
   ws.send(
     JSON.stringify({
-
       type:"createRoom",
-
       name:player.name,
-
       color:player.color
-
     })
   );
-
 };
 
 document.getElementById(
@@ -2171,103 +1825,58 @@ document.getElementById(
       "Sisesta roomi kood.";
 
     return;
-
   }
 
   ws.send(
     JSON.stringify({
-
       type:"joinRoom",
-
       code,
-
       name:player.name,
-
       color:player.color
-
     })
   );
-
 };
 
 document.getElementById(
   "start"
 ).onclick=()=>{
 
-  if(ws){
+  if(
+    ws &&
+    ws.readyState===WebSocket.OPEN
+  ){
 
     ws.send(
       JSON.stringify({
-        type:"startRoom"
+        type:"start"
       })
     );
-
   }
-
 };
 
-function updateRoomPlayers(players){
+/* SEND MULTIPLAYER INPUT */
 
-  const box=
-    document.getElementById(
-      "players"
-    );
+setInterval(()=>{
 
-  box.innerHTML="";
-
-  for(
-    const p of players
+  if(
+    ws &&
+    ws.readyState===WebSocket.OPEN &&
+    running &&
+    !single
   ){
 
-    const div=
-      document.createElement(
-        "div"
-      );
-
-    div.textContent=
-      p.name;
-
-    div.style.color=
-      p.color;
-
-    box.appendChild(div);
-
+    ws.send(
+      JSON.stringify({
+        type:"input",
+        angle:player.targetAngle,
+        boost:boosting
+      })
+    );
   }
 
-}
+},50);
 
-/* MULTIPLAYER INPUT */
-
-setInterval(
-  ()=>{
-
-    if(
-      ws &&
-      ws.readyState===WebSocket.OPEN &&
-      running &&
-      !single
-    ){
-
-      ws.send(
-        JSON.stringify({
-
-          type:"input",
-
-          angle:
-            player.targetAngle,
-
-          boost
-
-        })
-      );
-
-    }
-
-  },
-  50
-);
-
-/* GAME LOOP */
+/* MAIN LOOP */
 
 function loop(){
 
@@ -2275,30 +1884,32 @@ function loop(){
 
     if(single){
 
-      const dx=
-        mouseX-W/2;
+      if(innerWidth>800){
 
-      const dy=
-        mouseY-H/2;
+        const dx=
+          mouseX-W/2;
 
-      if(
-        Math.hypot(dx,dy)>10 &&
-        innerWidth>800
-      ){
+        const dy=
+          mouseY-H/2;
 
-        player.targetAngle=
-          Math.atan2(dy,dx);
+        if(
+          Math.hypot(dx,dy)>10
+        ){
 
+          player.targetAngle=
+            Math.atan2(dy,dx);
+        }
       }
 
       updatePlayer();
       updateBots();
-      collisions();
+      collision();
 
     }else{
 
       /*
-        Multiplayer movement prediction
+        Multiplayer client-side movement
+        makes movement feel smooth.
       */
 
       let d=
@@ -2311,30 +1922,27 @@ function loop(){
       while(d<-Math.PI)
         d+=Math.PI*2;
 
-      player.angle+=d*.16;
+      player.angle+=d*.17;
 
       const speed=
-        boost &&
-        player.length>38
-          ? 10
-          : 6.5;
+        boosting &&
+        player.length>45
+          ? 11
+          : 7;
 
       if(
-        boost &&
-        player.length>38
+        boosting &&
+        player.length>45
       ){
 
-        player.length-=.045;
-
+        player.length-=.08;
       }
 
       player.x+=
-        Math.cos(player.angle)*
-        speed;
+        Math.cos(player.angle)*speed;
 
       player.y+=
-        Math.sin(player.angle)*
-        speed;
+        Math.sin(player.angle)*speed;
 
       player.body.unshift({
         x:player.x,
@@ -2355,7 +1963,6 @@ function loop(){
           x:last.x,
           y:last.y
         });
-
       }
 
       while(
@@ -2364,42 +1971,20 @@ function loop(){
       ){
 
         player.body.pop();
-
       }
-
-      /*
-        Remote worms
-      */
-
-      for(
-        const p of remote.values()
-      ){
-
-        if(
-          !p.body ||
-          p.body.length===0
-        ){
-          continue;
-        }
-
-      }
-
     }
 
-    hud();
-
+    updateHUD();
   }
 
   draw();
 
   requestAnimationFrame(loop);
-
 }
 
 resetPlayer();
 connect();
 requestAnimationFrame(loop);
-
 </script>
 
 </body>
