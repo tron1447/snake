@@ -8,11 +8,38 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
-const WORLD = 12000;
+
+const WORLD = 10000;
+const TICK = 50;
+const MAX_PLAYERS = 16;
 
 app.use(express.static(path.join(__dirname)));
 
 const rooms = new Map();
+
+function randomId() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+function roomCode() {
+  let code;
+
+  do {
+    code = Math.random()
+      .toString(36)
+      .slice(2, 7)
+      .toUpperCase();
+  } while (rooms.has(code));
+
+  return code;
+}
+
+function cleanName(name) {
+  return String(name || "Player")
+    .replace(/[<>]/g, "")
+    .trim()
+    .slice(0, 16) || "Player";
+}
 
 function send(ws, data) {
   if (ws.readyState === WebSocket.OPEN) {
@@ -26,31 +53,17 @@ function broadcast(room, data) {
   }
 }
 
-function randomRoom() {
-  let code;
-
-  do {
-    code = Math.random()
-      .toString(36)
-      .substring(2, 7)
-      .toUpperCase();
-  } while (rooms.has(code));
-
-  return code;
-}
-
-function safeName(name) {
-  return String(name || "Player")
-    .replace(/[<>]/g, "")
-    .trim()
-    .substring(0, 16) || "Player";
-}
-
 function spawn() {
   return {
-    x: 1000 + Math.random() * (WORLD - 2000),
-    y: 1000 + Math.random() * (WORLD - 2000)
+    x: 1200 + Math.random() * (WORLD - 2400),
+    y: 1200 + Math.random() * (WORLD - 2400)
   };
+}
+
+function normalizeAngle(a) {
+  while (a > Math.PI) a -= Math.PI * 2;
+  while (a < -Math.PI) a += Math.PI * 2;
+  return a;
 }
 
 function resetPlayer(p) {
@@ -62,19 +75,19 @@ function resetPlayer(p) {
   p.angle = Math.random() * Math.PI * 2;
   p.targetAngle = p.angle;
 
-  p.length = 30;
+  p.length = 35;
   p.score = 0;
   p.kills = 0;
 
+  p.boost = false;
   p.alive = true;
-  p.boosting = false;
 
   p.body = [];
 
   for (let i = 0; i < p.length; i++) {
     p.body.push({
-      x: p.x - Math.cos(p.angle) * i * 8,
-      y: p.y - Math.sin(p.angle) * i * 8
+      x: p.x - Math.cos(p.angle) * i * 9,
+      y: p.y - Math.sin(p.angle) * i * 9
     });
   }
 }
@@ -95,17 +108,18 @@ function publicPlayer(p) {
   };
 }
 
-function roomState(room) {
+function state(room) {
   return {
     type: "state",
-    players: Array.from(room.players.values()).map(publicPlayer)
+    players: [...room.players.values()].map(publicPlayer)
   };
 }
 
 wss.on("connection", ws => {
   const p = {
-    id: Math.random().toString(36).slice(2, 10),
+    id: randomId(),
     ws,
+
     room: null,
 
     name: "Player",
@@ -117,16 +131,14 @@ wss.on("connection", ws => {
     angle: 0,
     targetAngle: 0,
 
-    length: 30,
+    length: 35,
     score: 0,
     kills: 0,
 
+    boost: false,
     alive: true,
-    boosting: false,
 
-    body: [],
-
-    lastInput: Date.now()
+    body: []
   };
 
   resetPlayer(p);
@@ -146,11 +158,7 @@ wss.on("connection", ws => {
     }
 
     if (data.type === "createRoom") {
-      if (p.room) {
-        p.room.players.delete(p.id);
-      }
-
-      const code = randomRoom();
+      const code = roomCode();
 
       const room = {
         code,
@@ -159,7 +167,7 @@ wss.on("connection", ws => {
 
       rooms.set(code, room);
 
-      p.name = safeName(data.name);
+      p.name = cleanName(data.name);
 
       if (typeof data.color === "string") {
         p.color = data.color;
@@ -176,7 +184,7 @@ wss.on("connection", ws => {
         id: p.id
       });
 
-      broadcast(room, roomState(room));
+      broadcast(room, state(room));
       return;
     }
 
@@ -195,7 +203,7 @@ wss.on("connection", ws => {
         return;
       }
 
-      if (room.players.size >= 12) {
+      if (room.players.size >= MAX_PLAYERS) {
         send(ws, {
           type: "error",
           message: "Room on täis."
@@ -203,11 +211,7 @@ wss.on("connection", ws => {
         return;
       }
 
-      if (p.room) {
-        p.room.players.delete(p.id);
-      }
-
-      p.name = safeName(data.name);
+      p.name = cleanName(data.name);
 
       if (typeof data.color === "string") {
         p.color = data.color;
@@ -224,7 +228,7 @@ wss.on("connection", ws => {
         id: p.id
       });
 
-      broadcast(room, roomState(room));
+      broadcast(room, state(room));
       return;
     }
 
@@ -239,19 +243,18 @@ wss.on("connection", ws => {
         type: "gameStart"
       });
 
-      broadcast(p.room, roomState(p.room));
+      broadcast(p.room, state(p.room));
       return;
     }
 
     if (data.type === "input") {
-      if (!p.room || !p.alive) return;
+      if (!p.room) return;
 
       if (Number.isFinite(data.angle)) {
         p.targetAngle = data.angle;
       }
 
-      p.boosting = !!data.boosting;
-      p.lastInput = Date.now();
+      p.boost = !!data.boost;
     }
   });
 
@@ -265,68 +268,123 @@ wss.on("connection", ws => {
     if (room.players.size === 0) {
       rooms.delete(room.code);
     } else {
-      broadcast(room, roomState(room));
+      broadcast(room, state(room));
     }
   });
 });
 
-/*
-  Server keeps multiplayer positions alive.
-  Client controls feel smooth because the client
-  predicts movement locally.
-*/
+function updatePlayer(p) {
+  if (!p.alive) return;
+
+  let turn = normalizeAngle(
+    p.targetAngle - p.angle
+  );
+
+  p.angle += turn * 0.20;
+
+  let speed = 6.5;
+
+  if (p.boost && p.length > 38) {
+    speed = 10.5;
+    p.length -= 0.06;
+  }
+
+  p.x += Math.cos(p.angle) * speed;
+  p.y += Math.sin(p.angle) * speed;
+
+  if (
+    p.x < 80 ||
+    p.x > WORLD - 80 ||
+    p.y < 80 ||
+    p.y > WORLD - 80
+  ) {
+    p.alive = false;
+    return;
+  }
+
+  p.body.unshift({
+    x: p.x,
+    y: p.y
+  });
+
+  while (p.body.length < Math.floor(p.length)) {
+    const last = p.body[p.body.length - 1];
+
+    p.body.push({
+      x: last.x,
+      y: last.y
+    });
+  }
+
+  while (p.body.length > Math.floor(p.length)) {
+    p.body.pop();
+  }
+}
+
+function distance(a, b) {
+  return Math.hypot(
+    a.x - b.x,
+    a.y - b.y
+  );
+}
+
+function collisionCheck(room) {
+  const players = [...room.players.values()];
+
+  for (const a of players) {
+    if (!a.alive) continue;
+
+    // Own body
+    for (let i = 10; i < a.body.length; i += 2) {
+      if (
+        Math.hypot(
+          a.x - a.body[i].x,
+          a.y - a.body[i].y
+        ) < 22
+      ) {
+        a.alive = false;
+        break;
+      }
+    }
+
+    if (!a.alive) continue;
+
+    // Other bodies
+    for (const b of players) {
+      if (a === b || !b.alive) continue;
+
+      for (let i = 5; i < b.body.length; i += 2) {
+        if (
+          Math.hypot(
+            a.x - b.body[i].x,
+            a.y - b.body[i].y
+          ) < 25
+        ) {
+          a.alive = false;
+          b.kills++;
+          b.score += 100;
+          b.length += 12;
+          break;
+        }
+      }
+
+      if (!a.alive) break;
+    }
+  }
+}
 
 setInterval(() => {
   for (const room of rooms.values()) {
     for (const p of room.players.values()) {
-      if (!p.alive) continue;
-
-      let diff = p.targetAngle - p.angle;
-
-      while (diff > Math.PI) diff -= Math.PI * 2;
-      while (diff < -Math.PI) diff += Math.PI * 2;
-
-      p.angle += diff * 0.18;
-
-      const speed = p.boosting ? 10 : 7;
-
-      p.x += Math.cos(p.angle) * speed;
-      p.y += Math.sin(p.angle) * speed;
-
-      p.x = Math.max(40, Math.min(WORLD - 40, p.x));
-      p.y = Math.max(40, Math.min(WORLD - 40, p.y));
-
-      p.body.unshift({
-        x: p.x,
-        y: p.y
-      });
-
-      while (p.body.length < Math.floor(p.length)) {
-        const last = p.body[p.body.length - 1];
-
-        p.body.push({
-          x: last.x,
-          y: last.y
-        });
-      }
-
-      while (p.body.length > Math.floor(p.length)) {
-        p.body.pop();
-      }
-
-      if (p.boosting && p.length > 32) {
-        p.length -= 0.02;
-      }
-
-      if (Date.now() - p.lastInput > 3000) {
-        p.boosting = false;
-      }
+      updatePlayer(p);
     }
 
-    broadcast(room, roomState(room));
+    collisionCheck(room);
+
+    broadcast(room, state(room));
   }
-}, 50);
+}, TICK);
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log("Snake Arena running on port " + PORT);
+  console.log(`Worm Arena running on port ${PORT}`);
 });
