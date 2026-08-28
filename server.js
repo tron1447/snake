@@ -8,10 +8,10 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
+const WORLD = 12000;
 
 app.use(express.static(path.join(__dirname)));
 
-const WORLD = 18000;
 const rooms = new Map();
 
 function send(ws, data) {
@@ -26,19 +26,21 @@ function broadcast(room, data) {
   }
 }
 
-function code() {
-  let c;
+function randomRoom() {
+  let code;
+
   do {
-    c = Math.random()
+    code = Math.random()
       .toString(36)
       .substring(2, 7)
       .toUpperCase();
-  } while (rooms.has(c));
-  return c;
+  } while (rooms.has(code));
+
+  return code;
 }
 
-function cleanName(n) {
-  return String(n || "Player")
+function safeName(name) {
+  return String(name || "Player")
     .replace(/[<>]/g, "")
     .trim()
     .substring(0, 16) || "Player";
@@ -51,15 +53,16 @@ function spawn() {
   };
 }
 
-function reset(p) {
+function resetPlayer(p) {
   const s = spawn();
 
   p.x = s.x;
   p.y = s.y;
 
   p.angle = Math.random() * Math.PI * 2;
-  p.length = 30;
+  p.targetAngle = p.angle;
 
+  p.length = 30;
   p.score = 0;
   p.kills = 0;
 
@@ -68,7 +71,7 @@ function reset(p) {
 
   p.body = [];
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < p.length; i++) {
     p.body.push({
       x: p.x - Math.cos(p.angle) * i * 8,
       y: p.y - Math.sin(p.angle) * i * 8
@@ -76,7 +79,7 @@ function reset(p) {
   }
 }
 
-function playerData(p) {
+function publicPlayer(p) {
   return {
     id: p.id,
     name: p.name,
@@ -88,27 +91,25 @@ function playerData(p) {
     kills: p.kills,
     color: p.color,
     alive: p.alive,
-    boosting: p.boosting,
-    body: p.body.slice(0, 220)
+    body: p.body
   };
 }
 
-function state(room) {
+function roomState(room) {
   return {
     type: "state",
-    players: [...room.players.values()].map(playerData)
+    players: Array.from(room.players.values()).map(publicPlayer)
   };
 }
 
 wss.on("connection", ws => {
-
   const p = {
-    id: Math.random().toString(36).substring(2, 10),
+    id: Math.random().toString(36).slice(2, 10),
     ws,
     room: null,
 
     name: "Player",
-    color: "#63ff78",
+    color: "#5cff72",
 
     x: 0,
     y: 0,
@@ -117,7 +118,6 @@ wss.on("connection", ws => {
     targetAngle: 0,
 
     length: 30,
-
     score: 0,
     kills: 0,
 
@@ -129,7 +129,7 @@ wss.on("connection", ws => {
     lastInput: Date.now()
   };
 
-  reset(p);
+  resetPlayer(p);
 
   send(ws, {
     type: "connected",
@@ -137,7 +137,6 @@ wss.on("connection", ws => {
   });
 
   ws.on("message", raw => {
-
     let data;
 
     try {
@@ -146,51 +145,47 @@ wss.on("connection", ws => {
       return;
     }
 
-    if (data.type === "create") {
-
+    if (data.type === "createRoom") {
       if (p.room) {
         p.room.players.delete(p.id);
       }
 
-      const roomCode = code();
+      const code = randomRoom();
 
       const room = {
-        code: roomCode,
+        code,
         players: new Map()
       };
 
-      rooms.set(roomCode, room);
+      rooms.set(code, room);
 
-      p.name = cleanName(data.name);
+      p.name = safeName(data.name);
 
       if (typeof data.color === "string") {
         p.color = data.color;
       }
 
-      reset(p);
+      resetPlayer(p);
 
       p.room = room;
       room.players.set(p.id, p);
 
       send(ws, {
-        type: "created",
-        code: roomCode,
+        type: "roomCreated",
+        code,
         id: p.id
       });
 
-      broadcast(room, state(room));
-
+      broadcast(room, roomState(room));
       return;
     }
 
-    if (data.type === "join") {
+    if (data.type === "joinRoom") {
+      const code = String(data.code || "")
+        .trim()
+        .toUpperCase();
 
-      const roomCode =
-        String(data.code || "")
-          .trim()
-          .toUpperCase();
-
-      const room = rooms.get(roomCode);
+      const room = rooms.get(code);
 
       if (!room) {
         send(ws, {
@@ -200,7 +195,7 @@ wss.on("connection", ws => {
         return;
       }
 
-      if (room.players.size >= 16) {
+      if (room.players.size >= 12) {
         send(ws, {
           type: "error",
           message: "Room on täis."
@@ -212,82 +207,55 @@ wss.on("connection", ws => {
         p.room.players.delete(p.id);
       }
 
-      p.name = cleanName(data.name);
+      p.name = safeName(data.name);
 
       if (typeof data.color === "string") {
         p.color = data.color;
       }
 
-      reset(p);
+      resetPlayer(p);
 
       p.room = room;
       room.players.set(p.id, p);
 
       send(ws, {
-        type: "joined",
-        code: roomCode,
+        type: "roomJoined",
+        code,
         id: p.id
       });
 
-      broadcast(room, state(room));
-
+      broadcast(room, roomState(room));
       return;
     }
 
-    if (data.type === "start") {
-
+    if (data.type === "startRoom") {
       if (!p.room) return;
 
       for (const x of p.room.players.values()) {
-        reset(x);
+        resetPlayer(x);
       }
 
       broadcast(p.room, {
         type: "gameStart"
       });
 
-      broadcast(p.room, state(p.room));
-
+      broadcast(p.room, roomState(p.room));
       return;
     }
 
     if (data.type === "input") {
-
       if (!p.room || !p.alive) return;
 
       if (Number.isFinite(data.angle)) {
         p.targetAngle = data.angle;
       }
 
-      p.boosting = data.boosting === true;
-
+      p.boosting = !!data.boosting;
       p.lastInput = Date.now();
-
-      return;
-    }
-
-    if (data.type === "disconnectRoom") {
-
-      if (p.room) {
-        const r = p.room;
-
-        r.players.delete(p.id);
-
-        p.room = null;
-
-        if (r.players.size === 0) {
-          rooms.delete(r.code);
-        } else {
-          broadcast(r, state(r));
-        }
-      }
-
-      return;
     }
   });
 
   ws.on("close", () => {
-
     if (!p.room) return;
 
     const room = p.room;
@@ -297,64 +265,44 @@ wss.on("connection", ws => {
     if (room.players.size === 0) {
       rooms.delete(room.code);
     } else {
-      broadcast(room, state(room));
+      broadcast(room, roomState(room));
     }
   });
 });
 
 /*
-SERVER PHYSICS
+  Server keeps multiplayer positions alive.
+  Client controls feel smooth because the client
+  predicts movement locally.
 */
 
 setInterval(() => {
-
   for (const room of rooms.values()) {
-
     for (const p of room.players.values()) {
-
       if (!p.alive) continue;
 
-      let diff =
-        p.targetAngle - p.angle;
+      let diff = p.targetAngle - p.angle;
 
-      while (diff > Math.PI) {
-        diff -= Math.PI * 2;
-      }
-
-      while (diff < -Math.PI) {
-        diff += Math.PI * 2;
-      }
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < -Math.PI) diff += Math.PI * 2;
 
       p.angle += diff * 0.18;
 
-      const speed =
-        p.boosting ? 10.5 : 7.5;
+      const speed = p.boosting ? 10 : 7;
 
       p.x += Math.cos(p.angle) * speed;
       p.y += Math.sin(p.angle) * speed;
 
-      p.x = Math.max(30, Math.min(WORLD - 30, p.x));
-      p.y = Math.max(30, Math.min(WORLD - 30, p.y));
+      p.x = Math.max(40, Math.min(WORLD - 40, p.x));
+      p.y = Math.max(40, Math.min(WORLD - 40, p.y));
 
       p.body.unshift({
         x: p.x,
         y: p.y
       });
 
-      if (p.boosting && p.length > 32) {
-        p.length -= 0.015;
-      }
-
-      const target =
-        Math.max(30, Math.floor(p.length));
-
-      while (p.body.length < target) {
-
-        const last =
-          p.body[p.body.length - 1] || {
-            x: p.x,
-            y: p.y
-          };
+      while (p.body.length < Math.floor(p.length)) {
+        const last = p.body[p.body.length - 1];
 
         p.body.push({
           x: last.x,
@@ -362,20 +310,23 @@ setInterval(() => {
         });
       }
 
-      while (p.body.length > target) {
+      while (p.body.length > Math.floor(p.length)) {
         p.body.pop();
       }
 
-      if (Date.now() - p.lastInput > 5000) {
+      if (p.boosting && p.length > 32) {
+        p.length -= 0.02;
+      }
+
+      if (Date.now() - p.lastInput > 3000) {
         p.boosting = false;
       }
     }
 
-    broadcast(room, state(room));
+    broadcast(room, roomState(room));
   }
-
 }, 50);
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Snake Arena running on ${PORT}`);
+  console.log("Snake Arena running on port " + PORT);
 });
