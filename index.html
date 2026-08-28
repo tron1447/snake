@@ -2,10 +2,16 @@
 <html lang="et">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport"
+ content="width=device-width,
+ initial-scale=1,
+ maximum-scale=1,
+ user-scalable=no">
+
 <title>Snake Arena</title>
 
 <style>
+
 *{
  box-sizing:border-box;
  margin:0;
@@ -17,7 +23,7 @@ html,body{
  width:100%;
  height:100%;
  overflow:hidden;
- background:#081108;
+ background:#071008;
  font-family:Arial,sans-serif;
  touch-action:none;
 }
@@ -34,32 +40,41 @@ canvas{
  inset:0;
  z-index:100;
  display:flex;
- justify-content:center;
  align-items:center;
- background:radial-gradient(circle,#214f29,#071008 70%);
+ justify-content:center;
+ background:
+ radial-gradient(
+  circle,
+  #245c2d,
+  #071008 70%
+ );
 }
 
 .panel{
- width:min(430px,94vw);
+ width:min(440px,94vw);
+ max-height:94vh;
+ overflow:auto;
  padding:25px;
  border-radius:25px;
  background:#081109;
  border:1px solid #426b47;
  color:white;
- text-align:center;
  box-shadow:0 20px 70px #000;
 }
 
 .logo{
+ text-align:center;
  font-size:65px;
 }
 
 h1{
+ text-align:center;
  color:#59ff70;
  font-size:38px;
 }
 
 .sub{
+ text-align:center;
  color:#839187;
  margin:5px 0 18px;
 }
@@ -82,7 +97,8 @@ button{
  border:0;
 }
 
-.main,.secondary{
+.main,
+.secondary{
  width:100%;
  height:48px;
  margin-top:8px;
@@ -101,17 +117,80 @@ button{
  border:1px solid #36553a;
 }
 
-#roomBox{
+#roomLobby{
  display:none;
- margin-top:10px;
+ margin-top:15px;
+}
+
+.roomTop{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:10px;
+}
+
+.roomTitle{
+ color:#55ff70;
+ font-weight:bold;
 }
 
 #roomCode{
- color:#55ff70;
- font-size:30px;
+ font-size:25px;
+ color:#fff;
+ letter-spacing:4px;
  font-weight:bold;
- letter-spacing:5px;
- margin:8px;
+}
+
+#players{
+ border:1px solid #29432d;
+ border-radius:12px;
+ overflow:hidden;
+ margin-top:10px;
+}
+
+.playerRow{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:10px;
+ background:#0d190f;
+ border-bottom:1px solid #1d3020;
+}
+
+.playerLeft{
+ display:flex;
+ align-items:center;
+ gap:9px;
+}
+
+.playerDot{
+ width:14px;
+ height:14px;
+ border-radius:50%;
+}
+
+.playerName{
+ font-weight:bold;
+}
+
+.host{
+ font-size:11px;
+ color:#ffd84a;
+ font-weight:bold;
+}
+
+.waiting{
+ text-align:center;
+ color:#718073;
+ font-size:13px;
+ margin:10px;
+}
+
+#notHost{
+ display:none;
+ text-align:center;
+ padding:10px;
+ color:#ffd84a;
 }
 
 #error{
@@ -119,6 +198,7 @@ button{
  color:#ff6677;
  font-size:13px;
  margin-top:7px;
+ text-align:center;
 }
 
 #hud{
@@ -196,67 +276,6 @@ button{
  font-weight:bold;
 }
 
-#shop{
- display:none;
- position:fixed;
- inset:0;
- z-index:150;
- justify-content:center;
- align-items:center;
- background:rgba(0,0,0,.85);
-}
-
-.shopPanel{
- width:min(500px,94vw);
- max-height:90vh;
- overflow:auto;
- padding:20px;
- border-radius:20px;
- background:#0a150c;
- color:white;
-}
-
-.shopHeader{
- display:flex;
- justify-content:space-between;
- margin-bottom:12px;
-}
-
-.coins{
- color:#ffd84a;
- font-weight:bold;
-}
-
-.skinGrid{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:10px;
-}
-
-.skin{
- background:#111d12;
- border:1px solid #2e4c32;
- border-radius:13px;
- padding:12px;
- text-align:center;
-}
-
-.preview{
- width:55px;
- height:55px;
- border-radius:50%;
- margin:auto auto 8px;
-}
-
-.skin button{
- width:100%;
- height:35px;
- margin-top:7px;
- border-radius:9px;
- background:#55ef68;
- font-weight:bold;
-}
-
 #boost{
  display:none;
  position:fixed;
@@ -330,149 +349,183 @@ button{
  font-weight:bold;
 }
 
-@media(max-width:800px){
- #joystick,#boost{
-  display:block;
- }
-}
-
-@media(max-width:500px){
- #minimap{
-  width:145px;
-  height:145px;
-  top:170px;
- }
- #leaderboard{
-  width:145px;
- }
-}
 </style>
 </head>
 
 <body>
 
 <canvas id="game"></canvas>
-<canvas id="minimap" width="180" height="180"></canvas>
+
+<canvas
+ id="minimap"
+ width="180"
+ height="180">
+</canvas>
 
 <div id="menu">
- <div class="panel">
 
-  <div class="logo">🐍</div>
-  <h1>SNAKE ARENA</h1>
-  <div class="sub">Kasva suureks ja võida!</div>
+<div class="panel">
 
-  <input id="name" maxlength="16" placeholder="Sinu nimi">
+<div class="logo">🐍</div>
 
-  <button class="main" id="single">
-   🤖 SINGLEPLAYER
-  </button>
+<h1>SNAKE ARENA</h1>
 
-  <button class="secondary" id="create">
-   🏠 LOO ROOM
-  </button>
+<div class="sub">
+Kasva suureks ja võida!
+</div>
 
-  <input id="roomInput" maxlength="5" placeholder="ROOM CODE">
+<input
+ id="name"
+ maxlength="16"
+ placeholder="Sinu nimi">
 
-  <button class="secondary" id="join">
-   🚪 LIITU ROOMI
-  </button>
+<button
+ class="main"
+ id="single">
+🤖 SINGLEPLAYER
+</button>
 
-  <div id="roomBox">
-   <div>ROOM CODE</div>
-   <div id="roomCode">-----</div>
+<button
+ class="secondary"
+ id="create">
+🏠 LOO ROOM
+</button>
 
-   <button class="main" id="startRoom">
-    ▶ ALUSTA
-   </button>
+<input
+ id="roomInput"
+ maxlength="5"
+ placeholder="ROOM CODE">
+
+<button
+ class="secondary"
+ id="join">
+🚪 LIITU ROOMI
+</button>
+
+<div id="roomLobby">
+
+ <div class="roomTop">
+
+  <div>
+   <div style="font-size:11px;color:#718073">
+    ROOM
+   </div>
+
+   <div id="roomCode">
+    -----
+   </div>
   </div>
 
-  <div id="error"></div>
+  <div>
+   <div style="font-size:11px;color:#718073">
+    MÄNGIJAID
+   </div>
+
+   <div id="playerCount">
+    0/8
+   </div>
+  </div>
 
  </div>
+
+ <div id="players"></div>
+
+ <div id="notHost">
+  ⏳ Ootad hosti, et mäng algaks...
+ </div>
+
+ <button
+  class="main"
+  id="startRoom"
+  style="display:none">
+  ▶ ALUSTA MÄNGU
+ </button>
+
+</div>
+
+<div id="error"></div>
+
+</div>
+
 </div>
 
 <div id="hud">
 
- <div class="stat">
-  <small>SKOOR</small>
-  <b id="score">0</b>
- </div>
+<div class="stat">
+<small>SKOOR</small>
+<b id="score">0</b>
+</div>
 
- <div class="stat">
-  <small>KILLID</small>
-  <b id="kills">0</b>
- </div>
+<div class="stat">
+<small>KILLID</small>
+<b id="kills">0</b>
+</div>
 
- <div class="stat">
-  <small>PIKKUS</small>
-  <b id="length">75</b>
- </div>
+<div class="stat">
+<small>PIKKUS</small>
+<b id="length">75</b>
+</div>
 
- <div class="stat">
-  <small>🪙</small>
-  <b id="coins">0</b>
- </div>
+<div class="stat">
+<small>🪙</small>
+<b id="coins">0</b>
+</div>
 
 </div>
 
 <div id="leaderboard">
- <div class="lbTitle">🏆 TOP 3</div>
- <div id="lb"></div>
+
+<div class="lbTitle">
+🏆 TOP 3
 </div>
 
-<button id="shopButton">🛒 POOD</button>
+<div id="lb"></div>
 
-<div id="shop">
- <div class="shopPanel">
-
-  <div class="shopHeader">
-   <h2>🛒 POOD</h2>
-   <div class="coins">
-    🪙 <span id="shopCoins">0</span>
-   </div>
-  </div>
-
-  <div class="skinGrid" id="skinGrid"></div>
-
-  <button class="secondary" id="closeShop">
-   SULGE
-  </button>
-
- </div>
 </div>
+
+<button id="shopButton">
+🛒 POOD
+</button>
 
 <div id="joystick">
- <div id="stick"></div>
+<div id="stick"></div>
 </div>
 
-<button id="boost">⚡</button>
+<button id="boost">
+⚡
+</button>
 
 <div id="gameOver">
- <div class="overPanel">
 
-  <h2>GAME OVER</h2>
+<div class="overPanel">
 
-  <p id="reason"></p>
+<h2>GAME OVER</h2>
 
-  <p style="margin-top:12px">
-   Skoor: <b id="finalScore">0</b>
-  </p>
+<p id="reason"></p>
 
-  <p>
-   Killid: <b id="finalKills">0</b>
-  </p>
+<p style="margin-top:12px">
+Skoor: <b id="finalScore">0</b>
+</p>
 
-  <button onclick="location.reload()">
-   🔄 UUESTI
-  </button>
+<p>
+Killid: <b id="finalKills">0</b>
+</p>
 
- </div>
+<button onclick="location.reload()">
+🔄 UUESTI
+</button>
+
+</div>
+
 </div>
 
 <script>
 
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
+const canvas =
+document.getElementById("game");
+
+const ctx =
+canvas.getContext("2d");
 
 let W=innerWidth;
 let H=innerHeight;
@@ -481,8 +534,10 @@ canvas.width=W;
 canvas.height=H;
 
 addEventListener("resize",()=>{
+
  W=innerWidth;
  H=innerHeight;
+
  canvas.width=W;
  canvas.height=H;
 });
@@ -493,38 +548,84 @@ let running=false;
 let single=false;
 let dead=false;
 
+let socket=null;
+let roomCode=null;
+
+let isHost=false;
+
+let multiplayerPlayers=[];
+
 let coins=
- Number(localStorage.getItem("snakeCoins"))||0;
+ Number(localStorage.getItem(
+  "snakeCoins"
+ ))||0;
 
 let selectedSkin=
- localStorage.getItem("snakeSkin")||"#54ff6b";
+ localStorage.getItem(
+  "snakeSkin"
+ )||"#54ff6b";
 
 const skins=[
- {name:"Neon",color:"#54ff6b",price:0},
- {name:"Ocean",color:"#35a9ff",price:50},
- {name:"Fire",color:"#ff465f",price:100},
- {name:"Gold",color:"#ffd43b",price:200},
- {name:"Purple",color:"#ae61ff",price:300},
- {name:"Pink",color:"#ff55c7",price:400},
- {name:"Cyber",color:"#20e0bd",price:500},
- {name:"Ghost",color:"#ffffff",price:750}
+
+ {
+  name:"Neon",
+  color:"#54ff6b",
+  price:0
+ },
+
+ {
+  name:"Ocean",
+  color:"#35a9ff",
+  price:50
+ },
+
+ {
+  name:"Fire",
+  color:"#ff465f",
+  price:100
+ },
+
+ {
+  name:"Gold",
+  color:"#ffd43b",
+  price:200
+ },
+
+ {
+  name:"Purple",
+  color:"#ae61ff",
+  price:300
+ },
+
+ {
+  name:"Pink",
+  color:"#ff55c7",
+  price:400
+ }
+
 ];
 
 const player={
+
  id:null,
- name:localStorage.getItem("snakeName")||"Player",
+
+ name:
+  localStorage.getItem(
+   "snakeName"
+  )||"Player",
 
  x:WORLD/2,
+
  y:WORLD/2,
 
  angle:0,
- targetAngle:0,
 
- speed:7.4,
+ targetAngle:0,
 
  length:75,
 
  score:0,
+
  kills:0,
 
  color:selectedSkin,
@@ -534,37 +635,24 @@ const player={
  alive:true
 };
 
-document.getElementById("name").value=player.name;
+document.getElementById(
+ "name"
+).value=player.name;
 
-document.getElementById("name").oninput=e=>{
+document.getElementById(
+ "name"
+).oninput=e=>{
 
- player.name=e.target.value
-  .replace(/[<>]/g,"")
-  .slice(0,16)||"Player";
+ player.name=
+  e.target.value
+   .replace(/[<>]/g,"")
+   .slice(0,16)||"Player";
 
  localStorage.setItem(
   "snakeName",
   player.name
  );
 };
-
-function saveCoins(){
- localStorage.setItem(
-  "snakeCoins",
-  coins
- );
-}
-
-function updateCoins(){
-
- document.getElementById("coins")
-  .textContent=coins;
-
- document.getElementById("shopCoins")
-  .textContent=coins;
-}
-
-updateCoins();
 
 /* FOOD */
 
@@ -573,14 +661,25 @@ const food=[];
 function makeFood(){
 
  return{
-  x:100+Math.random()*(WORLD-200),
-  y:100+Math.random()*(WORLD-200),
-  r:5+Math.random()*4,
-  value:1+Math.floor(Math.random()*4),
-  color:skins[
-   Math.floor(Math.random()*skins.length)
-  ].color,
-  phase:Math.random()*10
+
+  x:100+
+   Math.random()*(WORLD-200),
+
+  y:100+
+   Math.random()*(WORLD-200),
+
+  r:5+
+   Math.random()*4,
+
+  value:1+
+   Math.floor(Math.random()*4),
+
+  color:
+   skins[
+    Math.floor(
+     Math.random()*skins.length
+    )
+   ].color
  };
 }
 
@@ -592,46 +691,82 @@ for(let i=0;i<1600;i++)
 const bots=[];
 
 const botNames=[
- "Shadow","Viper","Blaze","Ghost",
- "Python","Storm","Ninja","Cobra",
- "Turbo","Venom","Rocket","Pixel"
+ "Shadow",
+ "Viper",
+ "Blaze",
+ "Ghost",
+ "Python",
+ "Storm",
+ "Ninja",
+ "Cobra",
+ "Turbo",
+ "Venom"
 ];
 
 function makeBot(){
 
  const b={
 
-  id:Math.random().toString(36),
+  id:
+   Math.random().toString(36),
 
   name:
    botNames[
-    Math.floor(Math.random()*botNames.length)
+    Math.floor(
+     Math.random()*botNames.length
+    )
    ],
 
-  x:1000+Math.random()*(WORLD-2000),
-  y:1000+Math.random()*(WORLD-2000),
+  x:
+   1000+
+   Math.random()*
+   (WORLD-2000),
 
-  angle:Math.random()*Math.PI*2,
-  target:Math.random()*Math.PI*2,
+  y:
+   1000+
+   Math.random()*
+   (WORLD-2000),
 
-  length:75+Math.random()*200,
+  angle:
+   Math.random()*Math.PI*2,
 
-  score:Math.floor(Math.random()*200),
+  target:
+   Math.random()*Math.PI*2,
+
+  length:
+   75+
+   Math.random()*200,
+
+  score:
+   Math.floor(
+    Math.random()*200
+   ),
 
   color:
    skins[
-    Math.floor(Math.random()*skins.length)
+    Math.floor(
+     Math.random()*skins.length
+    )
    ].color,
 
   body:[],
+
   timer:0
  };
 
  for(let i=0;i<b.length;i++){
 
   b.body.push({
-   x:b.x-Math.cos(b.angle)*i*7,
-   y:b.y-Math.sin(b.angle)*i*7
+
+   x:
+    b.x-
+    Math.cos(b.angle)*
+    i*7,
+
+   y:
+    b.y-
+    Math.sin(b.angle)*
+    i*7
   });
  }
 
@@ -646,70 +781,31 @@ function createBots(){
   bots.push(makeBot());
 }
 
-/* MOUSE */
-
-let mouseX=W/2;
-let mouseY=H/2;
-
-addEventListener("mousemove",e=>{
- mouseX=e.clientX;
- mouseY=e.clientY;
-});
-
-/* BOOST */
-
-let boosting=false;
-
-addEventListener("keydown",e=>{
-
- if(e.code==="Space")
-  boosting=true;
-});
-
-addEventListener("keyup",e=>{
-
- if(e.code==="Space")
-  boosting=false;
-});
-
-const boostBtn=
- document.getElementById("boost");
-
-boostBtn.addEventListener(
- "pointerdown",
- e=>{
-  e.preventDefault();
-  boosting=true;
- }
-);
-
-boostBtn.addEventListener(
- "pointerup",
- ()=>boosting=false
-);
-
-boostBtn.addEventListener(
- "pointercancel",
- ()=>boosting=false
-);
-
-/* RESET */
+/* PLAYER */
 
 function resetPlayer(){
 
  player.x=
-  1500+Math.random()*(WORLD-3000);
+  1500+
+  Math.random()*
+  (WORLD-3000);
 
  player.y=
-  1500+Math.random()*(WORLD-3000);
+  1500+
+  Math.random()*
+  (WORLD-3000);
 
  player.angle=
-  Math.random()*Math.PI*2;
+  Math.random()*
+  Math.PI*2;
 
- player.targetAngle=player.angle;
+ player.targetAngle=
+  player.angle;
 
  player.length=75;
+
  player.score=0;
+
  player.kills=0;
 
  player.alive=true;
@@ -719,16 +815,76 @@ function resetPlayer(){
  for(let i=0;i<75;i++){
 
   player.body.push({
+
    x:
     player.x-
-    Math.cos(player.angle)*i*7,
+    Math.cos(player.angle)*
+    i*7,
 
    y:
     player.y-
-    Math.sin(player.angle)*i*7
+    Math.sin(player.angle)*
+    i*7
   });
  }
 }
+
+/* MOUSE */
+
+let mouseX=W/2;
+let mouseY=H/2;
+
+addEventListener(
+ "mousemove",
+ e=>{
+
+  mouseX=e.clientX;
+  mouseY=e.clientY;
+ }
+);
+
+/* BOOST */
+
+let boosting=false;
+
+addEventListener(
+ "keydown",
+ e=>{
+
+  if(e.code==="Space")
+   boosting=true;
+ });
+
+addEventListener(
+ "keyup",
+ e=>{
+
+  if(e.code==="Space")
+   boosting=false;
+ });
+
+const boostBtn=
+ document.getElementById(
+  "boost"
+ );
+
+boostBtn.addEventListener(
+ "pointerdown",
+ ()=>{
+  boosting=true;
+ });
+
+boostBtn.addEventListener(
+ "pointerup",
+ ()=>{
+  boosting=false;
+ });
+
+boostBtn.addEventListener(
+ "pointercancel",
+ ()=>{
+  boosting=false;
+ });
 
 /* PLAYER UPDATE */
 
@@ -739,10 +895,15 @@ function updatePlayer(){
 
  if(innerWidth>800){
 
-  const dx=mouseX-W/2;
-  const dy=mouseY-H/2;
+  const dx=
+   mouseX-W/2;
 
-  if(Math.hypot(dx,dy)>12){
+  const dy=
+   mouseY-H/2;
+
+  if(
+   Math.hypot(dx,dy)>12
+  ){
 
    player.targetAngle=
     Math.atan2(dy,dx);
@@ -750,7 +911,8 @@ function updatePlayer(){
  }
 
  let diff=
-  player.targetAngle-player.angle;
+  player.targetAngle-
+  player.angle;
 
  while(diff>Math.PI)
   diff-=Math.PI*2;
@@ -758,44 +920,29 @@ function updatePlayer(){
  while(diff<-Math.PI)
   diff+=Math.PI*2;
 
- player.angle+=diff*.13;
+ player.angle+=
+  diff*.13;
 
- let speed=7.4;
-
- if(boosting && player.length>70){
-
-  speed=10;
-
-  player.length-=0.045;
-
-  if(Math.random()<.035){
-
-   const p=
-    player.body[
-     Math.min(10,player.body.length-1)
-    ];
-
-   if(p){
-
-    food.push({
-     x:p.x,
-     y:p.y,
-     r:5,
-     value:2,
-     color:player.color,
-     phase:Math.random()*10
-    });
-   }
-  }
- }
-
- player.speed=speed;
+ const speed=
+  boosting&&player.length>70
+  ?10
+  :7.4;
 
  player.x+=
-  Math.cos(player.angle)*speed;
+  Math.cos(player.angle)*
+  speed;
 
  player.y+=
-  Math.sin(player.angle)*speed;
+  Math.sin(player.angle)*
+  speed;
+
+ if(
+  boosting&&
+  player.length>70
+ ){
+
+  player.length-=.045;
+ }
 
  if(
   player.x<35||
@@ -804,31 +951,44 @@ function updatePlayer(){
   player.y>WORLD-35
  ){
 
-  die("Läksid vastu kaardi äärt!");
+  die(
+   "Läksid vastu kaardi äärt!"
+  );
 
   return;
  }
 
  player.body.unshift({
+
   x:player.x,
   y:player.y
  });
 
  const wanted=
-  Math.max(60,Math.floor(player.length));
+  Math.max(
+   60,
+   Math.floor(player.length)
+  );
 
- while(player.body.length<wanted){
+ while(
+  player.body.length<wanted
+ ){
 
   const last=
-   player.body[player.body.length-1];
+   player.body[
+    player.body.length-1
+   ];
 
   player.body.push({
+
    x:last.x,
    y:last.y
   });
  }
 
- while(player.body.length>wanted)
+ while(
+  player.body.length>wanted
+ )
   player.body.pop();
 
  eatFood(player);
@@ -836,23 +996,30 @@ function updatePlayer(){
 
 /* FOOD */
 
-function eatFood(snake){
+function eatFood(s){
 
- for(let i=food.length-1;i>=0;i--){
+ for(
+  let i=food.length-1;
+  i>=0;
+  i--
+ ){
 
   const f=food[i];
 
   if(
    Math.hypot(
-    snake.x-f.x,
-    snake.y-f.y
+    s.x-f.x,
+    s.y-f.y
    )<34
   ){
 
-   snake.score+=f.value;
-   snake.length+=f.value*.85;
+   s.score+=f.value;
+
+   s.length+=
+    f.value*.85;
 
    food.splice(i,1);
+
    food.push(makeFood());
   }
  }
@@ -869,39 +1036,16 @@ function updateBots(){
   if(b.timer<=0){
 
    b.timer=
-    20+Math.random()*80;
+    30+
+    Math.random()*80;
 
-   let closest=null;
-   let best=Infinity;
-
-   for(let i=0;i<food.length;i+=10){
-
-    const f=food[i];
-
-    const d=
-     Math.hypot(
-      f.x-b.x,
-      f.y-b.y
-     );
-
-    if(d<best){
-
-     best=d;
-     closest=f;
-    }
-   }
-
-   if(closest){
-
-    b.target=
-     Math.atan2(
-      closest.y-b.y,
-      closest.x-b.x
-     );
-   }
+   b.target=
+    Math.random()*
+    Math.PI*2;
   }
 
-  let diff=b.target-b.angle;
+  let diff=
+   b.target-b.angle;
 
   while(diff>Math.PI)
    diff-=Math.PI*2;
@@ -909,37 +1053,53 @@ function updateBots(){
   while(diff<-Math.PI)
    diff+=Math.PI*2;
 
-  b.angle+=diff*.055;
+  b.angle+=
+   diff*.055;
 
-  b.x+=Math.cos(b.angle)*5.5;
-  b.y+=Math.sin(b.angle)*5.5;
+  b.x+=
+   Math.cos(b.angle)*5.5;
 
-  if(b.x<100||b.x>WORLD-100)
+  b.y+=
+   Math.sin(b.angle)*5.5;
+
+  if(
+   b.x<100||
+   b.x>WORLD-100
+  )
    b.target=Math.PI-b.angle;
 
-  if(b.y<100||b.y>WORLD-100)
+  if(
+   b.y<100||
+   b.y>WORLD-100
+  )
    b.target=-b.angle;
 
   b.body.unshift({
+
    x:b.x,
    y:b.y
   });
 
   while(
-   b.body.length<Math.floor(b.length)
+   b.body.length<
+   Math.floor(b.length)
   ){
 
    const last=
-    b.body[b.body.length-1];
+    b.body[
+     b.body.length-1
+    ];
 
    b.body.push({
+
     x:last.x,
     y:last.y
    });
   }
 
   while(
-   b.body.length>Math.floor(b.length)
+   b.body.length>
+   Math.floor(b.length)
   )
    b.body.pop();
 
@@ -947,49 +1107,22 @@ function updateBots(){
  }
 }
 
-/* DROP */
-
-function dropSnake(s){
-
- for(
-  let i=0;
-  i<s.body.length;
-  i+=8
- ){
-
-  const p=s.body[i];
-
-  food.push({
-   x:p.x,
-   y:p.y,
-   r:5,
-   value:3,
-   color:s.color,
-   phase:Math.random()*10
-  });
- }
-}
-
-/* =====================================================
-   BOT COLLISIONS
-   ===================================================== */
+/* BOT COLLISION */
 
 function botCollisions(){
 
  if(!player.alive)
   return;
 
- for(let bi=bots.length-1;bi>=0;bi--){
+ for(
+  let bi=bots.length-1;
+  bi>=0;
+  bi--
+ ){
 
   const b=bots[bi];
 
-  /*
-     1.
-     SINU PEA VASTASE KEHAS
-     => SINA SURED
-  */
-
-  let playerHit=false;
+  /* PLAYER HEAD -> BOT BODY */
 
   for(
    let i=12;
@@ -1006,27 +1139,15 @@ function botCollisions(){
     )<31
    ){
 
-    playerHit=true;
-    break;
+    die(
+     "Sinu pea läks vastase keha vastu!"
+    );
+
+    return;
    }
   }
 
-  if(playerHit){
-
-   die(
-    "Sinu pea läks vastase keha vastu!"
-   );
-
-   return;
-  }
-
-  /*
-     2.
-     VASTASE PEA SINU KEHAS
-     => VASTANE SUREB
-  */
-
-  let botHit=false;
+  /* BOT HEAD -> PLAYER BODY */
 
   for(
    let i=12;
@@ -1034,7 +1155,8 @@ function botCollisions(){
    i+=2
   ){
 
-   const p=player.body[i];
+   const p=
+    player.body[i];
 
    if(
     Math.hypot(
@@ -1043,28 +1165,31 @@ function botCollisions(){
     )<31
    ){
 
-    botHit=true;
+    player.kills++;
+
+    player.score+=100;
+
+    player.length+=25;
+
+    coins+=10;
+
+    localStorage.setItem(
+     "snakeCoins",
+     coins
+    );
+
+    bots.splice(bi,1);
+
+    setTimeout(
+     ()=>{
+      if(running&&single)
+       bots.push(makeBot());
+     },
+     800
+    );
+
     break;
    }
-  }
-
-  if(botHit){
-
-   player.kills++;
-   player.score+=100;
-   player.length+=25;
-
-   coins+=10;
-   saveCoins();
-
-   dropSnake(b);
-
-   bots.splice(bi,1);
-
-   setTimeout(()=>{
-    if(running&&single)
-     bots.push(makeBot());
-   },800);
   }
  }
 }
@@ -1073,15 +1198,14 @@ function botCollisions(){
 
 function drawWorm(s){
 
- if(!s.body||s.body.length<2)
+ if(
+  !s.body||
+  s.body.length<2
+ )
   return;
 
  ctx.save();
 
- /*
-   SHADOW
- */
-
  ctx.beginPath();
 
  for(
@@ -1092,21 +1216,29 @@ function drawWorm(s){
 
   const p=s.body[i];
 
-  if(i===s.body.length-1)
-   ctx.moveTo(p.x+8,p.y+8);
+  if(
+   i===
+   s.body.length-1
+  )
+   ctx.moveTo(
+    p.x+7,
+    p.y+7
+   );
   else
-   ctx.lineTo(p.x+8,p.y+8);
+   ctx.lineTo(
+    p.x+7,
+    p.y+7
+   );
  }
 
- ctx.strokeStyle="rgba(0,0,0,.5)";
- ctx.lineWidth=47;
- ctx.lineCap="round";
- ctx.lineJoin="round";
- ctx.stroke();
+ ctx.strokeStyle=
+  "rgba(0,0,0,.5)";
 
- /*
-   BODY
- */
+ ctx.lineWidth=48;
+
+ ctx.lineCap="round";
+
+ ctx.stroke();
 
  ctx.beginPath();
 
@@ -1118,47 +1250,28 @@ function drawWorm(s){
 
   const p=s.body[i];
 
-  if(i===s.body.length-1)
+  if(
+   i===
+   s.body.length-1
+  )
    ctx.moveTo(p.x,p.y);
   else
    ctx.lineTo(p.x,p.y);
  }
 
  ctx.strokeStyle=s.color;
+
  ctx.lineWidth=36;
+
  ctx.lineCap="round";
- ctx.lineJoin="round";
+
  ctx.stroke();
 
- /*
-   HIGHLIGHT
- */
+ ctx.translate(
+  s.x,
+  s.y
+ );
 
- ctx.beginPath();
-
- for(
-  let i=s.body.length-1;
-  i>=0;
-  i--
- ){
-
-  const p=s.body[i];
-
-  if(i===s.body.length-1)
-   ctx.moveTo(p.x,p.y-5);
-  else
-   ctx.lineTo(p.x,p.y-5);
- }
-
- ctx.strokeStyle="rgba(255,255,255,.18)";
- ctx.lineWidth=7;
- ctx.stroke();
-
- /*
-   HEAD
- */
-
- ctx.translate(s.x,s.y);
  ctx.rotate(s.angle);
 
  ctx.fillStyle=s.color;
@@ -1166,48 +1279,80 @@ function drawWorm(s){
  ctx.beginPath();
 
  ctx.ellipse(
-  0,0,
-  41,35,
-  0,0,Math.PI*2
+  0,
+  0,
+  41,
+  35,
+  0,
+  0,
+  Math.PI*2
  );
 
  ctx.fill();
 
- /*
-   EYES
- */
-
  ctx.fillStyle="white";
 
  ctx.beginPath();
- ctx.arc(18,-14,10,0,Math.PI*2);
+
+ ctx.arc(
+  18,
+  -14,
+  10,
+  0,
+  Math.PI*2
+ );
+
  ctx.fill();
 
  ctx.beginPath();
- ctx.arc(18,14,10,0,Math.PI*2);
+
+ ctx.arc(
+  18,
+  14,
+  10,
+  0,
+  Math.PI*2
+ );
+
  ctx.fill();
 
  ctx.fillStyle="#111";
 
  ctx.beginPath();
- ctx.arc(21,-14,5,0,Math.PI*2);
+
+ ctx.arc(
+  21,
+  -14,
+  5,
+  0,
+  Math.PI*2
+ );
+
  ctx.fill();
 
  ctx.beginPath();
- ctx.arc(21,14,5,0,Math.PI*2);
+
+ ctx.arc(
+  21,
+  14,
+  5,
+  0,
+  Math.PI*2
+ );
+
  ctx.fill();
 
  ctx.restore();
 
- /*
-   NAME
- */
-
  ctx.textAlign="center";
- ctx.font="bold 14px Arial";
+
+ ctx.font=
+  "bold 14px Arial";
 
  ctx.lineWidth=5;
- ctx.strokeStyle="rgba(0,0,0,.9)";
+
+ ctx.strokeStyle=
+  "rgba(0,0,0,.9)";
 
  ctx.strokeText(
   s.name||"Player",
@@ -1228,7 +1373,12 @@ function drawWorm(s){
 
 function draw(){
 
- ctx.clearRect(0,0,W,H);
+ ctx.clearRect(
+  0,
+  0,
+  W,
+  H
+ );
 
  if(!running)
   return;
@@ -1243,12 +1393,11 @@ function draw(){
  ctx.fillStyle="#102716";
 
  ctx.fillRect(
-  0,0,WORLD,WORLD
+  0,
+  0,
+  WORLD,
+  WORLD
  );
-
- /*
-   GRID
- */
 
  const grid=120;
 
@@ -1256,46 +1405,74 @@ function draw(){
   "rgba(180,255,190,.035)";
 
  const left=
-  Math.floor((player.x-W)/grid)*grid;
+  Math.floor(
+   (player.x-W)/grid
+  )*grid;
 
  const right=
-  Math.ceil((player.x+W)/grid)*grid;
+  Math.ceil(
+   (player.x+W)/grid
+  )*grid;
 
  const top=
-  Math.floor((player.y-H)/grid)*grid;
+  Math.floor(
+   (player.y-H)/grid
+  )*grid;
 
  const bottom=
-  Math.ceil((player.y+H)/grid)*grid;
+  Math.ceil(
+   (player.y+H)/grid
+  )*grid;
 
- for(let x=left;x<=right;x+=grid){
+ for(
+  let x=left;
+  x<=right;
+  x+=grid
+ ){
 
   ctx.beginPath();
 
-  ctx.moveTo(x,player.y-H);
-  ctx.lineTo(x,player.y+H);
+  ctx.moveTo(
+   x,
+   player.y-H
+  );
+
+  ctx.lineTo(
+   x,
+   player.y+H
+  );
 
   ctx.stroke();
  }
 
- for(let y=top;y<=bottom;y+=grid){
+ for(
+  let y=top;
+  y<=bottom;
+  y+=grid
+ ){
 
   ctx.beginPath();
 
-  ctx.moveTo(player.x-W,y);
-  ctx.lineTo(player.x+W,y);
+  ctx.moveTo(
+   player.x-W,
+   y
+  );
+
+  ctx.lineTo(
+   player.x+W,
+   y
+  );
 
   ctx.stroke();
  }
-
- /*
-   FOOD
- */
 
  for(const f of food){
 
   if(
-   Math.abs(f.x-player.x)>W/2+150||
-   Math.abs(f.y-player.y)>H/2+150
+   Math.abs(f.x-player.x)>
+   W/2+150||
+   Math.abs(f.y-player.y)>
+   H/2+150
   )
    continue;
 
@@ -1314,45 +1491,30 @@ function draw(){
   ctx.fill();
  }
 
- /*
-   BOTS
- */
-
  if(single){
 
   for(const b of bots)
    drawWorm(b);
- }
 
- /*
-   MULTIPLAYER
- */
-
- if(!single){
+ }else{
 
   for(
    const p of multiplayerPlayers
-  ){
-
+  )
    drawWorm(p);
-  }
  }
-
- /*
-   PLAYER
- */
 
  drawWorm(player);
 
- /*
-   BORDER
- */
-
  ctx.strokeStyle="#52ff69";
+
  ctx.lineWidth=24;
 
  ctx.strokeRect(
-  0,0,WORLD,WORLD
+  0,
+  0,
+  WORLD,
+  WORLD
  );
 
  ctx.restore();
@@ -1360,64 +1522,290 @@ function draw(){
  drawMinimap();
 }
 
-/* =====================================================
-   MULTIPLAYER
-   ===================================================== */
+/* MINIMAP */
 
-let socket=null;
-let roomCode=null;
+function drawMinimap(){
 
-let multiplayerPlayers=[];
+ const c=
+  document.getElementById(
+   "minimap"
+  );
 
-function normalizeRemotePlayer(p){
+ const m=c.getContext("2d");
 
- return{
+ m.clearRect(
+  0,
+  0,
+  180,
+  180
+ );
 
-  id:p.id,
+ m.fillStyle="#071208";
 
-  name:
-   String(p.name||"Player")
-   .replace(/[<>]/g,"")
-   .slice(0,16),
+ m.fillRect(
+  0,
+  0,
+  180,
+  180
+ );
 
-  x:Number(p.x)||0,
-  y:Number(p.y)||0,
+ const drawDot=(s,r)=>{
 
-  angle:Number(p.angle)||0,
+  m.fillStyle=s.color;
 
-  length:Number(p.length)||75,
+  m.beginPath();
 
-  score:Number(p.score)||0,
+  m.arc(
+   s.x/WORLD*180,
+   s.y/WORLD*180,
+   r,
+   0,
+   Math.PI*2
+  );
 
-  kills:Number(p.kills)||0,
-
-  color:p.color||"#ff465f",
-
-  body:Array.isArray(p.body)
-   ?p.body.map(q=>({
-    x:Number(q.x)||0,
-    y:Number(q.y)||0
-   }))
-   :[]
+  m.fill();
  };
+
+ if(single){
+
+  for(const b of bots)
+   drawDot(b,3);
+
+ }else{
+
+  for(
+   const p of multiplayerPlayers
+  )
+   drawDot(p,4);
+ }
+
+ drawDot(player,5);
 }
+
+/* LEADERBOARD */
+
+function updateLeaderboard(){
+
+ const list=[{
+
+  name:player.name,
+
+  score:player.score,
+
+  color:player.color
+ }];
+
+ if(single){
+
+  for(const b of bots){
+
+   list.push({
+
+    name:b.name,
+
+    score:b.score,
+
+    color:b.color
+   });
+  }
+
+ }else{
+
+  for(
+   const p of multiplayerPlayers
+  ){
+
+   list.push({
+
+    name:p.name,
+
+    score:p.score,
+
+    color:p.color
+   });
+  }
+ }
+
+ list.sort(
+  (a,b)=>
+   b.score-a.score
+ );
+
+ const lb=
+  document.getElementById(
+   "lb"
+  );
+
+ lb.innerHTML="";
+
+ list
+ .slice(0,3)
+ .forEach((p,i)=>{
+
+  const row=
+   document.createElement(
+    "div"
+   );
+
+  row.className="lbRow";
+
+  const n=
+   document.createElement(
+    "span"
+   );
+
+  n.textContent=
+   `${i+1}. ${p.name}`;
+
+  n.style.color=p.color;
+
+  const s=
+   document.createElement(
+    "b"
+   );
+
+  s.textContent=
+   Math.floor(p.score);
+
+  row.appendChild(n);
+
+  row.appendChild(s);
+
+  lb.appendChild(row);
+ });
+}
+
+/* HUD */
+
+function updateHUD(){
+
+ document.getElementById(
+  "score"
+ ).textContent=
+  Math.floor(player.score);
+
+ document.getElementById(
+  "kills"
+ ).textContent=
+  player.kills;
+
+ document.getElementById(
+  "length"
+ ).textContent=
+  Math.floor(player.length);
+
+ document.getElementById(
+  "coins"
+ ).textContent=
+  coins;
+
+ updateLeaderboard();
+}
+
+/* GAME OVER */
+
+function die(reason){
+
+ if(dead)
+  return;
+
+ dead=true;
+
+ running=false;
+
+ player.alive=false;
+
+ document.getElementById(
+  "reason"
+ ).textContent=
+  reason;
+
+ document.getElementById(
+  "finalScore"
+ ).textContent=
+  Math.floor(player.score);
+
+ document.getElementById(
+  "finalKills"
+ ).textContent=
+  player.kills;
+
+ document.getElementById(
+  "gameOver"
+ ).style.display=
+  "flex";
+}
+
+/* START GAME */
+
+function startGame(){
+
+ resetPlayer();
+
+ running=true;
+
+ dead=false;
+
+ document.getElementById(
+  "menu"
+ ).style.display=
+  "none";
+
+ document.getElementById(
+  "hud"
+ ).style.display=
+  "flex";
+
+ document.getElementById(
+  "leaderboard"
+ ).style.display=
+  "block";
+
+ document.getElementById(
+  "minimap"
+ ).style.display=
+  "block";
+
+ document.getElementById(
+  "shopButton"
+ ).style.display=
+  "block";
+}
+
+/* SINGLE */
+
+document.getElementById(
+ "single"
+).onclick=()=>{
+
+ single=true;
+
+ createBots();
+
+ startGame();
+};
+
+/* SOCKET */
 
 function connectServer(){
 
  const protocol=
   location.protocol==="https:"
-   ?"wss:"
-   :"ws:";
+  ?"wss:"
+  :"ws:";
 
  socket=
   new WebSocket(
-   protocol+"//"+location.host
+   protocol+
+   "//"+
+   location.host
   );
 
  socket.onopen=()=>{
 
-  document.getElementById("error")
-   .textContent="";
+  document.getElementById(
+   "error"
+  ).textContent="";
  };
 
  socket.onmessage=e=>{
@@ -1433,38 +1821,74 @@ function connectServer(){
   if(data.type==="connected"){
 
    player.id=data.id;
-   return;
   }
 
-  if(data.type==="roomCreated"){
+  /*
+     ROOM CREATED
+  */
 
-   player.id=data.id;
+  if(
+   data.type===
+   "roomCreated"
+  ){
+
    roomCode=data.code;
 
-   document.getElementById("roomBox")
-    .style.display="block";
+   isHost=true;
 
-   document.getElementById("roomCode")
-    .textContent=roomCode;
+   showLobby();
 
    return;
   }
 
-  if(data.type==="roomJoined"){
+  /*
+     ROOM JOINED
+  */
 
-   player.id=data.id;
+  if(
+   data.type===
+   "roomJoined"
+  ){
+
    roomCode=data.code;
 
-   document.getElementById("roomBox")
-    .style.display="block";
+   isHost=false;
 
-   document.getElementById("roomCode")
-    .textContent=roomCode;
+   showLobby();
 
    return;
   }
 
-  if(data.type==="gameStart"){
+  /*
+     ROOM INFO
+  */
+
+  if(
+   data.type===
+   "roomInfo"
+  ){
+
+   roomCode=data.code;
+
+   isHost=
+    data.hostId===
+    player.id;
+
+   renderLobby(
+    data.players
+   );
+
+   return;
+  }
+
+  /*
+     GAME START
+  */
+
+  if(
+   data.type===
+   "gameStart"
+  ){
 
    single=false;
 
@@ -1473,601 +1897,305 @@ function connectServer(){
    return;
   }
 
-  if(data.type==="state"){
+  /*
+     GAME STATE
+  */
+
+  if(
+   data.type===
+   "state"
+  ){
 
    multiplayerPlayers=
     (data.players||[])
     .filter(
      p=>p.id!==player.id
     )
-    .map(
-     normalizeRemotePlayer
-    );
+    .map(p=>({
+
+     id:p.id,
+
+     name:p.name,
+
+     color:p.color||"#ff465f",
+
+     x:Number(p.x)||0,
+
+     y:Number(p.y)||0,
+
+     angle:Number(p.angle)||0,
+
+     length:Number(p.length)||75,
+
+     score:Number(p.score)||0,
+
+     kills:Number(p.kills)||0,
+
+     alive:p.alive,
+
+     body:Array.isArray(p.body)
+      ?p.body
+      :[]
+    }));
 
    return;
   }
 
-  if(data.type==="error"){
+  if(
+   data.type==="error"
+  ){
 
-   document.getElementById("error")
-    .textContent=data.message;
+   document.getElementById(
+    "error"
+   ).textContent=
+    data.message;
+  }
+ };
+
+ socket.onclose=()=>{
+
+  if(running&&!single){
+
+   console.log(
+    "Serveriga ühendus katkes."
+   );
   }
  };
 }
 
-/* =====================================================
-   MULTIPLAYER LOCAL COLLISION
-   ===================================================== */
+/* LOBBY */
 
-function multiplayerCollisions(){
+function showLobby(){
 
- if(!player.alive)
-  return;
+ document.getElementById(
+  "roomLobby"
+ ).style.display=
+  "block";
 
- for(
-  const other of
-  multiplayerPlayers
- ){
+ document.getElementById(
+  "roomCode"
+ ).textContent=
+  roomCode;
 
-  /*
-    SINU PEA -> TEISE KEHA
-    = SINA SURED
-  */
-
-  for(
-   let i=12;
-   i<other.body.length;
-   i+=2
-  ){
-
-   const p=other.body[i];
-
-   if(
-    Math.hypot(
-     player.x-p.x,
-     player.y-p.y
-    )<31
-   ){
-
-    die(
-     "Sinu pea läks teise mängija keha vastu!"
-    );
-
-    return;
-   }
-  }
-
-  /*
-    TEISE PEA -> SINU KEHA
-    Server otsustab lõpliku tulemuse.
-  */
- }
+ document.getElementById(
+  "error"
+ ).textContent="";
 }
 
-/* MINIMAP */
+function renderLobby(list){
 
-function drawMinimap(){
-
- const mc=
-  document.getElementById("minimap");
-
- const m=
-  mc.getContext("2d");
-
- m.clearRect(0,0,180,180);
-
- m.fillStyle="#071208";
- m.fillRect(0,0,180,180);
-
- /*
-   BOTS
- */
-
- if(single){
-
-  for(const b of bots){
-
-   m.fillStyle=b.color;
-
-   m.beginPath();
-
-   m.arc(
-    b.x/WORLD*180,
-    b.y/WORLD*180,
-    3,
-    0,
-    Math.PI*2
-   );
-
-   m.fill();
-  }
- }
-
- /*
-   PLAYERS
- */
-
- for(
-  const p of multiplayerPlayers
- ){
-
-  m.fillStyle=p.color;
-
-  m.beginPath();
-
-  m.arc(
-   p.x/WORLD*180,
-   p.y/WORLD*180,
-   5,
-   0,
-   Math.PI*2
+ const container=
+  document.getElementById(
+   "players"
   );
 
-  m.fill();
+ container.innerHTML="";
+
+ document.getElementById(
+  "playerCount"
+ ).textContent=
+  `${list.length}/8`;
+
+ for(const p of list){
+
+  const row=
+   document.createElement(
+    "div"
+   );
+
+  row.className="playerRow";
+
+  const left=
+   document.createElement(
+    "div"
+   );
+
+  left.className="playerLeft";
+
+  const dot=
+   document.createElement(
+    "div"
+   );
+
+  dot.className="playerDot";
+
+  dot.style.background=
+   p.color;
+
+  const name=
+   document.createElement(
+    "span"
+   );
+
+  name.className="playerName";
+
+  name.textContent=
+   p.name;
+
+  left.appendChild(dot);
+
+  left.appendChild(name);
+
+  const right=
+   document.createElement(
+    "span"
+   );
+
+  if(p.isHost){
+
+   right.className="host";
+
+   right.textContent=
+    "👑 HOST";
+  }
+
+  row.appendChild(left);
+
+  row.appendChild(right);
+
+  container.appendChild(row);
  }
 
- /*
-   PLAYER
- */
+ const start=
+  document.getElementById(
+   "startRoom"
+  );
 
- m.fillStyle="white";
+ const notHost=
+  document.getElementById(
+   "notHost"
+  );
 
- m.beginPath();
+ if(isHost){
 
- m.arc(
-  player.x/WORLD*180,
-  player.y/WORLD*180,
-  5,
-  0,
-  Math.PI*2
- );
+  start.style.display=
+   "block";
 
- m.fill();
-}
-
-/* LEADERBOARD */
-
-function updateLeaderboard(){
-
- const list=[{
-
-  name:player.name,
-  score:player.score,
-  color:player.color
- }];
-
- if(single){
-
-  for(const b of bots){
-
-   list.push({
-    name:b.name,
-    score:b.score,
-    color:b.color
-   });
-  }
+  notHost.style.display=
+   "none";
 
  }else{
 
-  for(
-   const p of multiplayerPlayers
-  ){
+  start.style.display=
+   "none";
 
-   list.push({
-    name:p.name,
-    score:p.score,
-    color:p.color
-   });
-  }
+  notHost.style.display=
+   "block";
  }
-
- list.sort(
-  (a,b)=>b.score-a.score
- );
-
- const lb=
-  document.getElementById("lb");
-
- lb.innerHTML="";
-
- list.slice(0,3).forEach((p,i)=>{
-
-  const row=
-   document.createElement("div");
-
-  row.className="lbRow";
-
-  const n=
-   document.createElement("span");
-
-  n.textContent=
-   `${i+1}. ${p.name}`;
-
-  n.style.color=p.color;
-
-  const s=
-   document.createElement("b");
-
-  s.textContent=
-   Math.floor(p.score);
-
-  row.appendChild(n);
-  row.appendChild(s);
-
-  lb.appendChild(row);
- });
 }
 
-/* HUD */
+/* CREATE */
 
-function updateHUD(){
+document.getElementById(
+ "create"
+).onclick=()=>{
 
- document.getElementById("score")
-  .textContent=Math.floor(player.score);
+ if(
+  !socket||
+  socket.readyState!==
+  WebSocket.OPEN
+ ){
 
- document.getElementById("kills")
-  .textContent=player.kills;
+  document.getElementById(
+   "error"
+  ).textContent=
+   "Serveriga ühendus puudub.";
 
- document.getElementById("length")
-  .textContent=Math.floor(player.length);
-
- updateCoins();
- updateLeaderboard();
-}
-
-/* GAME OVER */
-
-function die(reason){
-
- if(dead)
   return;
-
- dead=true;
- running=false;
-
- player.alive=false;
-
- document.getElementById("reason")
-  .textContent=reason;
-
- document.getElementById("finalScore")
-  .textContent=Math.floor(player.score);
-
- document.getElementById("finalKills")
-  .textContent=player.kills;
-
- document.getElementById("gameOver")
-  .style.display="flex";
-}
-
-/* START */
-
-function startGame(){
-
- resetPlayer();
-
- running=true;
- dead=false;
-
- document.getElementById("menu")
-  .style.display="none";
-
- document.getElementById("hud")
-  .style.display="flex";
-
- document.getElementById("leaderboard")
-  .style.display="block";
-
- document.getElementById("minimap")
-  .style.display="block";
-
- document.getElementById("shopButton")
-  .style.display="block";
-}
-
-/* SINGLE */
-
-document.getElementById("single")
- .onclick=()=>{
-
-  single=true;
-
-  createBots();
-
-  startGame();
- };
-
-/* SHOP */
-
-function drawShop(){
-
- const grid=
-  document.getElementById("skinGrid");
-
- grid.innerHTML="";
-
- skins.forEach(s=>{
-
-  const owned=
-   s.price===0||
-   localStorage.getItem(
-    "owned_"+s.color
-   )==="1";
-
-  const div=
-   document.createElement("div");
-
-  div.className="skin";
-
-  div.innerHTML=`
-
-   <div
-    class="preview"
-    style="
-     background:${s.color};
-     box-shadow:0 0 20px ${s.color};
-    ">
-   </div>
-
-   <b>${s.name}</b>
-
-   <div style="margin-top:5px;color:#879488">
-    ${
-     s.price===0
-      ?"TASUTA"
-      :"🪙 "+s.price
-    }
-   </div>
-
-   <button>
-    ${
-     selectedSkin===s.color
-      ?"VALITUD"
-      :owned
-       ?"KASUTA"
-       :"OSTA"
-    }
-   </button>
-  `;
-
-  div.querySelector("button")
-   .onclick=()=>{
-
-    if(owned){
-
-     selectedSkin=s.color;
-     player.color=s.color;
-
-     localStorage.setItem(
-      "snakeSkin",
-      s.color
-     );
-
-     drawShop();
-
-     return;
-    }
-
-    if(coins<s.price){
-
-     alert("Sul pole piisavalt coine!");
-     return;
-    }
-
-    coins-=s.price;
-
-    localStorage.setItem(
-     "owned_"+s.color,
-     "1"
-    );
-
-    selectedSkin=s.color;
-    player.color=s.color;
-
-    localStorage.setItem(
-     "snakeSkin",
-     s.color
-    );
-
-    saveCoins();
-    updateCoins();
-    drawShop();
-   };
-
-  grid.appendChild(div);
- });
-}
-
-document.getElementById("shopButton")
- .onclick=()=>{
-
-  drawShop();
-
-  document.getElementById("shop")
-   .style.display="flex";
- };
-
-document.getElementById("closeShop")
- .onclick=()=>{
-
-  document.getElementById("shop")
-   .style.display="none";
- };
-
-/* JOYSTICK */
-
-const joystick=
- document.getElementById("joystick");
-
-const stick=
- document.getElementById("stick");
-
-let joystickActive=false;
-
-function joystickMove(x,y){
-
- const r=
-  joystick.getBoundingClientRect();
-
- const cx=r.left+r.width/2;
- const cy=r.top+r.height/2;
-
- let dx=x-cx;
- let dy=y-cy;
-
- const max=48;
-
- const d=Math.hypot(dx,dy);
-
- if(d>max){
-
-  dx=dx/d*max;
-  dy=dy/d*max;
  }
 
- stick.style.left=
-  `calc(50% + ${dx}px)`;
+ socket.send(
+  JSON.stringify({
 
- stick.style.top=
-  `calc(50% + ${dy}px)`;
+   type:"createRoom",
 
- if(d>7){
+   name:player.name,
 
-  player.targetAngle=
-   Math.atan2(dy,dx);
+   color:player.color
+  })
+ );
+};
+
+/* JOIN */
+
+document.getElementById(
+ "join"
+).onclick=()=>{
+
+ const code=
+  document.getElementById(
+   "roomInput"
+  ).value
+   .trim()
+   .toUpperCase();
+
+ if(code.length!==5){
+
+  document.getElementById(
+   "error"
+  ).textContent=
+   "Room peab olema 5 märki.";
+
+  return;
  }
-}
 
-joystick.addEventListener(
- "pointerdown",
- e=>{
+ if(
+  !socket||
+  socket.readyState!==
+  WebSocket.OPEN
+ ){
 
-  joystickActive=true;
+  document.getElementById(
+   "error"
+  ).textContent=
+   "Serveriga ühendus puudub.";
 
-  joystick.setPointerCapture(
-   e.pointerId
-  );
-
-  joystickMove(
-   e.clientX,
-   e.clientY
-  );
+  return;
  }
-);
 
-joystick.addEventListener(
- "pointermove",
- e=>{
+ socket.send(
+  JSON.stringify({
 
-  if(joystickActive){
+   type:"joinRoom",
 
-   joystickMove(
-    e.clientX,
-    e.clientY
-   );
-  }
+   code,
+
+   name:player.name,
+
+   color:player.color
+  })
+ );
+};
+
+/* START ROOM */
+
+document.getElementById(
+ "startRoom"
+).onclick=()=>{
+
+ if(!isHost){
+
+  document.getElementById(
+   "error"
+  ).textContent=
+   "Ainult host saab alustada!";
+
+  return;
  }
-);
 
-function stopJoystick(){
-
- joystickActive=false;
-
- stick.style.left="50%";
- stick.style.top="50%";
-}
-
-joystick.addEventListener(
- "pointerup",
- stopJoystick
-);
-
-joystick.addEventListener(
- "pointercancel",
- stopJoystick
-);
-
-/* ROOMS */
-
-document.getElementById("create")
- .onclick=()=>{
-
-  if(
-   !socket||
-   socket.readyState!==WebSocket.OPEN
-  ){
-
-   document.getElementById("error")
-    .textContent=
-     "Server pole ühendatud.";
-
-   return;
-  }
+ if(
+  socket&&
+  socket.readyState===
+  WebSocket.OPEN
+ ){
 
   socket.send(
    JSON.stringify({
-    type:"createRoom",
-    name:player.name,
-    color:player.color
+    type:"start"
    })
   );
- };
-
-document.getElementById("join")
- .onclick=()=>{
-
-  const code=
-   document.getElementById("roomInput")
-    .value
-    .trim()
-    .toUpperCase();
-
-  if(code.length!==5){
-
-   document.getElementById("error")
-    .textContent=
-     "Room peab olema 5 märki.";
-
-   return;
-  }
-
-  if(
-   !socket||
-   socket.readyState!==WebSocket.OPEN
-  ){
-
-   document.getElementById("error")
-    .textContent=
-     "Server pole ühendatud.";
-
-   return;
-  }
-
-  socket.send(
-   JSON.stringify({
-    type:"joinRoom",
-    code,
-    name:player.name,
-    color:player.color
-   })
-  );
- };
-
-document.getElementById("startRoom")
- .onclick=()=>{
-
-  if(
-   socket&&
-   socket.readyState===WebSocket.OPEN
-  ){
-
-   socket.send(
-    JSON.stringify({
-     type:"start"
-    })
-   );
-  }
- };
+ }
+};
 
 /* SEND INPUT */
 
@@ -2075,7 +2203,8 @@ setInterval(()=>{
 
  if(
   socket&&
-  socket.readyState===WebSocket.OPEN&&
+  socket.readyState===
+  WebSocket.OPEN&&
   running&&
   !single
  ){
@@ -2096,6 +2225,106 @@ setInterval(()=>{
 
 },50);
 
+/* JOYSTICK */
+
+const joystick=
+ document.getElementById(
+  "joystick"
+ );
+
+const stick=
+ document.getElementById(
+  "stick"
+ );
+
+let joy=false;
+
+function moveJoy(x,y){
+
+ const r=
+  joystick.getBoundingClientRect();
+
+ const cx=
+  r.left+r.width/2;
+
+ const cy=
+  r.top+r.height/2;
+
+ let dx=x-cx;
+
+ let dy=y-cy;
+
+ const max=48;
+
+ const d=
+  Math.hypot(dx,dy);
+
+ if(d>max){
+
+  dx=dx/d*max;
+
+  dy=dy/d*max;
+ }
+
+ stick.style.left=
+  `calc(50% + ${dx}px)`;
+
+ stick.style.top=
+  `calc(50% + ${dy}px)`;
+
+ if(d>7){
+
+  player.targetAngle=
+   Math.atan2(dy,dx);
+ }
+}
+
+joystick.addEventListener(
+ "pointerdown",
+ e=>{
+
+  joy=true;
+
+  joystick.setPointerCapture(
+   e.pointerId
+  );
+
+  moveJoy(
+   e.clientX,
+   e.clientY
+  );
+ });
+
+joystick.addEventListener(
+ "pointermove",
+ e=>{
+
+  if(joy)
+   moveJoy(
+    e.clientX,
+    e.clientY
+   );
+ });
+
+function stopJoy(){
+
+ joy=false;
+
+ stick.style.left="50%";
+
+ stick.style.top="50%";
+}
+
+joystick.addEventListener(
+ "pointerup",
+ stopJoy
+);
+
+joystick.addEventListener(
+ "pointercancel",
+ stopJoy
+);
+
 /* LOOP */
 
 function loop(){
@@ -2109,10 +2338,6 @@ function loop(){
    updateBots();
 
    botCollisions();
-
-  }else{
-
-   multiplayerCollisions();
   }
 
   updateHUD();
@@ -2120,7 +2345,9 @@ function loop(){
 
  draw();
 
- requestAnimationFrame(loop);
+ requestAnimationFrame(
+  loop
+ );
 }
 
 resetPlayer();
